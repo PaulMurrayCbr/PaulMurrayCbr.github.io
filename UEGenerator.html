@@ -1,0 +1,1235 @@
+<html>
+<head>
+<title>Ultimate Equipment treasure generator</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- 
+	This HTML file is an implementation of the treasure generator in the Paizo's Ultimate Equipment, for the 
+	Pathfinder gaming sysytem. UE is copyright Paizo Publishing, and the data therin is used without permission.
+	
+	The code is copyright (c) 2014 Paul Murray, pmurray@bigpond.com, twitter PaulMurrayCbr, paulmurray.wordpress.com.
+	
+	License is Creative Commons "non-commercial with attribution"
+
+	(like, yeah right: I will totally sic my lawyers onto you if you diss my rights)
+	
+ -->
+
+<style type="text/css">
+.money {
+	border: thin solid gray;
+	text-align: right;
+	padding-left: .5em;
+	padding-right: .5em;
+	font-family: monospace;
+}
+
+.centercell {
+	border: thin solid gray;
+	text-align: center;
+	padding-left: .5em;
+	padding-right: .5em;
+}
+
+.cell {
+	border: thin solid gray;
+	text-align: left;
+	padding-left: .5em;
+	padding-right: .5em;
+}
+
+.cellNoB {
+	text-align: left;
+	padding-left: .5em;
+	padding-right: .5em;
+}
+</style>
+
+</head>
+<script type="text/javascript">
+	
+	function clearElement(e) {
+		while(e.childNodes.length != 0) {
+			e.removeChild(e.firstChild);
+		}
+	}
+
+	function initAll() {
+		mainTreasureBlock = new OverallTreasureBlock(document
+				.getElementById("MAIN-TREASURE"), 0);
+		npcCount = 0;
+		recalcTotalTreasureBudget();
+	}
+	
+	function rnd(dd) {
+		var r = Math.random();
+		r = r * dd
+		r = Math.floor(r)
+		return r;
+	}
+
+	function roll(n, dd) {
+		var t = 0;
+		while (n > 0) {
+			n--;
+			t += rnd(dd) + 1;
+		}
+		return t;
+	}
+
+	// a global.
+
+	var totalTreasureBudget = 0;
+
+	var t7_1_slow = [ 0, 170, 350, 550, 750, 1000, 1350, 1750, 2200, 2850,
+			3650, 4650, 6000, 7750, 10000, 13000, 16500, 22000, 28000, 35000,
+			44000 ];
+	var t7_1_medium = [ 0, 260, 550, 800, 1150, 1550, 2000, 3600, 3350, 4250,
+			5450, 7000, 9000, 11600, 15000, 19500, 25000, 32000, 41000, 53000,
+			67000 ];
+	var t7_1_fast = [ 0, 4000, 8000, 1200, 1700, 2300, 3000, 3900, 5000, 6400,
+			8200, 10500, 13500, 17500, 22000, 29000, 38000, 48000, 62000,
+			79000, 100000 ];
+
+	var mainTreasureBlock;
+	
+	var npcCount = 0;
+	var npcList = new Array();
+
+	function recalcTotalTreasureBudget() {
+		var apl = parseInt(document.getElementById("APL").value);
+		var track;
+		if (document.getElementById("AdvancementRate").value == 'slow') {
+			track = t7_1_slow;
+		} else if (document.getElementById("AdvancementRate").value == 'fast') {
+			track = t7_1_fast;
+		} else {
+			track = t7_1_medium;
+		}
+
+		totalTreasureBudget = track[apl];
+
+		if (document.getElementById("APLMultiplier").value == 'incidental') {
+			totalTreasureBudget /= 2;
+		} else if (document.getElementById("APLMultiplier").value == 'double') {
+			totalTreasureBudget *= 2;
+		} else if (document.getElementById("APLMultiplier").value == 'triple') {
+			totalTreasureBudget *= 3;
+		}
+
+		document.getElementById("totaltreasurebudget").innerHTML = totalTreasureBudget;
+		
+		var mainBudget = totalTreasureBudget;
+		
+		for(var i = 0; i<npcCount; i++) {
+			mainBudget -= npcList[i].budget;
+		}
+
+		mainTreasureBlock.setBudget(mainBudget);
+	}
+	
+	function repopulateSummary() {
+		document.getElementById('cp_amt').innerHTML = '0';
+		document.getElementById('cp_value').innerHTML = '0.00';
+		document.getElementById('sp_amt').innerHTML = '0';
+		document.getElementById('sp_value').innerHTML = '0.00';
+		document.getElementById('gp_amt').innerHTML = '0';
+		document.getElementById('gp_value').innerHTML = '0.00';
+		document.getElementById('pp_amt').innerHTML = '0';
+		document.getElementById('pp_value').innerHTML = '0.00';
+
+		document.getElementById('currency_value').innerHTML = '0.00';
+		document.getElementById('gem_value').innerHTML = '0.00';
+		document.getElementById('art_value').innerHTML = '0.00';
+		document.getElementById('total_value').innerHTML = '0.00';
+		
+		clearElement(document.getElementById('gem_table'));
+		clearElement(document.getElementById('art_table'));
+		clearElement(document.getElementById('item_table'));
+		clearElement(document.getElementById('weapon_table'));
+		clearElement(document.getElementById('armour_table'));
+		
+		if(!mainTreasureBlock) return; // this only happens during the initial page load
+		addTreasureBlockToSummary(mainTreasureBlock);
+		for(var i = 0; i<npcCount;i++) {
+			addTreasureBlockToSummary(npcList[i]);
+		}
+	}
+	
+	function addTreasureBlockToSummary(treasureBlock) {
+		for(var i = 0; i<treasureBlock.treasuresCount; i++) {
+			addTreasureToSummary(treasureBlock.treasures[i]);
+		}
+	}
+	
+	function addTreasureToSummary(treasure) {
+		for(var i = 0; i<treasure.generatedGold.length; i++) {
+			var generatedGold = treasure.generatedGold[i]
+		}
+		for(var i = 0; i<treasure.generatedGems.length; i++) {
+			var generatedGems = treasure.generatedGems[i]
+			var sp = document.createElement("div");
+			sp.style.margin = "2px";
+			sp.style.padding = "2px";
+			sp.appendChild(document.createTextNode(generatedGems));
+			document.getElementById('gem_table').appendChild(sp);
+		}
+		for(var i = 0; i<treasure.generatedArt.length; i++) {
+			var generatedArt = treasure.generatedArt[i]
+			var sp = document.createElement("div");
+			sp.style.margin = "2px";
+			sp.style.padding = "2px";
+			sp.appendChild(document.createTextNode(generatedArt));
+			document.getElementById('art_table').appendChild(sp);
+		}
+		for(var i = 0; i<treasure.generatedItems.length; i++) {
+			var generatedItem = treasure.generatedItems[i]
+			var sp = document.createElement("div");
+			sp.style.margin = "2px";
+			sp.style.padding = "2px";
+			sp.appendChild(document.createTextNode(generatedItem));
+			document.getElementById('item_table').appendChild(sp);
+		}
+		for(var i = 0; i<treasure.generatedWeapons.length; i++) {
+			var generatedWeapon = treasure.generatedWeapons[i]
+			var sp = document.createElement("div");
+			sp.style.margin = "2px";
+			sp.style.padding = "2px";
+			sp.appendChild(document.createTextNode(generatedWeapon));
+			document.getElementById('weapon_table').appendChild(sp);
+		}
+		for(var i = 0; i<treasure.generatedArmour.length; i++) {
+			var generatedArmour = treasure.generatedArmour[i]
+			var sp = document.createElement("div");
+			sp.style.margin = "2px";
+			sp.style.padding = "2px";
+			sp.appendChild(document.createTextNode(generatedArmour));
+			document.getElementById('armour_table').appendChild(sp);
+		}
+	}
+
+	
+	function addNPCBlock() {
+		var div = document.createElement('div');
+		npcList[npcCount] = new OverallTreasureBlock(div, 100, true, npcCount);
+		npcCount ++;
+		document.getElementById('NPC-TREASURES').appendChild(div);
+		recalcTotalTreasureBudget();
+	}
+	
+	var T7_2 = [0,260,390,780,1650,2400,3450,4650,6000,7800,10050,12750,16350,21000,27000,34800,45000,58500,75000,96000,123000,159000];
+	
+	function OverallTreasureBlock(div, budget, isNPCBlock, npcIndex) {
+		this.div = div;
+		this.isNPCBlock = isNPCBlock;
+		this.npcIndex = npcIndex;
+		div.controller = this;
+
+		this.treasures = new Array();
+		this.treasuresCount = 0;
+		
+		var e;
+		var ee;
+		var eee;
+
+		div.appendChild(document.createElement("hr"));
+
+		if(isNPCBlock) {
+			e = document.createElement("span")
+			e.appendChild(document.createTextNode("NPC Level: "));
+			ee = document.createElement("select");
+			for(var i = 1; i<=21;i++) {
+				eee = document.createElement("option");
+				eee.text = i;
+				eee.value = i;
+				ee.appendChild(eee);
+			}
+			e.appendChild(ee);
+			ee.onchange = function() {
+				controller(this).setBudget(T7_2[parseInt(ee.value)]);
+				recalcTotalTreasureBudget();
+			};
+			
+			div.appendChild(e);
+			budget = T7_2[1];
+		}
+		
+		
+		e = document.createElement("span")
+		e.appendChild(document.createTextNode("Budget: "))
+		this.budgetSpan = document.createElement("span");
+		e.appendChild(this.budgetSpan);
+		e.appendChild(document.createTextNode(", Consumed: "))
+		this.budgetConsumedSpan = document.createElement("span");
+		e.appendChild(this.budgetConsumedSpan);
+
+		div.appendChild(e);
+
+		var treasureType = document.createElement("div");
+		div.appendChild(treasureType);
+		
+		this.chooseTypeArea = document.createElement("div");
+		div.appendChild(this.chooseTypeArea);
+		this.treasureTypeSelector = new TreasureTypeSelector(this, this.chooseTypeArea);
+		
+		e = document.createElement("button");
+		e.innerHTML = "add one treasure";
+		e.onclick = function() {
+			controller(this).addOne();
+		};
+		div.appendChild(e);
+
+		e = document.createElement("button");
+		e.innerHTML = "reroll all";
+		e.onclick = function() {
+			controller(this).reroll();
+		};
+		div.appendChild(e);
+
+		if(isNPCBlock) {
+			e = document.createElement("button");
+			e.innerHTML = "delete NPC";
+			e.onclick = function() {
+					controller(this).delete();
+			};
+			div.appendChild(e);
+		}
+
+		this.treasuresArea = document.createElement("div");
+		div.appendChild(this.treasuresArea);
+
+		this.setBudget(budget);
+	}
+
+	OverallTreasureBlock.prototype.toString = function() {
+		return "OverallTreasureBlock" + ((this.npcIndex+1)? " for NPC " + (this.npcIndex+1) : "");
+	}
+	
+	OverallTreasureBlock.prototype.reroll = function() {
+		while(this.treasuresCount > 0) {
+			this.treasures[0].delete();
+		}
+		
+		var noMoreThan20 = 20;		
+		while(this.budgetConsumed < this.budget && noMoreThan20-- > 0) {
+			if(!this.addOne()) {
+				break;
+			}
+		}
+		
+		this.calculateBudgetConsumed();
+		repopulateSummary();
+	}
+
+	OverallTreasureBlock.prototype.addOne = function() {
+		// ok. How much budge do we have remainning?
+				
+		var d = document.createElement('div');
+		this.treasuresArea.appendChild(d);
+		
+		var treasureBlock =  new TreasureBlock(d, this, this.treasuresCount);
+		this.treasures[this.treasuresCount] = treasureBlock;
+		this.treasuresCount++;
+		
+		var budgetRemaining = this.budget - this.budgetConsumed;
+		
+		var chosenType = 'A'
+			var chosenIndex = -1
+
+		chooseComboSettings: {
+			if(budgetRemaining <= 0) break chooseComboSettings;
+			
+			var cheese = 100;
+			for(var i = 0; i<this.treasureTypeSelector.howMuchCheese.length;i++ ) {
+				var cheesyButton = this.treasureTypeSelector.howMuchCheese[i];
+				if(cheesyButton.checked) {
+					cheese = parseInt(cheesyButton.data_ming);
+				}
+			}
+			
+				
+			// do this in two rounds. 
+			// first, use the cheese limit. 
+			// If that fails, use maximmum cheese. 
+			for(var zz=0;chosenIndex == -1 && zz<=1;zz++) {
+				var maximumBudget;
+				if(zz == 0) {
+					maximumBudget = this.budget*cheese/100
+					if(maximumBudget > budgetRemaining) {
+						maximumBudget = budgetRemaining
+					}
+				}
+				else {
+					maximumBudget = budgetRemaining
+				}
+				// ok. What lists does the user want me to pick from?
+				var types = this.treasureTypeSelector.getSelectedTypes();
+				
+				while(types.length > 0 && chosenIndex == -1) {
+					var idx = rnd(types.length);
+					chosenType = types[idx];
+					types.splice(idx, 1);
+					chosenIndex = pickATreasureFromList(chosenType, maximumBudget)
+				}
+				
+			}
+
+			// nothing worked. Meh - add moneys.
+			if(chosenIndex != -1) {
+				treasureBlock.typeSelector.value = chosenType;
+				treasureBlock.setType(chosenType);
+				treasureBlock.budgetSelector.value = chosenIndex;
+				treasureBlock.setAllocationIndex(chosenIndex);
+			}			
+		}
+		
+		treasureBlock.reroll();
+		return chosenIndex != -1;
+	}
+	
+	function pickATreasureFromList(whichList, maximumBudget) {
+		var list = treasureTypeAllocations[whichList]
+		if(list[0].budget > maximumBudget) return -1;
+		
+		var biggestBudget = list[0].budget;
+		var biggestBudgetCount = 1;
+		var biggestBudgetStartPoint = 0;
+		
+		for(var i = 1; i<list.length; i++) {
+			if(list[i].budget > maximumBudget) {
+				break;
+			}
+			else if(list[i].budget == biggestBudget) {
+				biggestBudgetCount ++;
+			}
+			else {
+				biggestBudget = list[i].budget;
+				biggestBudgetCount = 1;
+				biggestBudgetStartPoint = i;
+			}
+		}
+
+		// pick one of the items at that budget point.
+		return biggestBudgetStartPoint + rnd(biggestBudgetCount);
+	}
+
+	OverallTreasureBlock.prototype.calculateBudgetConsumed = function() {
+		this.budgetConsumed = 0;
+		
+		for(var i =0; i<this.treasuresCount; i++) {
+			this.budgetConsumed += this.treasures[i].getValue();
+		}
+		
+		this.budgetConsumedSpan.innerHTML = this.budgetConsumed;
+		if(this.budgetConsumed > this.budget) {
+			this.budgetConsumedSpan.style.color = 'red'
+		}
+		else
+		if(this.budgetConsumed < this.budget) {
+			this.budgetConsumedSpan.style.color = 'black'
+		}
+		else {
+			this.budgetConsumedSpan.style.color = 'blue'
+		}
+		
+		// if we are recalculating the budget consumed, then something has changed.
+		repopulateSummary();
+	}
+
+	OverallTreasureBlock.prototype.delete = function() {
+		for(var i = this.npcIndex; i<npcCount-1; i++) {
+			npcList[i] = npcList[i+1];
+			npcList[i].npcIndex = i;
+		}
+		
+		npcCount --;
+
+		var tt = document.getElementById('NPC-TREASURES');
+		clearElement(tt);
+		for(var i = 0; i<npcCount; i++) {
+			tt.appendChild(npcList[i].div);
+		}
+		
+		repopulateSummary(); // redundant, because recalc does this anyway.
+		
+		recalcTotalTreasureBudget();
+	}
+	
+	OverallTreasureBlock.prototype.setBudget = function(budget) {
+		this.budget = budget;
+		this.budgetSpan.innerHTML = budget;
+		this.reroll();
+	}
+	
+	var radioButtonSeq = 0;
+	
+	var treasureTypeLabels = {
+			'A':'Coins',
+			'B':'Coins/Gems',
+			'C':'Art',
+			'D':'Coins/Small objects',
+			'E':'Armour and weapons',
+			'F':'Combat gear',
+			'G':'Spellcaster gear',
+			'H':'Lair treasure',
+			'I':'Hoard'
+	};
+	
+	
+	function TreasureTypeSelector(overallBlock, div) {
+		this.overallBlock = overallBlock;
+		this.div = div;
+		div.controller = this;
+		var dd;
+		
+		dd = document.createElement('div');
+		div.appendChild(dd);
+		dd.style.margin = ".5em 0 .5em 0";
+		
+		function creaturetype(name, treasure, extra, extratreasure) {
+			var lbl = document.createElement('span');
+			lbl.appendChild(document.createTextNode(name))
+			
+			if(extra) {
+				var lbl2 = document.createElement('span');
+				lbl2.appendChild(document.createTextNode(" (" + extra + ")"))
+				lbl.appendChild(lbl2);
+				lbl2.onclick = function(event) { 
+					controller(this).selectTreasureType(treasure + extratreasure); 
+					event.cancelBubble = true;
+				}
+			}
+			lbl.style.border = 'thin solid darkGray';
+			lbl.style.margin = '1px';
+			lbl.style.padding = '1px';
+			lbl.style.cursor = 'pointer';
+			lbl.onclick = function(event) { 
+				controller(this).selectTreasureType(treasure); 
+			}
+			dd.appendChild(lbl);
+		}
+		
+		creaturetype('Aberration', 'ABE', 'cunning', 'FHG');
+		creaturetype('Animal', 'ABDE');
+		creaturetype('Construct', 'EF', 'guarding loot', 'BCH');
+		creaturetype('Dragon', 'ABCHI');
+		creaturetype('Fey', 'BCDG');
+		creaturetype('Humanoid', 'ABDEFG', 'entire community', 'H');
+		creaturetype('Magical beast', 'ABDE');
+		creaturetype('Monstrous humanoid', 'ABCDEH');
+		creaturetype('Ooze', 'ABD');
+		creaturetype('Outsider', '');
+		creaturetype('Plant', 'ABDE');
+		creaturetype('Undead', 'ABDE', 'intelligent', 'FG');
+		creaturetype('Vermin', 'ABD');
+		
+		dd = document.createElement('div');
+		dd.style.margin = ".5em 0 .5em 0";
+		div.appendChild(dd);
+
+		this.checkboxes = new Object();
+		var thischeckboxes = this.checkboxes;
+		
+		for(var i = 'A'.charCodeAt(0); i<='I'.charCodeAt(0);i++) {
+			var type = String.fromCharCode(i);
+			var lbl = document.createElement('span');
+			var checkbox = document.createElement('input');
+			checkbox.type = "checkbox";
+			lbl.appendChild(checkbox);
+			lbl.appendChild(document.createTextNode(type + " - " + treasureTypeLabels[type]));
+			lbl.style.border = 'thin solid darkGray';
+			lbl.style.margin = '1px';
+			lbl.style.padding = '1px';
+			lbl.style.cursor = 'pointer';
+			lbl.mycheckbox = checkbox;
+			
+			thischeckboxes[type] = checkbox;
+			
+			lbl.onclick = function() {
+				this.mycheckbox.checked = !this.mycheckbox.checked;
+				return true;
+			}
+			
+			dd.appendChild(lbl);
+			
+			checkbox.onclick = function() {
+				this.checked = !this.checked;
+				return true;
+			}
+		}
+		
+		dd = document.createElement('div');
+		dd.style.margin = ".5em 0 .5em 0";
+		div.appendChild(dd);
+
+		dd.appendChild(document.createTextNode("Max individual treasure value"));
+		
+		this.howMuchCheese = [];
+		var howMuchCheese = this.howMuchCheese;
+		
+		function addMaxTreasureValue(pct) {
+			var radio = document.createElement('input');
+			radio.data_ming = pct
+			radio.type = "radio";
+			radio.name = radioButtonSeq + '-radio';
+			radio.value = "value";
+			if(pct==100) radio.checked = true;
+			dd.appendChild(radio);
+			dd.appendChild(document.createTextNode(pct + "%"));
+			howMuchCheese.push(radio);
+		}
+		
+		addMaxTreasureValue(100);
+		addMaxTreasureValue(80);
+		addMaxTreasureValue(66);
+		addMaxTreasureValue(50);
+		addMaxTreasureValue(25);
+		addMaxTreasureValue(10);
+		
+		radioButtonSeq++;
+	}
+	
+	TreasureTypeSelector.prototype.toString = function() {
+		return "TreasureTypeSelector for " + this.overallBlock;
+	}
+	
+	TreasureTypeSelector.prototype.selectTreasureType = function(types) {
+		for(var i = 'A'.charCodeAt(0); i<='I'.charCodeAt(0);i++) {
+			var t = String.fromCharCode(i);
+			this.checkboxes[t].checked = types.indexOf(t) != -1
+		}
+	}
+	
+	TreasureTypeSelector.prototype.getSelectedTypes = function() {
+		var selected = [];
+
+		for(var i = 'A'.charCodeAt(0); i<='I'.charCodeAt(0);i++) {
+			var type = String.fromCharCode(i);
+			if(this.checkboxes[type].checked) {
+				selected.push(type);
+			}
+		}		
+		
+		if(selected.length == 0) {
+			// money is always acceptable
+			selected.push('A');
+		}
+		return selected;
+	}
+	
+	
+	function TreasureBlock(div, overallTreasureBlock, treasureIndex) {
+		this.div = div;
+		this.overallTreasureBlock = overallTreasureBlock;
+		this.treasureIndex = treasureIndex;
+		
+		this.generatedGold = [];
+		this.generatedGems = [];
+		this.generatedArt = [];
+		this.generatedItems = [];
+		this.generatedWeapons = [];
+		this.generatedArmour = [];
+
+		// the current state
+		this.type = null;
+		this.budget = 1000;
+		this.allocation = null; // the currently selected allocation
+		
+		div.controller = this;
+		this.typeSelector = document.createElement('select');
+
+		for(var i = 'A'.charCodeAt(0); i<='I'.charCodeAt(0);i++) {
+			var tt = String.fromCharCode(i);
+			eee = document.createElement("option");
+			eee.text = tt + " - " + treasureTypeLabels[tt];
+			eee.value = tt;
+			this.typeSelector.appendChild(eee);
+		}
+		
+		div.appendChild(this.typeSelector);
+		this.typeSelector.onchange = function(ev) {
+			controller(this).setType(this.value)
+		};
+		
+		this.budgetSelector = document.createElement('select');
+		div.appendChild(this.budgetSelector);
+		
+		this.budgetSelector.onchange = function(ev) {
+			controller(this).setAllocationIndex(parseInt(this.value))
+		};
+
+		var e
+		e = document.createElement("button");
+		e.innerHTML = "clear";
+		e.onclick = function() {
+			controller(this).clear();
+		};
+		div.appendChild(e);
+
+		e = document.createElement("button");
+		e.innerHTML = "reroll";
+		e.onclick = function() {
+			controller(this).reroll();
+		};
+		div.appendChild(e);
+
+		e = document.createElement("button");
+		e.innerHTML = "delete";
+		e.onclick = function() {
+			controller(this).delete();
+		};
+		div.appendChild(e);
+		
+		this.generatedSpan = document.createElement("span");
+		div.appendChild(this.generatedSpan);
+		
+		this.setType('A');
+		
+	}
+	
+	TreasureBlock.prototype.toString = function() {
+		return "TreasureBlock belonging to " + this.overallTreasureBlock;
+	}
+	
+	TreasureBlock.prototype.clear = function() {
+		// clear does not clear the selected combos - it clears the generated treasure.
+		
+		this.generatedGold.length = 0;
+		this.generatedGems.length = 0;
+		this.generatedArt.length = 0;
+		this.generatedItems.length = 0;
+		this.generatedWeapons.length = 0;
+		this.generatedArmour.length = 0;
+		
+		clearElement(this.generatedSpan);
+		this.overallTreasureBlock.calculateBudgetConsumed();	
+	}
+	
+	TreasureBlock.prototype.delete = function() {
+		for(var i = this.treasureIndex; i<this.overallTreasureBlock.treasuresCount-1; i++) {
+			this.overallTreasureBlock.treasures[i] = this.overallTreasureBlock.treasures[i+1];
+			this.overallTreasureBlock.treasures[i].treasureIndex = i;
+		}
+		this.overallTreasureBlock.treasuresCount --;
+		
+		var tt = this.overallTreasureBlock.treasuresArea;
+		clearElement(tt);
+		
+		for(var i = 0; i<this.overallTreasureBlock.treasuresCount; i++) {
+			tt.appendChild(this.overallTreasureBlock.treasures[i].div);
+		}
+		
+		this.overallTreasureBlock.calculateBudgetConsumed();	
+	}
+	
+	TreasureBlock.prototype.getValue = function() {
+		return this.allocation == null ? 0 : this.allocation.budget;
+	}
+	
+	TreasureBlock.prototype.setType = function(type) {
+		this.clear();
+
+		clearElement(this.budgetSelector);
+		
+		if(type == null) return;
+		
+		// poplate the budget selector combo
+		
+		var allocationV = treasureTypeAllocations[type];
+		if(!allocationV) return;
+		
+		for(var i = 0; i<allocationV.length; i++) {
+			eee = document.createElement("option");
+			eee.value = i;
+			eee.text = allocationV[i].budget;
+			this.budgetSelector.appendChild(eee);
+		}
+		
+		this.setAllocationIndex(0);
+	}
+	
+	TreasureBlock.prototype.setAllocationIndex = function(index) {
+		var allocationV = treasureTypeAllocations[this.typeSelector.value];
+		if(!allocationV) {
+			this.setAllocation(null); 
+		}
+		else {
+			this.setAllocation(allocationV[index]);
+		}
+	}
+	
+	TreasureBlock.prototype.setAllocation = function(allocation) {
+		this.allocation = allocation;
+		this.reroll();
+	}
+	
+	TreasureBlock.prototype.reroll = function() {
+		this.clear();
+		
+		if(this.allocation) {
+			this.allocation.reroll(this);
+		}
+		
+		// reroll based on the TreasureTypeSelector belonging to my overallTreasureBlock
+		// if there is 
+		this.overallTreasureBlock.calculateBudgetConsumed();	
+	}
+	
+	
+	// this class holds one cell of table 7-, 7-5 etc. It knows what type it is, how much it is worth, 
+	// and how to generate a lump of loot.
+	
+	function TreasureTypeAllocation(type, budget, items) {
+		this.type = type;
+		this.budget = budget;
+		this.items = items;
+	}
+	
+	TreasureTypeAllocation.prototype.toString = function() {
+		return "Treasure type " + this.type + " worth " + this.budget + "gp";
+	}
+	
+	TreasureTypeAllocation.prototype.describeItems = function() {
+		return this.items.toString();
+	}
+	
+	TreasureTypeAllocation.prototype.reroll = function(treasureBlock) {
+		for(var i = 0; i<this.items.length; i++) {
+			if(this.items[i].reroll) {
+				this.items[i].reroll(treasureBlock)
+			}
+			else {
+				result = this.items[i].toString();
+				treasureBlock.generatedItems.push(result);
+				var sp = document.createElement('span');
+				sp.style.margin = '1px';
+				sp.style.padding = '1px';
+				sp.style.border = 'thin solid darkgray';
+				sp.appendChild(document.createTextNode(result));
+				sp.appendChild(document.createTextNode(' '));
+				treasureBlock.generatedSpan.appendChild(sp);
+			}
+		}
+	}
+	
+	// this global constant holds the known allocations. The arrays are sorted in ascending order of gold, so
+	// to find a treasure of type X worth not more than Y, go to the appropriate letter and scan backwards
+	
+	var treasureTypeAllocations = new Object();
+	treasureTypeAllocations.A = new Array();
+	treasureTypeAllocations.B = new Array();
+	treasureTypeAllocations.C = new Array();
+	treasureTypeAllocations.D = new Array();
+	treasureTypeAllocations.E = new Array();
+	treasureTypeAllocations.F = new Array();
+	treasureTypeAllocations.G = new Array();
+	treasureTypeAllocations.H = new Array();
+	treasureTypeAllocations.I = new Array();
+
+	treasureTypeAllocations.A = [
+	new TreasureTypeAllocation('A',     1, ['5d10 cp', '3d4 sp']),
+	new TreasureTypeAllocation('A',     5, ['2d6 × 10 cp', '4d8 sp', '1d4 gp']),
+	new TreasureTypeAllocation('A',    10, ['5d10 × 10 cp', '5d10 sp', '1d8 gp']),
+	new TreasureTypeAllocation('A',    25, ['2d4 × 100 cp', '3d6 × 10 sp', '4d4 gp']),
+	new TreasureTypeAllocation('A',    50, ['4d4 × 100 cp', '4d6 × 10 sp', '8d6 gp']),
+	new TreasureTypeAllocation('A',   100, ['6d8 × 10 sp', '3d4 × 10 gp']),
+	new TreasureTypeAllocation('A',   200, ['2d4 × 100 sp', '4d4 × 10 gp', '2d4 pp']),
+	new TreasureTypeAllocation('A',   500, ['6d6 × 10 gp', '8d6 pp']),
+	new TreasureTypeAllocation('A',  1000, ['2d4 × 100 gp', '10d10 pp']),
+	new TreasureTypeAllocation('A',  5000, ['4d8 × 100 gp', '6d10 × 10 pp']),
+	new TreasureTypeAllocation('A', 10000, ['2d4 × 1,000 gp', '12d8 × 10 pp']),
+	new TreasureTypeAllocation('A', 50000, ['2d6 × 1,000 gp', '8d10 × 100 pp'])
+	];
+	
+	treasureTypeAllocations.B = [
+	new TreasureTypeAllocation('B',   10, ['Grade 1 gemstone']),
+	new TreasureTypeAllocation('B',   15, ['2d6 × 10 cp', '4d8 sp', '1d4 gp', 'grade 1 gemstone']),
+	new TreasureTypeAllocation('B',   25, ['5d10 sp', '1d4 gp', 'two grade 1 gemstones']),
+	new TreasureTypeAllocation('B',   50, ['Grade 2 gemstone']),
+	new TreasureTypeAllocation('B',   50, ['3d6 × 10 sp', '3d6 gp', 'three grade 1 gemstones']),
+	new TreasureTypeAllocation('B',   75, ['1d4 × 10 sp', '1d4 gp', 'two grade 1 gemstones', 'grade 2 gemstone']),
+	new TreasureTypeAllocation('B',  100, ['Grade 3 gemstone']),
+	new TreasureTypeAllocation('B',  100, ['3d8 × 10 sp', '4d8 gp', 'two grade 1 gemstones', 'grade 2 gemstone']),
+	new TreasureTypeAllocation('B',  150, ['Grade 2 gemstone', 'grade 3 gemstone']),
+	new TreasureTypeAllocation('B',  200, ['3d6 × 10 sp', '2d4x10 gp', 'four grade 1 gemstones', 'grade 3 gemstone ']),
+	new TreasureTypeAllocation('B',  250, ['2d4 × 10 gp', 'two grade 2 gemstones', 'grade 3 gemstone']),
+	new TreasureTypeAllocation('B',  500, ['Grade 4 gemstone']),
+	new TreasureTypeAllocation('B',  500, ['2d4 × 10 gp', '2d4 pp', 'two grade 2 gemstones', 'three grade 3 gemstones']),
+	new TreasureTypeAllocation('B',  750, ['2d4 × 10 gp', 'two grade 2 gemstones', 'grade 3 gemstone', 'grade 4 gemstone']),
+	new TreasureTypeAllocation('B', 1000, ['Grade 5 gemstone']),
+	new TreasureTypeAllocation('B', 1000, ['3d6 × 10 gp', '4d4 pp', 'three grade 3 gemstones', 'grade 4 gemstone']),
+	new TreasureTypeAllocation('B', 2500, ['2d4 × 100 gp', 'two grade 4 gemstones', 'grade 5 gemstone']),
+	new TreasureTypeAllocation('B', 5000, ['Grade 6 gemstone']),
+	new TreasureTypeAllocation('B', 5000, ['2d4 × 100 gp', '2d4x10 pp', 'two grade 4 gemstones', 'three grade 5 gemstones']),
+	new TreasureTypeAllocation('B',10000, ['Five grade 5 gemstones', 'grade 6 gemstone']),
+	new TreasureTypeAllocation('B',20000, ['4d8 × 100 gp', '6d10x10 pp', 'three grade 6 gemstones']),
+	new TreasureTypeAllocation('B',50000, ['4d4 × 10 pp', 'ten grade 3 gemstones', 'four grade 4 gemstones', 'six grade 5 gemstones', 'eight grade 6 gemstones'])
+	];
+	
+
+	treasureTypeAllocations.C = [
+	new TreasureTypeAllocation('C', 50, ['Grade 1 art object']),
+	new TreasureTypeAllocation('C', 100, ['Grade 2 art object']),
+	new TreasureTypeAllocation('C', 100, ['Two grade 1 art objects']),
+	new TreasureTypeAllocation('C', 150, ['Grade 1 art object', 'grade 2 art object']),
+	new TreasureTypeAllocation('C', 200, ['Two grade 2 art objects']),
+	new TreasureTypeAllocation('C', 250, ['Three grade 1 art objects', 'grade 2 art object']),
+	new TreasureTypeAllocation('C', 500, ['Grade 3 art object']),
+	new TreasureTypeAllocation('C', 500, ['Four grade 1 art objects', 'three grade 2 art objects']),
+	new TreasureTypeAllocation('C', 750, ['Three grade 1 art objects', 'two grade 2 art objects', 'grade 3 art object']),
+	new TreasureTypeAllocation('C', 1000, ['Grade 4 art object']),
+	new TreasureTypeAllocation('C', 1000, ['Two grade 3 art objects']),
+	new TreasureTypeAllocation('C', 1500, ['Grade 3 art object', 'grade 4 art object']),
+	new TreasureTypeAllocation('C', 2000, ['Two grade 4 art objects']),
+	new TreasureTypeAllocation('C', 2500, ['Five grade 2 art objects', 'two grade 3 art objects', 'grade 4 art object']),
+	new TreasureTypeAllocation('C', 5000, ['Grade 5 art object']),
+	new TreasureTypeAllocation('C', 5000, ['Four grade 3 art objects', 'three grade 4 art objects']),
+	new TreasureTypeAllocation('C', 7500, ['Grade 3 art object', 'two grade 4 art objects', 'grade 5 art object']),
+	new TreasureTypeAllocation('C', 10000, ['Grade 6 art object']),
+	new TreasureTypeAllocation('C', 10000, ['Five grade 4 art objects', 'grade 5 art object']),
+	new TreasureTypeAllocation('C', 15000, ['Grade 5 art object', 'grade 6 art object']),
+	new TreasureTypeAllocation('C', 20000, ['Two grade 5 art objects', 'grade 6 art object']),
+	new TreasureTypeAllocation('C', 50000, ['Ten grade 3 art objects', 'five grade 4 art objects', 'four grade 5 art objects', 'two grade 6 art objects'])
+	];
+
+	treasureTypeAllocations.D = [
+	new TreasureTypeAllocation('D', 50, ['3d6 × 10 sp', '4d4 gp', 'lesser minor scroll']),
+	new TreasureTypeAllocation('D', 50, ['2d4 × 10 sp', '2d4 gp', 'lesser minor potion']),
+	new TreasureTypeAllocation('D', 100, ['4d6 × 10 sp', '3d10 gp', 'lesser minor potion', 'lesser minor scroll']),
+	new TreasureTypeAllocation('D', 150, ['2d4 × 10 sp', '6d6 gp', 'greater minor scroll']),
+	new TreasureTypeAllocation('D', 200, ['2d4 × 10 sp', '4d6 gp', 'greater minor potion', 'lesser minor scroll']),
+	new TreasureTypeAllocation('D', 250, ['3d6 × 10 sp', '3d6 gp', '1d4 pp', 'two lesser minor potions', 'greater minor scroll']),
+	new TreasureTypeAllocation('D', 300, ['2d4 × 10 sp', '6d6 gp', 'greater minor potion', 'greater minor scroll']),
+	new TreasureTypeAllocation('D', 400, ['Greater minor potion', 'two greater minor scrolls']),
+	new TreasureTypeAllocation('D', 500, ['2d4 × 10 gp', '1d4 pp', 'lesser medium potion', 'greater minor scroll']),
+	new TreasureTypeAllocation('D', 500, ['2d4 × 10 gp', '1d4 pp', 'two greater minor potions', 'greater minor scroll']),
+	new TreasureTypeAllocation('D', 750, ['7d6 gp', 'greater minor scroll', 'lesser minor wand']),
+	new TreasureTypeAllocation('D', 1000, ['4d4 × 10 gp', '3d6 pp', 'lesser medium potion', 'lesser medium scroll']),
+	new TreasureTypeAllocation('D', 1000, ['2d4 × 10 gp', '2d4 pp', 'lesser medium potion', 'lesser minor wand']),
+	new TreasureTypeAllocation('D', 1500, ['Greater minor wand']),
+	new TreasureTypeAllocation('D', 1500, ['4d4 × 10 gp', '3d6 pp', 'greater medium potion', 'greater medium scroll']),
+	new TreasureTypeAllocation('D', 2000, ['Greater medium potion', 'greater minor wand']),
+	new TreasureTypeAllocation('D', 2000, ['2d4 × 10 gp', '2d4 pp', 'lesser medium potion', 'two greater medium scrolls']),
+	new TreasureTypeAllocation('D', 3000, ['3d6 × 10 gp', '4d4 pp', 'greater medium potion', 'greater medium scroll', 'greater minor wand']),
+	new TreasureTypeAllocation('D', 4000, ['3d6 × 10 gp', '4d4 pp', 'greater medium scroll', 'two greater minor wands']),
+	new TreasureTypeAllocation('D', 5000, ['2d4 × 10 gp', '2d4 pp', 'three lesser major potions', 'two greater medium scrolls', 'greater minor wand ']),
+	new TreasureTypeAllocation('D', 7500, ['2d6 pp', 'lesser major scroll', 'lesser medium wand']),
+	new TreasureTypeAllocation('D', 7500, ['5d6 pp', 'two greater major potions', 'two greater major scrolls']),
+	new TreasureTypeAllocation('D', 10000, ['Greater medium wand']),
+	new TreasureTypeAllocation('D', 10000, ['4d6 pp', 'greater major potion', 'greater major scroll', 'lesser medium wand']),
+	new TreasureTypeAllocation('D', 15000, ['Lesser major wand']),
+	new TreasureTypeAllocation('D', 15000, ['9d10 pp', 'three greater major potions', 'two lesser major scrolls', 'greater medium wand']),
+	new TreasureTypeAllocation('D', 20000, ['4d4 × 10 gp', '2d4x10 pp', 'two greater major potions', 'greater major scroll', 'lesser major wand']),
+	new TreasureTypeAllocation('D', 20000, ['6d6 × 10 gp', 'three lesser major potions', 'greater major wand']),
+	new TreasureTypeAllocation('D', 25000, ['Five greater major scrolls', 'greater medium wand']),
+	new TreasureTypeAllocation('D', 30000, ['6d6 pp', 'four greater major potions', 'three greater major scrolls', 'greater major wand']),
+	new TreasureTypeAllocation('D', 50000, ['8d4 × 10 pp', 'four greater major scrolls', 'two greater major wands'])
+	];
+
+	treasureTypeAllocations.E = [
+	new TreasureTypeAllocation('E', 200, ['Masterwork light armor or shield']),
+	new TreasureTypeAllocation('E', 300, ['Masterwork medium armor']),
+	new TreasureTypeAllocation('E', 350, ['Masterwork weapon']),
+	new TreasureTypeAllocation('E', 1000, ['Masterwork heavy armor']),
+	new TreasureTypeAllocation('E', 1500, ['Lesser minor armor']),
+	new TreasureTypeAllocation('E', 2500, ['Lesser minor weapon']),
+	new TreasureTypeAllocation('E', 3000, ['Greater minor armor']),
+	new TreasureTypeAllocation('E', 3000, ['Masterwork medium armor', 'masterwork shield', 'lesser minor weapon']),
+	new TreasureTypeAllocation('E', 4000, ['Lesser minor armor', 'lesser minor weapon']),
+	new TreasureTypeAllocation('E', 5500, ['Greater minor armor', 'lesser minor weapon']),
+	new TreasureTypeAllocation('E', 6000, ['Greater minor weapon']),
+	new TreasureTypeAllocation('E', 7500, ['Lesser minor armor', 'greater minor weapon']),
+	new TreasureTypeAllocation('E', 8000, ['Greater minor armor', 'two lesser minor weapons']),
+	new TreasureTypeAllocation('E', 9000, ['Greater minor armor', 'greater minor weapon']),
+	new TreasureTypeAllocation('E', 10000, ['Lesser medium armor', 'lesser minor weapon']),
+	new TreasureTypeAllocation('E', 13000, ['Lesser medium weapon']),
+	new TreasureTypeAllocation('E', 13000, ['Lesser medium armor', 'greater minor weapon']),
+	new TreasureTypeAllocation('E', 15000, ['Greater medium armor', 'lesser minor weapon']),
+	new TreasureTypeAllocation('E', 20000, ['Lesser medium armor', 'lesser medium weapon']),
+	new TreasureTypeAllocation('E', 25000, ['Greater minor armor', 'greater medium weapon']),
+	new TreasureTypeAllocation('E', 30000, ['Lesser major armor', 'lesser minor weapon', 'greater minor weapon']),
+	new TreasureTypeAllocation('E', 30000, ['Lesser medium armor', 'greater medium weapon']),
+	new TreasureTypeAllocation('E', 35000, ['Lesser major armor', 'lesser medium weapon']),
+	new TreasureTypeAllocation('E', 35000, ['Lesser minor armor', 'lesser major weapon']),
+	new TreasureTypeAllocation('E', 40000, ['Greater major armor', 'greater minor weapon']),
+	new TreasureTypeAllocation('E', 50000, ['Greater major armor', 'lesser medium weapon']),
+	new TreasureTypeAllocation('E', 75000, ['Greater minor armor', 'greater major weapon']),
+	new TreasureTypeAllocation('E', 100000, ['Greater major armor', 'greater major weapon'])
+	];
+
+	treasureTypeAllocations.F = [
+	new TreasureTypeAllocation('F', 50, ['2d4 × 10 sp', '2d4 gp', 'lesser minor potion']),
+	new TreasureTypeAllocation('F', 250, ['2d4 × 10 sp', '2d4 gp', 'masterwork light armor or shield', 'lesser minor potion']),
+	new TreasureTypeAllocation('F', 350, ['2d4 × 10 sp', '2d4 gp', 'masterwork medium armor', 'lesser minor potion']),
+	new TreasureTypeAllocation('F', 400, ['2d4 × 10 sp', '2d4 gp', 'masterwork weapon', 'lesser minor potion']),
+	new TreasureTypeAllocation('F', 500, ['Masterwork weapon', 'greater minor potion ']),
+	new TreasureTypeAllocation('F', 750, ['6d6 gp', 'masterwork medium armor', 'masterwork weapon', 'two lesser minor potions']),
+	new TreasureTypeAllocation('F', 1000, ['Masterwork heavy armor']),
+	new TreasureTypeAllocation('F', 1500, ['Masterwork heavy armor', 'masterwork weapon', 'greater minor potion']),
+	new TreasureTypeAllocation('F', 2000, ['Lesser minor armor', 'masterwork weapon', 'two greater minor potions']),
+	new TreasureTypeAllocation('F', 3000, ['Masterwork medium armor', 'lesser minor weapon', 'greater minor potion']),
+	new TreasureTypeAllocation('F', 4000, ['Lesser minor armor', 'masterwork weapon', 'lesser minor wondrous item', 'greater minor potion']),
+	new TreasureTypeAllocation('F', 5000, ['Masterwork medium armor', 'lesser minor weapon', 'lesser minor wondrous item', 'greater minor potion']),
+	new TreasureTypeAllocation('F', 6000, ['Lesser minor armor', 'lesser minor weapon', 'lesser minor wondrous item']),
+	new TreasureTypeAllocation('F', 7500, ['Greater minor armor', 'lesser minor weapon', 'lesser minor ring']),
+	new TreasureTypeAllocation('F', 10000, ['Greater minor armor', 'lesser minor weapon', 'lesser minor ring', 'lesser minor wondrous item', 'three greater minor potions']),
+	new TreasureTypeAllocation('F', 10000, ['Greater minor armor', 'greater minor weapon', 'two greater medium potions']),
+	new TreasureTypeAllocation('F', 12500, ['Greater minor armor', 'lesser minor weapon', 'greater minor wondrous item', 'two greater medium potions']),
+	new TreasureTypeAllocation('F', 15000, ['Greater minor armor', 'greater minor weapon', 'greater minor ring']),
+	new TreasureTypeAllocation('F', 20000, ['Lesser medium armor', 'greater minor weapon', 'greater minor wondrous item', 'two greater medium potions']),
+	new TreasureTypeAllocation('F', 25000, ['Lesser medium armor', 'lesser medium weapon', 'lesser minor ring', 'lesser minor wondrous item', 'two greater medium potions']),
+	new TreasureTypeAllocation('F', 30000, ['Lesser medium armor', 'lesser medium weapon', 'two lesser minor rings', 'greater minor wondrous items']),
+	new TreasureTypeAllocation('F', 40000, ['Lesser medium armor', 'lesser medium weapon', 'lesser medium ring', 'greater minor wondrous item', 'two greater medium potions']),
+	new TreasureTypeAllocation('F', 50000, ['Greater medium armor', 'greater medium weapon', 'lesser medium wondrous item', 'two lesser major potions']),
+	new TreasureTypeAllocation('F', 60000, ['Greater medium armor', 'greater medium weapon', 'two greater minor rings', 'two greater minor wondrous items']),
+	new TreasureTypeAllocation('F', 75000, ['Lesser major armor', 'greater medium weapon', 'greater minor ring', 'greater medium wondrous item', 'three greater major potions']),
+	new TreasureTypeAllocation('F', 100000, ['Lesser major armor', 'lesser major weapon', 'lesser medium ring', 'greater minor ring', 'two lesser medium wondrous items'])
+	];
+
+	treasureTypeAllocations.G = [
+	new TreasureTypeAllocation('G', 50, ['2d4 × 10 sp', '2d4 gp', 'lesser minor potion']),
+	new TreasureTypeAllocation('G', 75, ['2d4 gp', 'lesser minor potion', 'lesser minor scroll']),
+	new TreasureTypeAllocation('G', 100, ['Lesser minor potion', 'two lesser minor scrolls']),
+	new TreasureTypeAllocation('G', 150, ['Lesser minor scroll', 'greater minor scroll']),
+	new TreasureTypeAllocation('G', 200, ['Two lesser minor potions', 'greater minor scroll']),
+	new TreasureTypeAllocation('G', 250, ['Two greater minor scrolls']),
+	new TreasureTypeAllocation('G', 500, ['Three lesser minor potions', 'three greater minor scrolls']),
+	new TreasureTypeAllocation('G', 750, ['Greater minor potion', 'lesser minor wand']),
+	new TreasureTypeAllocation('G', 1000, ['7d6 gp', 'three greater minor scrolls', 'lesser minor wand']),
+	new TreasureTypeAllocation('G', 1500, ['3d6 × 10 gp', 'Lesser medium potion', 'lesser medium scroll', 'lesser minor wand']),
+	new TreasureTypeAllocation('G', 2000, ['2d4 × 10 gp', 'masterwork weapon', 'two lesser medium scrolls', 'lesser minor wand']),
+	new TreasureTypeAllocation('G', 2500, ['Two greater medium potions', 'greater minor wand']),
+	new TreasureTypeAllocation('G', 3000, ['Greater medium potion', 'two lesser medium scrolls', 'greater minor wand']),
+	new TreasureTypeAllocation('G', 4000, ['Lesser minor wondrous item', 'greater medium potion', 'greater minor wand']),
+	new TreasureTypeAllocation('G', 5000, ['Lesser minor ring', 'lesser minor wondrous item', 'two lesser medium scrolls']),
+	new TreasureTypeAllocation('G', 6000, ['Lesser minor ring', 'lesser minor wondrous item', 'greater medium potion', 'greater minor wand']),
+	new TreasureTypeAllocation('G', 7500, ['Two greater medium potions', 'lesser minor scroll', 'lesser medium wand ']),
+	new TreasureTypeAllocation('G', 10000, ['Lesser minor ring', 'lesser minor wondrous item', 'lesser medium wand']),
+	new TreasureTypeAllocation('G', 12500, ['Lesser minor ring', 'greater minor wondrous item', 'two greater medium scrolls', 'two greater minor wands']),
+	new TreasureTypeAllocation('G', 15000, ['Lesser minor ring', 'lesser medium rod', 'lesser medium wand']),
+	new TreasureTypeAllocation('G', 20000, ['Greater minor ring', 'greater minor wondrous item', 'greater medium potion', 'two greater medium scrolls', 'lesser medium wand']),
+	new TreasureTypeAllocation('G', 25000, ['Lesser minor ring', 'lesser medium wand', 'greater medium wand', 'greater minor wondrous item']),
+	new TreasureTypeAllocation('G', 30000, ['Greater minor ring', 'lesser medium wondrous item', 'lesser major scroll', 'greater medium wand']),
+	new TreasureTypeAllocation('G', 40000, ['Lesser minor weapon', 'lesser medium staff', 'greater medium rod', 'two lesser minor wondrous items', 'lesser medium wand']),
+	new TreasureTypeAllocation('G', 50000, ['Greater minor ring', 'two lesser medium wondrous items', 'lesser major potion', 'three greater medium scrolls', 'lesser major wand']),
+	new TreasureTypeAllocation('G', 60000, ['Lesser medium staff', 'greater medium rod', 'greater medium wondrous item', 'greater medium potion', 'two lesser major scrolls', 'lesser medium wand']),
+	new TreasureTypeAllocation('G', 75000, ['Lesser minor weapon', 'greater medium staff', 'greater medium wondrous item', 'three greater major scrolls', 'greater major wand']),
+	new TreasureTypeAllocation('G', 100000, ['Lesser major ring', 'greater medium rod', 'lesser major staff', 'lesser major scroll', 'greater medium wand'])
+	];
+
+	treasureTypeAllocations.H = [
+	new TreasureTypeAllocation('H', 500, ['4d4 × 100 cp', '3d6 × 10 sp', '2d4 × 10 gp', 'masterwork weapon', 'lesser minor potion', 'lesser minor scroll', 'grade 2 gemstone']),
+	new TreasureTypeAllocation('H', 1000, ['2d4 × 100 cp', '2d6 × 100 sp', '6d6 gp', 'greater minor potion', 'greater minor scroll', 'lesser minor wand', 'three grade 1 gemstones']),
+	new TreasureTypeAllocation('H', 2500, ['3d6 × 10 sp', '2d4 gp', 'masterwork heavy armor', 'masterwork weapon', 'two lesser medium potions', 'two greater minor scrolls', 'grade 2 gemstone']),
+	new TreasureTypeAllocation('H', 5000, ['2d4 × 10 gp', '4d6 pp', 'masterwork weapon', 'lesser minor ring', 'greater medium potion', 'lesser medium scroll', 'greater minor wand']),
+	new TreasureTypeAllocation('H', 7500, ['4d4 × 10 gp', '6d6 pp', 'lesser minor weapon', 'lesser minor wondrous item', 'two greater medium potions', 'greater minor wand', 'two grade 3 gemstones']),
+	new TreasureTypeAllocation('H', 10000, ['4d8 × 10 gp', '6d10 pp', 'greater minor armor', 'lesser minor ring', 'lesser minor wondrous item', 'lesser medium scroll', 'greater minor wand', 'grade 4 gemstone']),
+	new TreasureTypeAllocation('H', 15000, ['4d4 × 10 gp', '4d4 × 10 pp', 'greater minor armor', 'lesser minor wondrous item', 'two greater medium potions', 'two greater medium scrolls', 'lesser medium wand', 'one grade 3 gemstone']),
+	new TreasureTypeAllocation('H', 20000, ['2d4 × 10 pp', 'greater minor ring', 'two lesser minor wondrous items', 'two greater medium potions', 'two lesser major scrolls', 'lesser medium wand']),
+	new TreasureTypeAllocation('H', 25000, ['6d10 × 10 gp', '6d6 pp', 'lesser medium armor', 'lesser minor weapon', 'greater minor wondrous item', 'two lesser major scrolls', 'lesser medium wand', 'grade 4 gemstone']),
+	new TreasureTypeAllocation('H', 30000, ['6d6 × 10 gp', '2d4 × 10 pp', 'greater minor weapon', 'lesser medium wondrous item', 'greater medium wand', 'three grade 3 gemstones']),
+	new TreasureTypeAllocation('H', 40000, ['4d4 × 10 gp', '4d4 × 10 pp', 'lesser medium ring', 'lesser medium rod', 'two greater major potions', 'two lesser major scrolls', 'lesser major wand']),
+	new TreasureTypeAllocation('H', 50000, ['4d4 × 10 pp', 'greater medium armor', 'lesser medium staff', 'lesser medium wondrous item', 'greater major scroll', 'lesser medium wand', 'grade 5 gemstone']),
+	new TreasureTypeAllocation('H', 75000, ['2d8 × 100 gp', '4d4 × 10 pp', 'greater minor weapon', 'greater medium ring', 'greater medium staff', 'three greater major potions', 'greater major scroll', 'lesser major wand', 'grade 5 gemstone']),
+	new TreasureTypeAllocation('H', 100000, ['8d6 × 100 gp', '4d4 × 10 pp', 'lesser major ring', 'lesser major wondrous item', 'three greater major potions', 'greater major scroll', 'lesser medium wand', 'two grade 5 gemstones', 'grade 6 gemstone'])
+	];
+
+	treasureTypeAllocations.I = [
+	new TreasureTypeAllocation('I', 5000, ['4d4 × 1,000 cp', '6d6 × 100 sp', '2d4 × 100 gp', '6d6 pp', 'lesser minor armor', 'greater minor wand', 'five grade 3 gemstones', 'grade 3 art object']),
+	new TreasureTypeAllocation('I', 10000, ['4d4 × 1,000 cp', '6d6 × 100 sp', '2d4 × 100 gp', '6d6 pp', 'greater minor armor', 'lesser minor weapon', 'lesser minor wondrous item', 'greater medium scroll', 'grade 4 gemstone', 'grade 3 art object']),
+	new TreasureTypeAllocation('I', 15000, ['2d4 × 1,000 cp', '6d4 × 100 sp', '3d6 × 10 gp', '6d6 pp', 'greater minor ring', 'two lesser minor wondrous items', 'two greater medium potions', 'greater minor wand', 'grade 4 gemstone', 'grade 3 art object']),
+	new TreasureTypeAllocation('I', 20000, ['2d4 × 1,000 cp', '6d4 × 100 sp', '3d6 × 10 gp', '6d6 pp', 'greater minor armor', 'lesser medium rod', 'greater minor wondrous item', 'two lesser major potions', 'greater medium scroll', 'three grade 3 art objects']),
+	new TreasureTypeAllocation('I', 25000, ['2d4 × 1,000 cp', '6d4 × 100 sp', '3d6 × 10 gp', '6d6 pp', 'lesser medium staff', 'two lesser minor wondrous items', 'greater medium potion', 'lesser medium wand', 'two grade 2 gemstones', 'two grade 3 gemstones', 'grade 4 gemstone']),
+	new TreasureTypeAllocation('I', 30000, ['2d4 × 1,000 cp', '6d4 × 100 sp', '3d6 × 10 gp', '6d6 pp', 'lesser medium armor', 'greater minor weapon', 'lesser medium wondrous item', 'two lesser major scrolls', 'grade 4 art object']),
+	new TreasureTypeAllocation('I', 40000, ['4d4 × 1,000 cp', '6d6 × 100 sp', '2d4 × 100 gp', '6d6 pp', 'lesser medium weapon', 'greater medium rod', 'greater major potion', 'greater medium scroll', 'lesser medium wand', 'three grade 3 art objects', 'two grade 4 art objects']),
+	new TreasureTypeAllocation('I', 50000, ['4d4 × 10,000 cp', '6d6 × 1,000 sp', '4d4 × 100 gp', '2d4 × 10 pp', 'greater minor armor', 'two greater minor weapons', 'greater medium staff', 'greater minor wondrous item', 'grade 5 gemstone']),
+	new TreasureTypeAllocation('I', 60000, ['2d4 × 10,000 cp', '2d4 × 1,000 sp', '2d4 × 100 gp', '2d4 × 10 pp', 'greater medium weapon', 'greater medium rod', 'lesser medium wondrous item', 'greater major scroll', 'two greater minor wands', 'grade 4 gemstone', 'five grade 2 art objects']),
+	new TreasureTypeAllocation('I', 75000, ['2d4 × 10,000 cp', '2d4 × 1,000 sp', '2d4 × 100 gp', '2d4 × 10 pp', 'lesser major armor', 'greater medium ring', 'lesser medium staff', 'greater medium wand', 'grade 6 gemstone', 'grade 4 art object']),
+	new TreasureTypeAllocation('I', 100000, ['2d4 × 10,000 cp', '2d4 × 1,000 sp', '2d4 × 100 gp', '2d4 × 10 pp', 'lesser medium weapon', 'greater medium ring', 'lesser major rod', 'greater medium wondrous item', 'two greater major potions', 'lesser medium scroll', 'two grade 4 art objects']),
+	new TreasureTypeAllocation('I', 125000, ['4d4 × 10,000 cp', '6d6 × 1,000 sp', '4d4 × 100 gp', '2d8 × 10 pp', 'greater major armor', 'lesser medium weapon', 'lesser major staff', 'two greater major scrolls', 'greater major wand', 'grade 6 gemstone', 'three grade 4 art objects']),
+	new TreasureTypeAllocation('I', 150000, ['4d4 × 10,000 cp', '6d6 × 1,000 sp', '4d4 × 100 gp', '2d8 × 10 pp', 'greater medium armor', 'lesser major ring', 'greater major wondrous item', 'greater major wand']),
+	new TreasureTypeAllocation('I', 200000, ['4d4 × 10,000 cp', '6d6 × 1,000 sp', '4d4 × 100 gp', '2d8 × 10 pp', 'greater major weapon', 'two lesser medium rings', 'lesser major staff', 'lesser major wondrous item', 'lesser major wand', 'three grade 5 gemstones', 'grade 4 gemstone ']),
+	new TreasureTypeAllocation('I', 300000, ['8d4 × 10,000 cp', '12d6 × 1,000 sp', '8d4 × 100 gp', '2d8 × 10 pp', 'greater major weapon', 'lesser major ring', 'greater major staff', 'greater major wondrous item', 'greater medium wand', 'grade 6 gemstone', 'grade 6 art object'])
+	];
+
+
+	
+	function CoinPicker(roll, mul, denom) {
+		this.roll = roll;
+		this.mul = mul;
+		this.denom = denom;
+	}
+	
+	CoinPicker.prototype.toString = function() {
+		return (roll=='1'?'':roll + '×') + (mul==1?'':mul) + denom;
+	}
+
+	CoinPicker.prototype.reroll = function(treasureBlock) {
+		treasureBlock.generatedItems.push('generated ' + this.toString())
+		treasureBlock.generatedSpan.appendChild(document.createTextNode('generated ' + this.toString()));
+	}
+	
+	// this function builds a coin picker based on a parameter string
+	function pickCoins(params) {
+		return new CoinPicker('1', '1', 'params');
+	}
+	
+	// find the innermost enclosing node that has a "controller" object
+
+	function controller(c) {
+		while (c) {
+			if (c.controller)
+				return c.controller;
+			c = c.parentNode;
+		}
+	}
+</script>
+<body onload="initAll()">
+	<div id="summary"margin:1em; ></div>
+
+	<div style="clear: both;"></div>
+
+	<div id="total treasure value"margin:1em; >
+		APL <select id="APL" onchange="recalcTotalTreasureBudget()">
+			<option value="1" selected="on">1</option>
+			<option value="2">2</option>
+			<option value="3">3</option>
+			<option value="4">4</option>
+			<option value="5">5</option>
+			<option value="6">6</option>
+			<option value="7">7</option>
+			<option value="8">8</option>
+			<option value="9">9</option>
+			<option value="10">10</option>
+			<option value="11">11</option>
+			<option value="12">12</option>
+			<option value="13">13</option>
+			<option value="14">14</option>
+			<option value="15">15</option>
+			<option value="16">16</option>
+			<option value="17">17</option>
+			<option value="18">18</option>
+			<option value="19">19</option>
+			<option value="20">20+</option>
+		</select> Amount: <select id="APLMultiplier" onchange="recalcTotalTreasureBudget()">
+			<option value="incidental">incidental</option>
+			<option value="standard" selected="on">standard</option>
+			<option value="double">double</option>
+			<option value="triple">triple</option>
+		</select> Advancement rate: <select id="AdvancementRate" onchange="recalcTotalTreasureBudget()">
+			<option value="slow">slow</option>
+			<option value="med" selected="on">medium</option>
+			<option value="fast">fast</option>
+		</select> Total treasure budget: <span class="money" id="totaltreasurebudget">0</span>
+
+		<button onclick="recalcTotalTreasureBudget()">Reroll all</button>
+
+		<button onclick="addNPCBlock()">Add NPC Block</button>
+	</div>
+
+
+	<div id="MAIN">
+		<div id="SUMMARY">
+			<div style="float: left; margin: 1em; padding: 1em;  border: thin solid black;">
+				<table border="0" cellspacing="0" cellpadding="0">
+					<tr>
+						<TD></TD>
+						<TH>Amt</TH>
+						<TH>Value</TH>
+					</tr>
+					<tr>
+						<TD>CP</TD>
+						<TD id="cp_amt" class="money">0</TD>
+						<TD id="cp_value" class="money">0.00</TD>
+					</tr>
+					<tr>
+						<TD>SP</TD>
+						<TD id="sp_amt" class="money">0</TD>
+						<TD id="sp_value" class="money">0.00</TD>
+					</tr>
+					<tr>
+						<TD>GP</TD>
+						<TD id="gp_amt" class="money">0</TD>
+						<TD id="gp_value" class="money">0.00</TD>
+					</tr>
+					<tr>
+						<TD>PP</TD>
+						<TD id="pp_amt" class="money">0</TD>
+						<TD id="pp_value" class="money">0.00</TD>
+					</tr>
+					<tr>
+						<TD>Subtotal</TD>
+						<TD colspan="2" id="currency_value" class="money">0.00</TD>
+					</tr>
+					<tr>
+						<TD>Gems</TD>
+						<TD colspan="2" id="gem_value" class="money">0.00</TD>
+					</tr>
+					<tr>
+						<TD>Art Objects</TD>
+						<TD colspan="2" id="art_value" class="money">0.00</TD>
+					</tr>
+					<tr>
+						<TD>Total</TD>
+						<TD colspan="2" id="total_value" class="money" style="font-weight: bold;">0.00</TD>
+					</tr>
+				</table>
+			</div>
+
+			<div style="float: left;"">
+				<div style="margin: 1em; padding: 1em; border: thin solid black;">
+					<table border="0" cellspacing="0" cellpadding="0">
+						<caption>Gems</caption>
+						<tbody id="gem_table">
+						</tbody>
+					</table>
+				</div>
+				<div style="margin: 1em; padding: 1em; border: thin solid black;">
+					<table border="0" cellspacing="0" cellpadding="0">
+						<caption>Art Objects</caption>
+						<tbody id="art_table">
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<div style="float: left; margin: 1em; padding: 1em; border: thin solid black;">
+				<table border="0" cellspacing="0" cellpadding="0">
+					<caption>Items</caption>
+					<tbody id="item_table">
+					</tbody>
+				</table>
+			</div>
+
+			<div style="float: left;">
+				<div style="margin: 1em; padding: 1em; border: thin solid black;">
+					<table border="0" cellspacing="0" cellpadding="0">
+						<caption>Weapons</caption>
+						<tbody id="weapon_table">
+						</tbody>
+					</table>
+				</div>
+
+				<div style="margin: 1em; padding: 1em; border: thin solid black;">
+					<table border="0" cellspacing="0" cellpadding="0">
+						<caption>Armour</caption>
+						<tbody id="armour_table">
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div style="clear: both;"></div>
+		<div id="MAIN-TREASURE"></div>
+		<div style="clear: both;"></div>
+		<div id="NPC-TREASURES"></div>
+	</div>
+
+	<div style="clear: both;"></div>
+	<hr>
+
+	<font size="-1"> Paizo Publishing data used without permission. Using this generator without owning a paid-for copy of Ulimte Equipment is a chaotic act! Also, this generator won't be much use to you without one. <br>
+		Javascript code &copy; <a href="mailto:Paul Murray<pmurray@bigpond.com">Paul Murray</a> 2014. <a href="http://paulmurray.wordpress.com">Wordpress</a>, <a href="https://twitter.com/#!/PaulMurrayCbr">Twitter</a>, <a
+		href="http://www.facebook.com/PaulMurrayCbr">Facebook</a>.
+	</font>
+</body>
+</html>
