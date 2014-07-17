@@ -630,11 +630,22 @@
 		}
 		for(var i = 0; i<treasure.generatedWeapons.length; i++) {
 			var generatedWeapon = treasure.generatedWeapons[i]
-			var span = document.createElement("div");
-			span.style.margin = "2px";
-			span.style.padding = "2px";
-			span.appendChild(document.createTextNode(generatedWeapon));
-			document.getElementById('weapon_table').appendChild(span);
+			var tr = document.createElement("tr");
+
+			var td = document.createElement("td");
+			td.setAttribute("class", "cell");
+			td.appendChild(document.createTextNode(generatedWeapon.getLabel()));
+			tr.appendChild(td);
+
+			var td = document.createElement("td");
+			td.setAttribute("class", "money");
+			td.appendChild(document.createTextNode(cpToString(generatedWeapon.getValue()*100)));
+			tr.appendChild(td);
+
+			document.getElementById('weapon_table').appendChild(tr);
+			
+			summaryWEAPONS += generatedWeapon.getValue();
+			summaryWEAPONSCT ++;
 		}
 		for(var i = 0; i<treasure.generatedArmour.length; i++) {
 			var generatedArmour = treasure.generatedArmour[i]
@@ -769,21 +780,21 @@
 		this.treasureTypeSelector = new TreasureTypeSelector(this, this.chooseTypeArea);
 		
 		e = document.createElement("button");
-		e.innerHTML = "add one treasure";
-		e.onclick = function() {
-			controller(this).addOne();
-		};
-		div.appendChild(e);
-
-		e = document.createElement("button");
-		e.innerHTML = "reroll all";
+		e.innerHTML = "Reallocate treasure blocks";
 		e.onclick = function() {
 			controller(this).reroll();
 		};
 		div.appendChild(e);
 
 		e = document.createElement("button");
-		e.innerHTML = "reroll each";
+		e.innerHTML = "Add one treasure block";
+		e.onclick = function() {
+			controller(this).addOne();
+		};
+		div.appendChild(e);
+
+		e = document.createElement("button");
+		e.innerHTML = "Reroll all blocks";
 		e.onclick = function() {
 			var otb = controller(this);
 			for(var i = 0; i<otb.treasuresCount; i++) {
@@ -794,7 +805,7 @@
 
 		if(isNPCBlock) {
 			e = document.createElement("button");
-			e.innerHTML = "delete NPC";
+			e.innerHTML = "Delete this NPC";
 			e.onclick = function() {
 					controller(this).delete();
 			};
@@ -5174,16 +5185,16 @@ var weaponType  = {
 };
 weaponType.picker = new D100Picker(weaponType);
 
-function WeaponTableRow(name, type, cost) {
+function WeaponTypeTableRow(name, type, cost) {
 	this.name = name;
-	this.type = type; // M, R, A -> Melee, Ranged, Ammo
+	this.type = type; // M, R, MR
 	this.cost = cost;
 }
 
-WeaponTableRow.prototype.isArmour = false;
-WeaponTableRow.prototype.isWeapon = true;
+WeaponTypeTableRow.prototype.isArmour = false;
+WeaponTypeTableRow.prototype.isWeapon = true;
 
-WeaponTableRow.prototype.toString = function() {
+WeaponTypeTableRow.prototype.toString = function() {
 	return "WeaponTableRow("+this.name +")"
 }
 
@@ -5210,6 +5221,65 @@ armourAndShieldType.add(91,93, 'Other light armor (GM\'s choice)','L',50);
 armourAndShieldType.add(94,95, 'Other medium armor (GM\'s choice)','M',100);
 armourAndShieldType.add(96,98, 'Other heavy armor (GM\'s choice)','H',425);
 armourAndShieldType.add(99,100, 'Other shield (GM\'s choice)','S',15);
+
+weaponType.add( 1, 1, "Bastard sword",'M',35);
+weaponType.add( 2, 5, "Battleaxe",'M',10);
+weaponType.add( 6, 6, "Bolas",'R',5);
+weaponType.add( 7, 8, "Club",'M',0);
+weaponType.add( 9, 10, "Composite longbow",'R',100);
+weaponType.add( 11, 12, "Composite shortbow",'R',75);
+weaponType.add( 13, 16, "Dagger",'MR',2);
+weaponType.add( 17, 17, "Dart",'R',.5);
+weaponType.add( 18, 18, "Dwarven waraxe",'M',30);
+weaponType.add( 19, 19, "Falchion",'M',75);
+weaponType.add( 20, 20, "Gauntlet",'M',5);
+weaponType.add( 21, 21, "Glaive",'M',8);
+weaponType.add( 22, 24, "Greataxe",'M',20);
+weaponType.add( 25, 25, "Greatclub",'M',5);
+weaponType.add( 26, 28, "Greatsword",'M',50);
+weaponType.add( 29, 29, "Halberd",'M',10);
+weaponType.add( 30, 30, "Handaxe",'MR',6);
+weaponType.add( 31, 33, "Heavy crossbow",'R',50);
+weaponType.add( 34, 34, "Heavy flail",'M',15);
+weaponType.add( 35, 35, "Heavy mace",'M',12);
+weaponType.add( 36, 37, "Lance",'M',10);
+weaponType.add( 38, 40, "Light crossbow",'R',35);
+weaponType.add( 41, 41, "Light flail",'M',4); // ?? same price as a light pick
+weaponType.add( 42, 42, "Light hammer",'MR',1);
+weaponType.add( 43, 44, "Light mace",'M',5);
+weaponType.add( 45, 45, "Light pick",'M',4);
+weaponType.add( 46, 49, "Longbow",'M',75);
+weaponType.add( 50, 51, "Longspear",'M',5);
+weaponType.add( 52, 58, "Longsword",'M',15);
+weaponType.add( 59, 60, "Morningstar",'M',8);
+weaponType.add( 61, 61, "Nunchaku",'M',0);
+weaponType.add( 62, 63, "Quarterstaff",'M',0);
+weaponType.add( 64, 65, "Rapier",'M',20);
+weaponType.add( 66, 84, "UE missing weapons 66-84. GM's choice.",'?',20);
+weaponType.add( 85, 87, "Spear",'MR',2);
+weaponType.add( 88, 88, "Trident",'MR',15);
+weaponType.add( 89, 91, "Warhammer",'MR',12);
+weaponType.add( 92, 92, "Whip",'M',1);
+// using an approximate price
+weaponType.add( 93, 94, "Other light melee weapon (GM's  choice)",'M',10);
+weaponType.add( 95, 96, "Other one-handed melee weapon (GM's  choice)",'M',20);
+weaponType.add( 97, 98, "Other two-handed melee weapon (GM's  choice)",'M',50);
+weaponType.add( 99, 100, "Other ranged weapon (GM's  choice)",'R',40);
+
+var masterwork_weapon = {
+	reroll: function (treasureBlock) { 
+		var chosenType;
+		for(;;) {
+			chosenType = weaponType.gen();
+			if(chosenType.type != '?') break;
+		}
+		var result = new ArmsAndArmourResult(0, chosenType, 0);
+		treasureBlock.generatedWeapons.push(result)
+		treasureBlock.generatedSpan.appendChild(document.createTextNode(result.getLabel()));
+	 },
+	toString: function() { return 'masterwork_weapon picker'; }
+};
+
 
 function reroll_masterwork_armour(treasureBlock, weight) {
 	var chosenType;
@@ -5439,7 +5509,7 @@ ArmsAndArmourResult.prototype.getValue = function() {
 	treasureTypeAllocations.E = [
 	new TreasureTypeAllocation('E', 200, [masterwork_light_armour_or_shield]),
 	new TreasureTypeAllocation('E', 300, [masterwork_medium_armour]),
-	new TreasureTypeAllocation('E', 350, [plainString('masterwork weapon')]),
+	new TreasureTypeAllocation('E', 350, [masterwork_weapon]),
 	new TreasureTypeAllocation('E', 1000, [masterwork_heavy_armour]),
 	new TreasureTypeAllocation('E', 1500, [plainString('lesser minor armor')]),
 	new TreasureTypeAllocation('E', 2500, [plainString('lesser minor weapon')]),
@@ -5471,14 +5541,14 @@ ArmsAndArmourResult.prototype.getValue = function() {
 	new TreasureTypeAllocation('F', 50, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), lesser_minor_potion]),
 	new TreasureTypeAllocation('F', 250, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), masterwork_light_armour_or_shield, lesser_minor_potion]),
 	new TreasureTypeAllocation('F', 350, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), masterwork_medium_armour, lesser_minor_potion]),
-	new TreasureTypeAllocation('F', 400, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), plainString('masterwork weapon'), lesser_minor_potion]),
-	new TreasureTypeAllocation('F', 500, [plainString('masterwork weapon'), greater_minor_potion]),
-	new TreasureTypeAllocation('F', 750, [makeCoinPicker(6, 6, 1, gp), masterwork_medium_armour, plainString('masterwork weapon'), mult(2, lesser_minor_potion)]),
+	new TreasureTypeAllocation('F', 400, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), masterwork_weapon, lesser_minor_potion]),
+	new TreasureTypeAllocation('F', 500, [masterwork_weapon, greater_minor_potion]),
+	new TreasureTypeAllocation('F', 750, [makeCoinPicker(6, 6, 1, gp), masterwork_medium_armour, masterwork_weapon, mult(2, lesser_minor_potion)]),
 	new TreasureTypeAllocation('F', 1000, [masterwork_heavy_armour]),
-	new TreasureTypeAllocation('F', 1500, [masterwork_heavy_armour, plainString('masterwork weapon'), greater_minor_potion]),
-	new TreasureTypeAllocation('F', 2000, [plainString('lesser minor armor'), plainString('masterwork weapon'), mult(2, greater_minor_potion)]),
+	new TreasureTypeAllocation('F', 1500, [masterwork_heavy_armour, masterwork_weapon, greater_minor_potion]),
+	new TreasureTypeAllocation('F', 2000, [plainString('lesser minor armor'), masterwork_weapon, mult(2, greater_minor_potion)]),
 	new TreasureTypeAllocation('F', 3000, [masterwork_medium_armour, plainString('lesser minor weapon'), greater_minor_potion]),
-	new TreasureTypeAllocation('F', 4000, [plainString('lesser minor armor'), plainString('masterwork weapon'), lesser_minor_wondrous_item, greater_minor_potion]),
+	new TreasureTypeAllocation('F', 4000, [plainString('lesser minor armor'), masterwork_weapon, lesser_minor_wondrous_item, greater_minor_potion]),
 	new TreasureTypeAllocation('F', 5000, [masterwork_medium_armour, plainString('lesser minor weapon'), lesser_minor_wondrous_item, greater_minor_potion]),
 	new TreasureTypeAllocation('F', 6000, [plainString('lesser minor armor'), plainString('lesser minor weapon'), lesser_minor_wondrous_item]),
 	new TreasureTypeAllocation('F', 7500, [plainString('greater minor armor'), plainString('lesser minor weapon'), lesser_minor_ring]),
@@ -5507,7 +5577,7 @@ ArmsAndArmourResult.prototype.getValue = function() {
 	new TreasureTypeAllocation('G', 750, [greater_minor_potion, lesser_minor_wand]),
 	new TreasureTypeAllocation('G', 1000, [makeCoinPicker(7, 6, 1, gp), mult(3, greater_minor_scroll), lesser_minor_wand]),
 	new TreasureTypeAllocation('G', 1500, [makeCoinPicker(3, 6, 10, gp), lesser_medium_potion, lesser_medium_scroll, lesser_minor_wand]),
-	new TreasureTypeAllocation('G', 2000, [makeCoinPicker(2, 4, 10, gp), plainString('masterwork weapon'), mult(2, lesser_medium_scroll), lesser_minor_wand]),
+	new TreasureTypeAllocation('G', 2000, [makeCoinPicker(2, 4, 10, gp), masterwork_weapon, mult(2, lesser_medium_scroll), lesser_minor_wand]),
 	new TreasureTypeAllocation('G', 2500, [mult(2, greater_medium_potion), greater_minor_wand]),
 	new TreasureTypeAllocation('G', 3000, [greater_medium_potion, mult(2, lesser_medium_scroll), greater_minor_wand]),
 	new TreasureTypeAllocation('G', 4000, [lesser_minor_wondrous_item, greater_medium_potion, greater_minor_wand]),
@@ -5528,10 +5598,10 @@ ArmsAndArmourResult.prototype.getValue = function() {
 	];
 
 	treasureTypeAllocations.H = [
-	new TreasureTypeAllocation('H', 500, [makeCoinPicker(4, 4, 100, cp), makeCoinPicker(3, 6, 10, sp), makeCoinPicker(2, 4, 10, gp), plainString('masterwork weapon'), lesser_minor_potion, lesser_minor_scroll, gemPicker(2)]),
+	new TreasureTypeAllocation('H', 500, [makeCoinPicker(4, 4, 100, cp), makeCoinPicker(3, 6, 10, sp), makeCoinPicker(2, 4, 10, gp), masterwork_weapon, lesser_minor_potion, lesser_minor_scroll, gemPicker(2)]),
 	new TreasureTypeAllocation('H', 1000, [makeCoinPicker(2, 4, 100, cp), makeCoinPicker(2, 6, 100, sp), makeCoinPicker(6, 6, 1, gp), greater_minor_potion, greater_minor_scroll, lesser_minor_wand, mult(3, gemPicker(1))]),
-	new TreasureTypeAllocation('H', 2500, [makeCoinPicker(3, 6, 10, sp), makeCoinPicker(2, 4, 1, gp), masterwork_heavy_armour, plainString('masterwork weapon'), mult(2, lesser_medium_potion), mult(2, greater_minor_scroll), gemPicker(2)]),
-	new TreasureTypeAllocation('H', 5000, [makeCoinPicker(2, 4, 10, gp), makeCoinPicker(4, 6, 1, pp), plainString('masterwork weapon'), lesser_minor_ring, greater_medium_potion, lesser_medium_scroll, greater_minor_wand]),
+	new TreasureTypeAllocation('H', 2500, [makeCoinPicker(3, 6, 10, sp), makeCoinPicker(2, 4, 1, gp), masterwork_heavy_armour, masterwork_weapon, mult(2, lesser_medium_potion), mult(2, greater_minor_scroll), gemPicker(2)]),
+	new TreasureTypeAllocation('H', 5000, [makeCoinPicker(2, 4, 10, gp), makeCoinPicker(4, 6, 1, pp), masterwork_weapon, lesser_minor_ring, greater_medium_potion, lesser_medium_scroll, greater_minor_wand]),
 	new TreasureTypeAllocation('H', 7500, [makeCoinPicker(4, 4, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser minor weapon'), lesser_minor_wondrous_item, mult(2, greater_medium_potion), greater_minor_wand, mult(2, gemPicker(3))]),
 	new TreasureTypeAllocation('H', 10000, [makeCoinPicker(4, 8, 10, gp), makeCoinPicker(6, 10, 1, pp), plainString('greater minor armor'), lesser_minor_ring, lesser_minor_wondrous_item, lesser_medium_scroll, greater_minor_wand, gemPicker(4)]),
 	new TreasureTypeAllocation('H', 15000, [makeCoinPicker(4, 4, 10, gp), makeCoinPicker(4, 4, 10, pp), plainString('greater minor armor'), lesser_minor_wondrous_item, mult(2, greater_medium_potion), mult(2, greater_medium_scroll), lesser_medium_wand, gemPicker(3)]),
@@ -5575,8 +5645,13 @@ ArmsAndArmourResult.prototype.getValue = function() {
 <body onload="initAll()">
 	<div style="margin: 1em; padding: 1em; border: thick solid red;">
 	This generator is unfinished. <br>
-	Done: overall budget manager, NPC blocks, treasure allocation groups; gold, gems; potions, scrolls, wands; wondrous items (inc least wondrous); rods (inc metamagic), staves, rings; masterwork armour</br>
-	<strong>TODO: </strong> masterwork weapons, magic weapons and armour.
+	Done: overall budget manager, NPC blocks, treasure allocation groups; 
+	gold, gems; 
+	potions, scrolls, wands; 
+	wondrous items (inc least wondrous); 
+	rods (inc metamagic), staves, rings; 
+	masterwork arms and armour</br>
+	<strong>TODO: </strong>magic weapons and armour.
 	</div>
 
 	<div id="summary"margin:1em; ></div>
@@ -5616,7 +5691,7 @@ ArmsAndArmourResult.prototype.getValue = function() {
 			<option value="fast">fast</option>
 		</select> Total treasure budget: <span class="money" id="totaltreasurebudget">0</span>
 
-		<button onclick="recalcTotalTreasureBudget()">Reroll all</button>
+		<button onclick="recalcTotalTreasureBudget()">Reallocate all budget</button>
 
 		<button onclick="addNPCBlock()">Add NPC Block</button>
 	</div>
