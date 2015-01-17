@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html ng-app="gotaCraftingApp">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Insert title here</title>
+<style type="text/css">
+.selecteditem {
+	font-weight: bold;
+	background-color: yellow;
+	cursor: pointer;
+}
+
+.unselecteditem {
+	cursor: pointer;
+}
+</style>
+<script type="text/javascript" src="jquery-2.1.3.min.js"></script>
+<script type="text/javascript" src="angular.min.js"></script>
+<script type="text/javascript" src="GoTA-items.js"></script>
+<script type="text/javascript">
+	var item = {};
+
+	for (i in all_items) {
+		item[all_items[i].name] = all_items[i];
+	}
+
+	function timeStr(b) {
+		return _timeStr(b.time);
+	}
+
+	function _timeStr(s) {
+		if(!s) return null;
+	
+		var tt = "";
+		var ttt = 0;
+
+		if (s > 86400) {
+			ttt = ((s - (s % 86400)) / 86400)
+			tt = tt + "" + ttt + "d"
+			s -= ttt * 86400;
+		}
+		if (s > 3600) {
+			if (tt)
+				tt += " ";
+			ttt = ((s - (s % 3600)) / 3600)
+			tt = tt + "" + ttt + "h"
+			s -= ttt * 3600;
+		}
+		if (s > 60) {
+			if (tt)
+				tt += " ";
+			ttt = ((s - (s % 60)) / 60)
+			tt = tt + "" + ttt + "m"
+			s -= ttt * 60;
+		}
+		if (s > 0) {
+			if (tt)
+				tt += " ";
+			ttt = s
+			tt = tt + "" + ttt + "s"
+			s -= ttt;
+		}
+		return tt;
+	}
+
+	var gotaCraftingApp = angular.module('gotaCraftingApp', []);
+
+	gotaCraftingApp
+			.controller(
+					'GotaCraftingMainblock',
+					function($scope) {
+						$scope.item = {};
+						$scope.selected = null;
+						$scope.requirements = [];
+						$scope.qty = {};
+						$scope.buildings = {};
+						$scope.maxTime = 0;
+						$scope.totalCost = 0;
+						for (i in all_items) {
+							$scope.item[all_items[i].name] = all_items[i];
+						}
+						$scope.setSelected = function(s) {
+							$scope.selected = s;
+							$scope.requirements = [];
+							$scope.qty = {};
+							$scope.buildings = {};
+							$scope.maxTime = 0;
+							$scope.totalCost = 0;
+							$scope.recursiveAdd(s, 1);
+						}
+
+						$scope.timeStr = timeStr;
+						$scope._timeStr = _timeStr;
+
+						$scope.recursiveAdd = function(s, n) {
+							var name = s.name;
+							if (!$scope.qty[s.name]) {
+								$scope.requirements.push(s.name);
+								$scope.qty[s.name] = 0;
+							}
+
+							$scope.qty[s.name] += n;
+
+							var building;
+							if (s.building) {
+								building = s.building;
+							} else {
+								building = "Resource";
+							}
+
+							if (!$scope.buildings[building]) {
+								$scope.buildings[building] = {
+									name : building,
+									upgradeList : [],
+									upgradeSet : {},
+									resourceName : [],
+									resourceQty : {},
+									time : 0
+								}
+							}
+
+							building = $scope.buildings[building];
+							if (s.upgrade) {
+								if (!building.upgradeSet[s.upgrade]) {
+									building.upgradeSet[s.upgrade] = true;
+									building.upgradeList.push(s.upgrade);
+								}
+							}
+
+							if (!building.resourceQty[s.name]) {
+								building.resourceQty[s.name] = 0;
+								building.resourceName.push(s.name);
+							}
+							building.resourceQty[s.name] += n;
+
+							if (s.time) {
+								var timeregex = / *(([0-9]+) *d)? *(([0-9]+) *h)? *(([0-9]+) *m)? *(([0-9]+) *s)? */
+								var result = timeregex.exec(s.time)
+								var sec = 0;
+
+								if (result[2])
+									sec += parseInt(result[2]) * 24 * 60 * 60;
+								if (result[4])
+									sec += parseInt(result[4]) * 60 * 60;
+								if (result[6])
+									sec += parseInt(result[6]) * 60;
+								if (result[8])
+									sec += parseInt(result[8]);
+
+								building.time += sec * n;
+
+								if (building.time > $scope.maxTime) {
+									$scope.maxTime = building.time;
+								}
+							}
+
+							if (s.silver) {
+								$scope.totalCost += parseInt(s.silver) * n;
+							}
+
+							for (i in s.resource) {
+								var name = s.resource[i].name;
+								if (item[name]) {
+									$scope.recursiveAdd(item[name],
+											s.resource[i].qty * n);
+								} else {
+									// add resource
+									$scope.recursiveAdd({
+										name : name,
+										building : "(resource)"
+									}, s.resource[i].qty * n)
+								}
+							}
+						}
+					});
+</script>
+</head>
+<body ng-controller="GotaCraftingMainblock" style="margin: 0; padding: 1em; position: absolute; top: 0; left: 0; right: 0; bottom: 0;">
+
+	<div style="position: absolute; top: 0; left: 0; bottom: 0; width: 15em; float: left; padding: 1em; overflow-y: scroll;">
+		<div ng-repeat="i in item" ng-click="setSelected(i)" ng-class="i==selected?'selecteditem':'unselecteditem'">{{i.name}}</div>
+	</div>
+
+	<div style="position: absolute; top: 0; left: 17em; bottom: 0; right: 0; padding: 1em; overflow-y: scroll;">
+		<h1>GoTA item recipe thingy</h1>
+		<p>This page uses data harvested from the Game of Thrones Ascent wiki. All errors are entirely their fault.</p>
+		<div ng-if="selected != null">
+			<p style="clear: both;">Crafting requirements for {{selected.name}}:
+			minimum {{_timeStr(maxTime)}}, {{totalCost}}sp</p>
+
+			<div ng-repeat="b in buildings" style="float: left; margin-right: 1.5em; margin-bottom: .5em;">
+				<div>
+					<b>{{b.name}}</b> {{timeStr(b)}}
+				</div>
+				<div ng-if="b.upgradeList.length > 0">
+					<i> Requires: <span ng-repeat="u in b.upgradeList">{{u}}<span ng-if="!$last">, </span></span>
+					</i>
+				</div>
+				<div ng-repeat="r in b.resourceName">
+					{{r}}: {{b.resourceQty[r]}} <span ng-if="item[r]"> @ {{item[r].time}}, {{item[r].silver}}sp</span>
+				</div>
+			</div>
+		</div>
+</body>
+</html>
