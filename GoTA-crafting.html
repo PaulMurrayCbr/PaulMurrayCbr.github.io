@@ -10,9 +10,24 @@
 	cursor: pointer;
 }
 
+.selecteditem:hover {
+	text-decoration: underline;
+	color: blue;
+}
+
+.unselecteditem:hover {
+	text-decoration: underline;
+	color: blue;
+}
+
 .unselecteditem {
 	cursor: pointer;
 }
+
+.resourceitem {
+	color: green;
+}
+
 </style>
 <script type="text/javascript" src="jquery-2.1.3.min.js"></script>
 <script type="text/javascript" src="angular.min.js"></script>
@@ -22,6 +37,18 @@
 
 	for (i in all_items) {
 		item[all_items[i].name] = all_items[i];
+		all_items[i].requiredForList = [];
+		all_items[i].requiredForSet = {};
+	}
+	
+	for (dependent in item) {
+		for(reqi in item[dependent].resource) {
+			var req = item[dependent].resource[reqi];
+			if(item[req.name] && !item[req.name].requiredForSet[dependent]) {
+				item[req.name].requiredForSet[dependent] = true;
+				item[req.name].requiredForList.push(dependent);
+			}
+		}
 	}
 
 	function timeStr(b) {
@@ -183,9 +210,23 @@
 
 	<div style="position: absolute; top: 0; left: 17em; bottom: 0; right: 0; padding: 1em; overflow-y: scroll;">
 		<h1>GoTA item recipe thingy</h1>
-		<p>This page uses data harvested from the Game of Thrones Ascent wiki. All errors are entirely their fault.</p>
+		<p>This page uses data harvested from the Game of Thrones Ascent wiki. Thanks to everyone who entered it.</p>
 		<div ng-if="selected != null">
-			<p style="clear: both;">Crafting requirements for {{selected.name}}:
+			<h3 style="clear: both;"><u>Requirements for {{selected.name}}</u></h3>
+			<span ng-if="selected.resource.length > 0" >
+				<span ng-repeat="req in selected.resource">
+					<span ng-if="item[req.name]" ng-class="item[req.name]==selected?'selecteditem':'unselecteditem'" ng-click="setSelected(item[req.name])">{{req.name}}</span><span class="resourceitem" ng-if="!item[req.name]">{{req.name}}</span><span ng-if="!$last">, </span>
+				</span>
+				&rarr;
+			</span>
+			{{selected.name}}
+			<span ng-if="selected.requiredForList.length > 0"  >
+				&rarr;
+				<span  ng-repeat="req in selected.requiredForList">
+					<span ng-if="item[req]" ng-class="item[req]==selected?'selecteditem':'unselecteditem'" ng-click="setSelected(item[req])">{{req}}</span><span class="resourceitem" ng-if="!item[req]">{{req}}</span><span ng-if="!$last">, </span>
+				</span>
+			</span>
+			<p style="clear: both;">Computed requirements:
 			minimum {{_timeStr(maxTime)}}, {{totalCost}}sp</p>
 
 			<div ng-repeat="b in buildings" style="float: left; margin-right: 1.5em; margin-bottom: .5em;">
@@ -197,7 +238,9 @@
 					</i>
 				</div>
 				<div ng-repeat="r in b.resourceName">
-					{{r}}: {{b.resourceQty[r]}} <span ng-if="item[r]"> @ {{item[r].time}}, {{item[r].silver}}sp</span>
+					<span ng-if="item[r]" ng-class="item[r]==selected?'selecteditem':'unselecteditem'" ng-click="setSelected(item[r])">{{r}}:</span>
+					<span class="resourceitem" ng-if="!item[r]">{{r}}:</span>
+					 {{b.resourceQty[r]}} <span ng-if="item[r]"> @ {{item[r].time}}, {{item[r].silver}}sp</span>
 				</div>
 			</div>
 		</div>
