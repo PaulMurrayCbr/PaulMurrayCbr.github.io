@@ -225,6 +225,19 @@ pre {
 					<p>
 				</div>
 				<p>C++, however, allows you to bundle these things together.</p>
+				<p>
+					Sure, you can do this without classes and objects. If you code
+					Arduino, you already <em>are</em> doing these things without
+					classes and objects. All you have to do is be careful to keep track
+					of things and it helps to give everything sensible names.
+				</p>
+				<p>But the same applies to all of the progression of languages
+					over the years. Assembler doesn't allow you to do anything you
+					can't do with raw opcodes. Compilers don't allow you to do anything
+					that you can't do in assembler. Block-structured languages don't
+					allow you to do anything that you can't do with gotos. All these
+					things do is make it easier for you - the programmer - to get it
+					right.</p>
 				<p>Bundling your variables and code for those variables together
 					has a few advantages.</p>
 				<p>Your code becomes easier to understand and modify, because
@@ -1759,7 +1772,8 @@ void loop() {
 				<p>Well, that seems like a lot of code. But review what this
 					sketch does - two inputs, one of them timer based, and three
 					outputs. Flashing, internal state, a little routine that must be
-					done when the light comes on. It's all there, and it all works seamlessly.</p>
+					done when the light comes on. It's all there, and it all works
+					seamlessly.</p>
 				<p>Using the "objects where each gets a time slice" pattern, no
 					individual step was particularly difficult to do. At each step, I
 					could check that the object I had written so far worked. And once
