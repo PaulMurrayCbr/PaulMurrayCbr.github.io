@@ -1,0 +1,1800 @@
+<html>
+<head>
+<title>Arduino the Object Way</title>
+
+<style type="text/css">
+body {
+	background: lightgray;
+}
+
+#container {
+	background: white;
+	width: 900;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 0;
+}
+</style>
+</head>
+<body>
+	<div id="container">
+		<div id="atoow">
+
+			<style type="text/css">
+.sidebar {
+	margin: .5em 0 .5em 1em;
+	padding: 0 1em;
+	background: lightgray;
+	border: thin solid darkgray;
+	width: 15%;
+	float: right;
+	font-size: smaller;
+}
+
+p {
+	text-align: justify;
+	text-justify: inter-word;
+}
+
+#atoow {
+	color: #303030;
+	padding: .5em 1.5em;
+}
+
+pre {
+	margin: .5em 1em;
+	padding: .5em;
+	background: #F0F0F0;
+	border: thin solid black;
+}
+</style>
+			<h1>Arduino the Object Oriented way</h1>
+			<ol>
+				<li><a href="#Introduction">Introduction</a>
+					<ol>
+						<li><a href="#TheProblem">The Problem</a></li>
+						<li><a href="#TheOOWay">The Object Oriented Way</a></li>
+						<li><a href="#WhatIsAnObject">What is an Object?</a></li>
+					</ol></li>
+
+				<li>Part I - the headlamp and control button
+					<ol>
+						<li><a href="#ShowMeTheCode">Show me the code</a></li>
+						<li><a href="#step2">Next step - the light</a></li>
+						<li><a href="#theRestOfTheLight">The rest of the light:
+								composition</a></li>
+						<li><a href="#buttonWithInheritance">Separating out the
+								button behavior: polymorphism</a></li>
+						<li><a href="#buttonWithRef">Wiring up the buttons with
+								constructors: composition by reference</a></li>
+						<li><a href="#theFullSketch">The full, working sketch</a></li>
+					</ol>
+				</li>
+				<li>Part II - adding the tail light
+					<ol>
+						<li><a href="#flashingTailLight">Flashing Tail Light</a></li>
+						<li><a href="#hookingUpTheLight">Hooking up the light to
+								the headlamp</a></li>
+						<li><a href="#brakeSensor">Adding the brake switch</a></li>
+						<li><a href="#theFullSketch">The full, working sketch,
+								with tail light</a></li>
+					</ol>
+				</li>
+				<li><a href="#finalThoughts">Final Thoughts</a></li>
+			</ol>
+
+			<div class="section" id="Introduction">
+				<a name="Introduction"></a>
+				<h2>Introduction</h2>
+				<p>In the early to mid 1990's, programmers began coding in a new
+					way - the Object Oriented way.</p>
+				<p>Ok, that's a total lie. OO programming and languages had been
+					around for years. But it was around this time that it became big
+					commercially, spurred by the introduction of OO features to
+					existing languages, such as C++, and by new languages and platforms
+					such as Java</p>
+				<p>Object oriented programming is part of a progression in
+					language design over the last 50 years:</p>
+				<div class="sidebar">
+					<p>People don't usually count object oriented languages as
+						being the fourth generation, but it fits the progression here.</p>
+					<p>What are usually called "4th-generation languages" are
+						languages in which you specify what you want rather than how to do
+						it. It isn't that relevant to Arduino programming.</p>
+				</div>
+				<ol start="0">
+					<li>Machine code</li>
+					<li>Assembler, Macro assembler</li>
+					<li>Compiled languages</li>
+					<li>Block-structured languages</li>
+					<li>Object-oriented languages</li>
+				</ol>
+				<p>At each stage in this progression, the nitty-gritty details
+					of the previous stage have been wrapped, hidden. This allows a
+					programmer to make more complex things, because at each stage of
+					programming there is less to think about, fewer balls to keep in
+					the air.</p>
+				<p>Arduino programming - at least, what you see on the Arduino
+					message boards - seems to be stuck at step 3. But OO coding has a
+					great deal to offer in terms of making Arduino code simpler and
+					more robust. it's well worthwhile getting your head around it.</p>
+			</div>
+
+			<div class="section" id="TheProblem">
+				<a name="TheProblem"></a>
+				<h3>The Problem</h3>
+				<p>In the code that is sometimes posted to the Arduino message
+					boards, things start to get messy when coders are having to deal
+					with several independent devices, which is to say clusters of pins
+					- input and output.</p>
+				<div class="sidebar">
+					<p>The other symptom of a need for an OO approach is when a
+						post appears on the board with the title "Need help combining two
+						codes into one code! Urgent!"</p>
+				</div>
+				<p>
+					One example is here: <a
+						href="http://forum.arduino.cc/index.php?topic=367748.0">#367748
+						- Reading length of button-press</a>.
+				</p>
+				<p>The OP has a bike headlamp. this headlamp has a button that
+					you can press 5 times to cycle through 5 output settings, and a
+					power switch. the OP would like to have one button to control it. A
+					long click should turn the lamp on and off, and a short click
+					should cycle the brighness. Furthermore, when the lamp is turned
+					on, the OP would like the arduino to cycle the light up to its
+					previous level of brightness. The outputs to cycle the lamp should
+					be pulses with a duration of 100ms, separated by 100ms. The output
+					to turn the lamp on and off should simply be HIGH/LOW on a digital
+					out.</p>
+				<p>
+					Simple stuff - you would think. But the output clicks to cycle the
+					lamp up to a level of brightness take time. What happens if there's
+					a short click <em>while</em> this is happening? A long click? How
+					do the timing of the input clicks on the controller button interact
+					with the timing of the output to the lamp? Oh, and there should be
+					a 50ms debounce delay on the button, too.
+				</p>
+				<p>
+					What happens is that people try to code this up by having long
+					chains of nested
+					<tt>if</tt>
+					statements, trying to account for all the possibilities. This never
+					works out, because the number of possibilities explodes
+					combinatorially. These sketches also tend to have a rat's nest of
+					variables declared at the top.
+				</p>
+				<p>Let's add something to the OP's sketch - a tail light and a
+					brake sensor. If the headlamp is on, then the tail light should
+					flash intermittently (100ms every second). The tail light should
+					also shine continuously if the brakes are on.</p>
+				<p>Adding this to a sketch structured in the usual way people
+					attempt to write these things - you'd just give up. But if you code
+					things the Object Oriented way, it becomes easy. Easier, anyway.
+					Do-able.</p>
+			</div>
+
+			<div class="section" id=""TheOOWay"">
+				<a name="TheOOWay"></a>
+				<h3>The OO Way</h3>
+				<p>
+					The OO way of programming is like building electronics, or building
+					something mechanical, or building anything, really. You use
+					something simple to make something moderately complicated, and
+					those moderately complicated things to make something very
+					complicated. The trick is: when it comes time build the very
+					complicated thing, you work with <em>what</em> your moderately
+					complicated things do and you temporarily forget about <em>how</em>
+					they do it.
+				</p>
+				<p>In our headlamp example, we have two things. We have a button
+					that emits a short-click and a long-click. And we have a headlamp
+					that turns on and off and that cycles brightness. If we can make
+					those two things work, and hook them together - job done.</p>
+				<p>Adding the tail light is straightforward. Our tail light has
+					two independent on/off variables: day/night, and
+					braking/not&nbsp;braking. We program a thing that can do that, and
+					then we program up the interactions between the things.</p>
+			</div>
+
+			<div class="section" id="WhatIsAnObject">
+				<a name="WhatIsAnObject"></a>
+				<h3>What is an object?</h3>
+				<p>An object is a bundle of variables (holding state) and
+					functions that operate on those variables.</p>
+				<p>
+					Of course, whenever you code things for an arduino this is what you
+					wind up doing anyway. You will always have sets of variables that
+					work togther (in OO language: that have strong cohesion), and
+					blocks of code that mainly deal with those variables. A function is
+					just a block of code that you have separated out and given a name.
+					If you have a thing that needs to blink, your will inevitably have
+					a set of variables like
+					<tt>blinkTimeMs</tt>
+					and
+					<tt>blinkState</tt>
+					to keep track of the blink, and functions named
+					<tt>handle_blink</tt>
+					and such.
+				</p>
+				<div class="sidebar">
+					<p>Yes, there is also inheritance and polymorphism. This is
+						meant to be a simple introduction to OO programming. Simply using
+						encapsulation to manage your code is a win, compared to many
+						things on the discussion boards.
+					<p>
+				</div>
+				<p>C++, however, allows you to bundle these things together.</p>
+				<p>Bundling your variables and code for those variables together
+					has a few advantages.</p>
+				<p>Your code becomes easier to understand and modify, because
+					the variables that the code needs are right there, next to the
+					code.</p>
+				<p>It becomes much easier to create multiple objects that all do
+					the same thing. A set of blinkers, each one with its own output
+					pin. A pair of servos that both behave in the same way. You no
+					longer need to declare multiple variables all with slightly
+					different names, or have them in arrays.</p>
+				<p>It becomes easier to build compound objects, such as a pair
+					of relays which must never be both on at the same time, requiring a
+					delay between turning one off and the other on.</p>
+				<p>
+					Objects can conceal parts of themselves from other objects (in
+					fact, that's the default). You can build an object and be confident
+					that it will work correctly because other parts of your sketch <em>cannot</em>
+					interfere with its internals. Conversely, if another part of your
+					sketch <em>needs</em> to interfere with its internals, then this
+					signals to you - the programmer - that there's something you
+					haven't thought of and might need to take into account.
+				</p>
+				<p>
+					But the most important thing is difficult to quantify: it changes
+					the way that you <em>think</em> about what you are doing, it
+					changes the <em>way</em> you code.
+				</p>
+				<div class="sidebar">
+					<p>
+						"But," you cry, "most sketches don't have user interfaces!" Of
+						course they do. A pushbutton is a user interface. It might not be
+						a <em>graphical</em> interface, but it still counts. Even outputs
+						to servos are interfaces - there isn't any difference between a
+						servo out and a gauge showing what the servo position would be if
+						one was connected.
+					<p>
+				</div>
+				<p>And finally, doing objects the way I suggest here makes
+					managing asynchonous, event-driven interfaces to sketches much
+					easier and more natural to do. Blink-without-delay for everything.</p>
+			</div>
+
+			<h2>Part I - the headlamp and control button</h2>
+
+			<div class="section" id="ShowMeTheCode">
+				<a name="ShowMeTheCode"></a>
+				<h3>Enough! Show me the code!</h3>
+				<p>Ok, let's start with the control button. I will drop it onto
+					pin 7.</p>
+				<pre>
+const int BUTTON_PIN = 7;
+
+class Button {
+};
+
+Button button;
+
+void setup() {
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+}
+
+void loop() {
+}
+</pre>
+				<p>
+					This defines a <u>class</u> for the button, and a single <u>instance</u>
+					of the button class named
+					<tt>button</tt>
+					.
+				</p>
+				<p>
+					Obviously, it does nothing yet. However, in the programming pattern
+					I am describing here, we give every object a
+					<tt>setup</tt>
+					and a
+					<tt>loop</tt>
+					method (functions inside classes are called methods). The
+					<tt>setup</tt>
+					method of every object is invoked in the main
+					<tt>setup</tt>
+					, and the
+					<tt>loop</tt>
+					method of every object is invoked in the main
+					<tt>loop</tt>
+					.
+				</p>
+				<pre>			
+const int BUTTON_PIN = 7;
+
+class Button {
+  public:
+    void setup() {
+      pinMode(BUTTON_PIN, INPUT_PULLUP);
+    }
+
+    void loop() {
+    }
+};
+
+Button button;
+
+void setup() {
+  button.setup();
+}
+
+void loop() {
+  button.loop();
+}
+</pre>
+				<p>
+					And this is the key to this pattern for building Arduino projects.
+					It's called "time-slicing". Every object gets a turn, even if it
+					does nothing. And every object guaranteed that it returns <em>quickly</em>
+					from it's
+					<tt>loop</tt>
+					method.
+				</p>
+				<p>In effect, each object works like a mini-sketch that does
+					something.</p>
+				<p>
+					Notice that I have had to introduce a
+					<tt>public</tt>
+					declaration. As I mentioned, the default behaviour for objects is
+					that their internals are not visible to other things or to the main
+					sketch. Anything that needs to be visible must be in a
+					<tt>public</tt>
+					section.
+				</p>
+				<p>At this stage, we can introduce the usual code for button
+					behaviour which you have all seen a million times before.</p>
+				<pre>
+const int BUTTON_PIN = 7;
+
+class Button {
+    int state;
+    unsigned long buttonDownMs;
+
+  public:
+    void setup() {
+      pinMode(BUTTON_PIN, INPUT_PULLUP);
+      state = HIGH;
+    }
+
+    void loop() {
+      int prevState = state;
+      state = digitalRead(BUTTON_PIN);
+      if (prevState == HIGH && state == LOW) {
+        buttonDownMs = millis();
+      }
+      else if (prevState == LOW && state == HIGH) {
+        if (millis() - buttonDownMs < 50) {
+          // ignore this for debounce
+        }
+        else if (millis() - buttonDownMs < 250) {
+          // short click
+        }
+        else  {
+          // long click
+        }
+      }
+    }
+};
+
+Button button;
+
+void setup() {
+  button.setup();
+}
+
+void loop() {
+  button.loop();
+}
+</pre>
+				<p>We can see here a bit of weirdness - the button state is
+					inside the button class, but the pin that it uses is a constant
+					defined outside. This is a problem if you want - for instance -
+					more than one button with similar behaviour.</p>
+				<p>
+					To fix this, we move the pin number into the button class using a <u>constructor</u>.
+					Constructors get invoked <em>before</em> any
+					<tt>setup</tt>
+					, so its important that they don't attempt to talk to the outside
+					world at all. They are purely for initializing the object into a
+					sensible pre-setup state.
+				</p>
+				<pre>
+class Button {
+    const int pin;
+    int state;
+    unsigned long buttonDownMs;
+
+  public:
+    Button(int attachTo) :
+      pin(attachTo)
+    {
+    }
+
+
+    void setup() {
+      pinMode(pin, INPUT_PULLUP);
+      state = HIGH;
+    }
+
+    void loop() {
+      int prevState = state;
+      state = digitalRead(pin);
+      if (prevState == HIGH && state == LOW) {
+        buttonDownMs = millis();
+      }
+      else if (prevState == LOW && state == HIGH) {
+        if (millis() - buttonDownMs < 50) {
+          // ignore this for debounce
+        }
+        else if (millis() - buttonDownMs < 250) {
+          // short click
+        }
+        else  {
+          // long click
+        }
+      }
+    }
+};
+
+Button button(7);
+
+void setup() {
+  button.setup();
+}
+
+void loop() {
+  button.loop();
+}
+
+</pre>
+				<div class="sidebar">
+					<p>The colon syntax allows you to initialise things inside your
+						class that themselves have constructors, but that's beyond what we
+						are doing here.
+					<p>
+				</div>
+				<p>You can do other things inside your constructor, but in this
+					case all we are doing is assigning a simple variable.</p>
+				<p>At this point, our button is complete, except for the code
+					for what actually gets done when a long and short click is
+					performed. So just for testing purposes, let's have our button
+					change the state of a pair of LEDs on pin 8 and 9. The LED on pin 8
+					will change for a short click, and the LED on pin 9 will change in
+					response to a long click.</p>
+				<pre>
+class Button {
+    const int pin;
+    int state;
+    unsigned long buttonDownMs;
+
+  public:
+    Button(int attachTo) :
+      pin(attachTo)
+    {
+    }
+
+
+    void setup() {
+      pinMode(pin, INPUT_PULLUP);
+      state = HIGH;
+    }
+
+    void loop() {
+      int prevState = state;
+      state = digitalRead(pin);
+      if (prevState == HIGH && state == LOW) {
+        buttonDownMs = millis();
+      }
+      else if (prevState == LOW && state == HIGH) {
+        if (millis() - buttonDownMs < 50) {
+          // ignore this for debounce
+        }
+        else if (millis() - buttonDownMs < 250) {
+          // short click
+          // TEST BY TOGGLING PIN 8
+          digitalWrite(8, !digitalRead(8));
+        }
+        else  {
+          // long click
+          // TEST BY TOGGLING PIN 9
+          digitalWrite(9, !digitalRead(9));
+        }
+      }
+    }
+};
+
+Button button(7);
+void setup() {
+  button.setup();
+  
+  // FOR TESTING
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
+}
+
+void loop() {
+  button.loop();
+}
+
+</pre>
+				<p>Sans issues with the damn PCB-mount buttons jumping out of
+					the breadboard (grr!), it works exactly as it should.</p>
+				<p></p>
+			</div>
+
+			<div class="section" id="step2">
+				<a name="step2"></a>
+				<h3>Step 2 - the light.</h3>
+				<p>Next step is the light controller. It has two outputs - a
+					power on/of and a brighness cycle. The brightness cycler switch
+					needs pauses between clicks. For purposes of my demo, I will make
+					the pauses long: a 250ms on and a 750ms off.</p>
+				<p>
+					The controller needs two inputs - power on/off and brightness
+					cycle. Our problem is: what happens if things happen <em>while</em>
+					the brighness is cycling?
+				</p>
+				<p>I'll over-engineer this a little and make the brightness
+					cycle a sub-object. It has two input events: a "cycle by one" and a
+					"cancel". What state does it need? Well, it needs to know if it is
+					currently doing a click, it needs to know when it started doing the
+					click that it is currently doing, and it needs to know how many
+					clicks are pending on the queue.</p>
+				<p>Without further ado, the code looks like this:</p>
+				<pre>
+class ClickQueue {
+    const int pin;
+    // make these slow for testing
+    const unsigned CLICK_DOWN_MS = 250;
+    const unsigned CLICK_TOTAL_MS = 1000;
+
+
+    enum State {
+      NOT_CLICKING = 0,
+      CLICK_DOWN = 1,
+      CLICK_PAUSE = 2
+    } state;
+
+    unsigned long clickStartMs;
+    int pendingClicks;
+
+  public:
+    ClickQueue(int attachTo) :
+      pin(attachTo) {
+    }
+
+    void setup() {
+      pinMode(pin, OUTPUT);
+      state = NOT_CLICKING;
+      pendingClicks = 0;
+    }
+
+    void loop() {
+      switch (state) {
+        case NOT_CLICKING:
+          if (pendingClicks > 0) {
+            pendingClicks --;
+            digitalWrite(pin, HIGH);
+            clickStartMs = millis();
+            state = CLICK_DOWN;
+          }
+          break;
+        case CLICK_DOWN:
+          if (millis() - clickStartMs > CLICK_DOWN_MS) {
+            digitalWrite(pin, LOW);
+            state = CLICK_PAUSE;
+          }
+          break;
+        case CLICK_PAUSE:
+          if (millis() - clickStartMs > CLICK_TOTAL_MS) {
+            state = NOT_CLICKING;
+          }
+          break;
+      }
+    }
+
+    void addAClick() {
+      pendingClicks++;
+    }
+
+    void cancel() {
+    }
+} clickQueue(11);
+</pre>
+				<p>There are a few things to note about this, which I believe
+					are good practise.</p>
+				<div class="sidebar">
+					<p>Alternatively, use typedefs.
+					<p>
+				</div>
+				<p>
+					First, any variable that holds a physical quantity should be
+					suffixed with the unit of measurement of that quantity. This is a
+					coding standard born of bitter experience. Variables, parameters,
+					and functions dealing with time should be suffixed
+					<tt>Day</tt>
+					<tt>Min</tt>
+					<tt>Sec</tt>
+					or
+					<tt>Ms</tt>
+					accordingly. This also applies to currency, although we don't often
+					encounter that in Arduino programming.
+				</p>
+				<p>
+					Notice that the variable
+					<tt>pin</tt>
+					is not the same variable in the two classes. We say that they are
+					in different "scopes". An advantage of scoping is that you don't
+					have to keep coming up with new and creative ways of naming your
+					variables.
+				</p>
+				<p>
+					Use an enum for states. Enums are better than
+					<tt>const int</tt>
+					or
+					<tt>#define</tt>
+					when a variable might hold one of a small set of related values,
+					because the compiler will check the types for you and make sure you
+					are using the right one. It also means that you can use namespaces,
+					for instance if you have several things each with an INIT state.
+				</p>
+				<p>Each branch of the switch statement follows the form:</p>
+				<pre>
+if(some condition) {
+  do stuff;
+  state = new state;
+}
+else if(some other condition) {
+  do other stuff;
+  state = different new state;
+}
+else {
+  do stuff if nothing else matches;
+  state = other different new state;
+}
+</pre>
+				<p>
+					Of course, you can skip the final
+					<tt>else</tt>
+					. If the "do stuff" or the conditions are complex, move them into a
+					function. However, the assignment of the state should be done in
+					the switch statement in the loop. That way, by inspection of the
+					loop alone you can map put the flow of state changes in the object.
+				</p>
+
+				<div class="sidebar">
+					<p>If tight timing is very important, then this state-driven
+						programming style may not be appropriate.
+					<p>
+				</div>
+				<p>
+					You might notice that I don't handle the case where a button
+					finished being pressed but there are more presses on the queue. It
+					doesn't matter - <em>the next time slice will take care of it</em>.
+					The key is that
+					<tt>loop()</tt>
+					gets called frequently, because none of the other objects hang up
+					with
+					<tt>delay()s</tt>
+					.
+				</p>
+				<p>But alternatively, then yes you can make the 'end of click'
+					processing do it. The problem is that there are then two places
+					where whatever needs to be done to start a click gets done.</p>
+				<p>
+					So what you would normally do is pull out the code (the digital
+					write and the setting of the start time) into a private function
+					and call that from both places. If you name that function clearly
+					(eg:
+					<tt>beginClickDown</tt>
+					), then it might be reasonable to set the value of
+					<tt>state</tt>
+					in that function. As is often the case, it doesn't matter what you
+					do, so long as you are consistent and name things appropriately.
+				</p>
+				<p>So let's test it! I'll modify the button click code like so:
+				</p>
+				<pre>
+        else if (millis() - buttonDownMs < 250) {
+          // short click
+          // TEST BY TOGGLING PIN 8
+          digitalWrite(8, !digitalRead(8));
+          <b>clickQueue.addAClick();</b>
+        }
+</pre>
+			</div>
+
+			<p>And - it doesn't work. Of course it doesnt: I have to gibe
+				this new object some time slices.</p>
+			<pre>
+void setup() {
+  button.setup();
+  clickQueue.setup();
+
+  // FOR TESTING
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
+}
+
+void loop() {
+  button.loop();
+  clickQueue.loop();
+}
+</pre>
+			<p>And now it works like a charm. When I short-click the button
+				four times, the LED on pin 8 switches on/off (the testing code) and
+				the LED on pin 11 flashes 4 times slowly.</p>
+
+			<h4>Cancel</h4>
+			<p>Ok, what about cancel? Specifically, what do we do if a cancel
+				occurs while we are in the middle of a click? What if we turn off
+				the click, and then have another click immediately after? This
+				requires a decision. I am going to go the simple way and have cancel
+				simply turn off the click unconditionally. This is because I know
+				that in this case, the sketch will be hitting cancel only when the
+				power to the light is going to be going off, so having hanging state
+				is not really a concern.</p>
+			<pre>
+    void cancel() {
+      pendingClicks = 0;
+      digitalWrite(pin, LOW);
+      state = NOT_CLICKING;
+    }
+</pre>
+			<p>If we need things like cool-down periods before turning off
+				the power - well, we would have to code for that. In this simple
+				case, no.</p>
+			<p>So let's test it:</p>
+			<pre>
+        else  {
+          // long click
+          // TEST BY TOGGLING PIN 9
+          digitalWrite(9, !digitalRead(9));
+          clickQueue.cancel();
+        }
+</pre>
+			<p>And again, it works perfectly. A series of short clicks will
+				queue up a series of flashes, and a long click will cancel them all.
+			</p>
+			<div class="section" id="theRestOfTheLight">
+				<a name="theRestOfTheLight"></a>
+				<h3>The rest of the light: composition</h3>
+				<p>Ok, now that we have a thing that can click the clicky thing
+					to advance the light through its brightness levels, its time to
+					think about power on/off.</p>
+				<p>The main thing we want is that if power goes of and then on
+					again, we want the arduino to advance the brightness to its prior
+					knows state.</p>
+				<p>So, lets get the basics going. We write our basic headlamp
+					class:</p>
+				<pre>
+class Headlamp {
+    const int powerOutPin;
+    const int brightnessOutPin;
+
+  public:
+    Headlamp(int powerOutAttach, int brightnessOutAttach) :
+      powerOutPin(powerOutAttach),
+      brightnessOutPin(brightnessOutAttach)
+    {
+    }
+
+    void setup() {
+    }
+
+    void loop() {
+    }
+
+    void powerToggle() {
+    }
+
+    void brighnessClick() {
+    }
+
+} headlamp(10, 11);
+</pre>
+				<p>Alter the button code to sent messages to that instead of the
+					click queue</p>
+				<pre>
+        else if (millis() - buttonDownMs < 250) {
+          // short click
+          // TEST BY TOGGLING PIN 8
+          digitalWrite(8, !digitalRead(8));
+          <b>headlamp.brighnessClick();</b>
+        }
+        else  {
+          // long click
+          // TEST BY TOGGLING PIN 9
+          digitalWrite(9, !digitalRead(9));
+          <b>headlamp.powerToggle();</b>
+        }
+</pre>
+				<p>And alter the main setup and loop to include this new object,
+				</p>
+				<pre>
+void setup() {
+  button.setup();
+  clickQueue.setup();
+  <b>headlamp.setup();</b>
+
+  // FOR TESTING
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
+}
+
+void loop() {
+  button.loop();
+  clickQueue.loop();
+  <b>headlamp.loop();</b>
+}
+</pre>
+				<p>Now, at this point I want to think about pins. I want to
+					think of the headlamp as a single object, with a power output pin
+					and a brightness click oputput pin. But the brighness pin needs to
+					be operated by a ClickQueue. What I have will kinda work, because
+					both the click queue and the headlamp ar hooed to pin 11, but
+					that's the wrong way to go about things: a pin sould be "owned" by
+					only one object.</p>
+				<p>
+					So what I am going to do is to build a compound object by <u>composition</u>.
+					The click queue will be part of the headlamp.
+				</p>
+				<p>
+					This does not mean that the
+					<tt>Headlamp</tt>
+					class needs to have the the
+					<tt>ClickQueue</tt>
+					classinside it. Instead, it means that the
+					<tt>Headlamp</tt>
+					class has an <u>instance</u> of the
+					<tt>ClickQueue</tt>
+					class in it.
+				</p>
+				<p>The result looks line this:</p>
+				<pre>
+class Headlamp {
+    const int powerOutPin;
+    ClickQueue brightnessClicker;
+
+  public:
+    Headlamp(int powerOutAttach, int brightnessOutAttach) :
+      powerOutPin(powerOutAttach),
+      brightnessClicker(brightnessOutAttach)
+    {
+    }
+
+    void setup() {
+      brightnessClicker.setup();
+    }
+
+    void loop() {
+      brightnessClicker.loop();
+    }
+
+    void powerToggle() {
+    }
+
+    void brighnessClick() {
+    }
+
+} headlamp(10, 11);
+</pre>
+				<p>
+					Because the brighness clicker is <u>part of</u> the headlamp, the
+					headlamp becomes responsible for setting it up with its
+					constructor, and for calling its
+					<tt>setup</tt>
+					and
+					<tt>loop</tt>
+					methods.
+				</p>
+				<p>Consequently, we get rid of the clickQueue instance
+					altogether - it's all headlamp now.</p>
+				<p>From here, we put the code into the headlamp that keeps track
+					of what the brightness is and turns things on and off. The result
+					looks like this:</p>
+				<pre>
+class Headlamp {
+    const int powerOutPin;
+    ClickQueue brightnessClicker;
+    boolean isOn;
+    int brightness;
+
+  public:
+    Headlamp(int powerOutAttach, int brightnessOutAttach) :
+      powerOutPin(powerOutAttach),
+      brightnessClicker(brightnessOutAttach)
+    {
+    }
+
+    void setup() {
+      brightnessClicker.setup();
+
+      pinMode(powerOutPin, OUTPUT);
+      isOn = false;
+      digitalWrite(powerOutPin, LOW);
+
+      brightness = 0;
+    }
+
+    void loop() {
+      brightnessClicker.loop();
+    }
+
+    void powerToggle() {
+      if (isOn) {
+        brightnessClicker.cancel();
+        digitalWrite(powerOutPin, LOW);
+        isOn = false;
+      }
+      else {
+        digitalWrite(powerOutPin, HIGH);
+        delay(50);
+        brightnessClicker.addClicks(brightness);
+        isOn = true;
+      }
+    }
+
+    void brightnessClick() {
+      if (isOn) {
+        brightnessClicker.addAClick();
+        brightness = (brightness + 1 ) % 5;
+      }
+    }
+
+} headlamp(10, 11);
+</pre>
+				<p>You may notice that I have had to add a "addClicks" method to
+					the clicker. This is not a big deal.</p>
+				<p>You may also notice that I have added a 50ms delay to the
+					power toggle. This is a potential source of trouble. But the only
+					thing that is going to happen is that a short click might be
+					ignored after a long click to turn the lamp on. This is something
+					we can live with.</p>
+				<p>And you know what? It works exactly as it should. Short
+					clicks increment the brightness when the lamp is on; Long clicks
+					turn it off and on; and when the lamp is turned on there's a series
+					of clicks to bring it up to the previous level of brightness.</p>
+				<p>Job done. Well - there's some refinements to make.</p>
+			</div>
+
+			<div class="section" id="buttonWithInheritance">
+				<a name="buttonWithInheritance"></a>
+				<h3>Separating out the button behaviour: polymorphism</h3>
+				<p>It really irks me that our very abstract
+					short-click/long-click button has a bunch of code in it that's
+					specific to headlamps in particular. I want to separate out the bit
+					that worries about timing from the bit that thinks about headlamps.</p>
+				<p>
+					The way I am going to do this is with inheritane. My base button
+					class will only think about timings, and will call a
+					<tt>longClick</tt>
+					and
+					<tt>shortClick</tt>
+					method. But here's the thing: these methods will not be
+					implemented. It looks like this:
+				</p>
+				<pre>
+class Button {
+    const int pin;
+    int state;
+    unsigned long buttonDownMs;
+
+  protected:
+    virtual void shortClick();
+    virtual void longClick();
+
+  public:
+    Button(int attachTo) :
+      pin(attachTo)
+    {
+    }
+
+
+    void setup() {
+      pinMode(pin, INPUT_PULLUP);
+      state = HIGH;
+    }
+
+    void loop() {
+      int prevState = state;
+      state = digitalRead(pin);
+      if (prevState == HIGH && state == LOW) {
+        buttonDownMs = millis();
+      }
+      else if (prevState == LOW && state == HIGH) {
+        if (millis() - buttonDownMs < 50) {
+          // ignore this for debounce
+        }
+        else if (millis() - buttonDownMs < 250) {
+          shortClick();
+        }
+        else  {
+          longClick();
+        }
+      }
+    }
+
+};
+</pre>
+				<p>
+					We then have what we call a <u>subclass</u> of button whose job it
+					is to know how to work a headlight. Crucially, that subclass has
+					everything that a button has - it uses the button's
+					<tt>setup</tt>
+					and
+					<t>loop</t>
+					. So the only thing it needs is that it needs to supply the
+					definition of what to do if there's a short and a long click.
+				</p>
+				<pre>
+class HeadlampControlButton: public Button {
+  public:
+    HeadlampControlButton(int attachTo) :
+      Button(attachTo) {
+    }
+  protected:
+    void shortClick() {
+      headlamp.brightnessClick();
+    }
+
+    void longClick() {
+      headlamp.powerToggle();
+    }
+};
+
+HeadlampControlButton button(7);
+</pre>
+				<p>With this change, the sketch - well - does exactly what it
+					did before :). But now, if we want to make other long/short clicky
+					buttons on difefrent pins doing different things, it's easy.</p>
+				<p></p>
+				<p></p>
+			</div>
+
+			<div class="section" id="buttonWithRef">
+				<a name="buttonWithRef"></a>
+				<h3>Wiring up the buttons with constructors: composition by
+					reference</h3>
+				<p>The next thing that irritates me is how the
+					HeadlampControlButton object is tied to the headlamp object defined
+					in the main part of the sketch. What if we want two headlamps and
+					buttons? What if we want to call it something different?</p>
+				<p>
+					So what I will do is have a <em>HeadlampControlButton</em> hold a <u>reference</u>
+					to its headlight. It is given this reference in the constructor,
+					which means that the thing that builds it is responsible for
+					working out which headlight it is supposed to be tied to.
+				</p>
+				<p>
+					Because the object does not "own" the headlight, it will not call
+					the
+					<tt>setup</tt>
+					and
+					<tt>loop</tt>
+					methds.
+				</p>
+				<p>It looks a little like this:</p>
+				<pre>
+class HeadlampControlButton: public Button {
+    Headlamp &lamp;
+
+  public:
+    HeadlampControlButton(int attachToPin, Headlamp &attachToHeadlamp) :
+      Button(attachToPin),
+      lamp(attachToHeadlamp) {
+    }
+  protected:
+    void shortClick() {
+      lamp.brightnessClick();
+    }
+
+    void longClick() {
+      lamp.powerToggle();
+    }
+};
+</pre>
+				<p>At this point, the main part of the sketch looks like this</p>
+				<pre>
+Headlamp headlamp(10, 11);
+HeadlampControlButton button(7, headlamp);
+
+void setup() {
+  button.setup();
+  headlamp.setup();
+}
+
+void loop() {
+  button.loop();
+  headlamp.loop();
+}
+</pre>
+				<p>See how it is now the declarations in the main part of the
+					sketch that defines who uses what pins and how they interact. Each
+					component only "knows" about its own little world and can be
+					swapped in and out on one place without needing other coding.</p>
+			</div>
+
+			<div class="section" id="theFullSketch">
+				<a name="theFullSketch"></a>
+				<h3>The full, working sketch</h3>
+				<p>As you have been so patient looking at these code fragments
+					and snippets, here is the full thing.</p>
+				<pre>
+class ClickQueue {
+    const int pin;
+    // make these slow for testing
+    const unsigned CLICK_DOWN_MS = 250;
+    const unsigned CLICK_TOTAL_MS = 1000;
+
+    enum State {
+      NOT_CLICKING = 0,
+      CLICK_DOWN = 1,
+      CLICK_PAUSE = 2
+    } state;
+
+    unsigned long clickStartMs;
+    int pendingClicks;
+
+  public:
+    ClickQueue(int attachTo) :
+      pin(attachTo) {
+    }
+
+    void setup() {
+      pinMode(pin, OUTPUT);
+      state = NOT_CLICKING;
+      pendingClicks = 0;
+    }
+
+    void loop() {
+      switch (state) {
+        case NOT_CLICKING:
+          if (pendingClicks > 0) {
+            pendingClicks --;
+            digitalWrite(pin, HIGH);
+            clickStartMs = millis();
+            state = CLICK_DOWN;
+          }
+          break;
+        case CLICK_DOWN:
+          if (millis() - clickStartMs > CLICK_DOWN_MS) {
+            digitalWrite(pin, LOW);
+            state = CLICK_PAUSE;
+          }
+          break;
+        case CLICK_PAUSE:
+          if (millis() - clickStartMs > CLICK_TOTAL_MS) {
+            state = NOT_CLICKING;
+          }
+          break;
+      }
+    }
+
+    void addAClick() {
+      pendingClicks++;
+    }
+
+    void addClicks(int clicks) {
+      pendingClicks += clicks;
+    }
+
+    void cancel() {
+      pendingClicks = 0;
+      digitalWrite(pin, LOW);
+      state = NOT_CLICKING;
+    }
+};
+
+class Headlamp {
+    const int powerOutPin;
+    ClickQueue brightnessClicker;
+    boolean isOn;
+    int brightness;
+
+  public:
+    Headlamp(int powerOutAttach, int brightnessOutAttach) :
+      powerOutPin(powerOutAttach),
+      brightnessClicker(brightnessOutAttach)
+    {
+    }
+
+    void setup() {
+      brightnessClicker.setup();
+
+      pinMode(powerOutPin, OUTPUT);
+      isOn = false;
+      digitalWrite(powerOutPin, LOW);
+
+      brightness = 0;
+    }
+
+    void loop() {
+      brightnessClicker.loop();
+    }
+
+    void powerToggle() {
+      if (isOn) {
+        brightnessClicker.cancel();
+        digitalWrite(powerOutPin, LOW);
+        isOn = false;
+      }
+      else {
+        digitalWrite(powerOutPin, HIGH);
+        delay(50);
+        brightnessClicker.addClicks(brightness);
+        isOn = true;
+      }
+    }
+
+    void brightnessClick() {
+      if (isOn) {
+        brightnessClicker.addAClick();
+        brightness = (brightness + 1 ) % 5;
+      }
+    }
+
+} ;
+
+class Button {
+    const int pin;
+    int state;
+    unsigned long buttonDownMs;
+
+  protected:
+    virtual void shortClick();
+    virtual void longClick();
+
+  public:
+    Button(int attachTo) :
+      pin(attachTo)
+    {
+    }
+
+
+    void setup() {
+      pinMode(pin, INPUT_PULLUP);
+      state = HIGH;
+    }
+
+    void loop() {
+      int prevState = state;
+      state = digitalRead(pin);
+      if (prevState == HIGH && state == LOW) {
+        buttonDownMs = millis();
+      }
+      else if (prevState == LOW && state == HIGH) {
+        if (millis() - buttonDownMs < 50) {
+          // ignore this for debounce
+        }
+        else if (millis() - buttonDownMs < 250) {
+          shortClick();
+        }
+        else  {
+          longClick();
+        }
+      }
+    }
+
+};
+
+class HeadlampControlButton: public Button {
+    Headlamp &lamp;
+
+  public:
+    HeadlampControlButton(int attachToPin, Headlamp &attachToHeadlamp) :
+      Button(attachToPin),
+      lamp(attachToHeadlamp) {
+    }
+  protected:
+    void shortClick() {
+      // short click
+      lamp.brightnessClick();
+    }
+
+    void longClick() {
+      // long click
+      lamp.powerToggle();
+    }
+};
+
+Headlamp headlamp(10, 11);
+HeadlampControlButton button(7, headlamp);
+
+void setup() {
+  button.setup();
+  headlamp.setup();
+}
+
+void loop() {
+  button.loop();
+  headlamp.loop();
+}
+</pre>
+				<h2>Part II - adding the tail light</h2>
+				<p>Now, one of the the motivations for going to all this trouble
+					is to demonstrate that it's reasonably easy to modify and extend
+					tour sketch. I will add a tail and brake light that flashes
+					intermittently when the headlamp is on and comes on when the brake
+					is hit.</p>
+				<p>
+					Before I do, stop and think what sort of a challenge this would be
+					with the usual way of coding - one big
+					<tt>loop</tt>
+					method doing the lamp on of, keeping track of the brighness,
+					bringning the brightness up when the lamp is turned in, the whole
+					thing. Coding this way - the OO way - means that adding another
+					thingumajig is mostly more of the same.
+				</p>
+			</div>
+
+			<div class="section" id="flashingTailLight">
+				<a name="flashingTailLight"></a>
+				<h3>Flashing Tail Light</h3>
+				<p>Ok, our tail light has two independent state things - on/off,
+					and braking/not&nbsp;braking - and it's attached to a pin. Lets
+					just code up one of those.</p>
+				<pre>
+class Taillight {
+    const int pin;
+    boolean flashing;
+    boolean braking;
+    
+  public:
+    Taillight(int attachToPin) :
+      pin(attachToPin) {
+    }
+
+    void setup() {
+      pinMode(pin, OUTPUT);
+      digitalWrite(pin, LOW);
+      flashing = true; // SETTING to true for testing
+      braking = false;
+    }
+
+    void loop() {
+    }
+};
+</pre>
+				<p>And we declare one, attach it to pin 12, and give it a setup
+					and a time slice.</p>
+				<pre>
+Headlamp headlamp(10, 11);
+HeadlampControlButton button(7, headlamp);
+Taillight taillight(12);
+
+void setup() {
+  button.setup();
+  headlamp.setup();
+  taillight.setup();
+}
+
+void loop() {
+  button.loop();
+  headlamp.loop();
+  taillight.loop();
+}
+</pre>
+				<p>Great! Now, for logic - the loop. If the brake is on, then
+					the taillight should be on. If the brake is not on and it's day
+					(not flashing), the LED should be off. otherwise, it should flash.</p>
+				<p>
+					Now, for flashing, I am totally going to cheat. I want it to flash
+					every second. You know what's really close to a second? 1024
+					milliseconds. Bit 10 of
+					<tt>millis()</tt>
+					. And I want it to be on 1/10th of the time. You know what's really
+					close to 1/10? 1/8. Three bits. So I will look at three bits at
+					position 10 to 8 of millis. If they are all off, then the light is
+					on. That should make it flash like a boss.
+				</p>
+				<p>I won't bother with "if it was off before and it's on now,
+					then we need to turn on the pin". I'll just unconditionally write
+					the state to the pin. Meh.</p>
+				<pre>
+    void loop() {
+      if (braking) {
+        digitalWrite(pin, HIGH);
+      }
+      else if (!flashing) {
+        digitalWrite(pin, LOW);
+      }
+      else {
+        digitalWrite(pin, (millis() & 0b1110000000) == 0 ? HIGH : LOW);
+      }
+    }
+</pre>
+				<p>Flashes just like a bought one! Fantastic. Now to do the rest
+					of the state.</p>
+			</div>
+
+
+
+			<div class="section" id="hookingUpTheLight">
+				<a name="hookingUpTheLight"></a>
+				<h3>Hooking the taillight to the headlamp</h3>
+				<p>
+					Next thing I need to do is to have the taillight flashing only if
+					the headlamp is on. Now, I don't want to do a lot of surgery to the
+					headlamp. So instead of having the headlamp push its state to the
+					taillight, I will have the taillight pull the data from the
+					headlamp. This means the headlamp needs to expose its isOn state.
+					You can do this by having a method that returns the value (an <u>accessor</u>
+					method), but I will just make the variable public.
+				</p>
+				<p>This breaks some of the rules, because it means that another
+					object can directly write to that state without the headlamp class
+					knowing about it. This could put the object into an invalid state.
+					YOu would not do this if you were writing a library class, meant to
+					be used by other people.</p>
+				<p>But in this case, I know what I'm doing. I need the taillight
+					to hold a reference to a headlamp, and I actually don't need the
+					'flashing' variable at all.</p>
+				<p>So, the variables at the top of the headlamp class now look
+					like this:</p>
+				<pre>
+    const int powerOutPin;
+    ClickQueue brightnessClicker;
+    int brightness;
+
+  public:
+    boolean isOn;
+</pre>
+				<p>The declarations in the main sketch that create our
+					components look like this:</p>
+				<pre>
+Headlamp headlamp(10, 11);
+HeadlampControlButton button(7, headlamp);
+Taillight taillight(12, headlamp);
+</pre>
+				<p>And the taillight looks like this:</p>
+				<pre>
+class Taillight {
+    const int pin;
+    Headlamp &headlamp;
+    boolean braking;
+
+  public:
+    Taillight(int attachToPin, Headlamp &attachToHeadlamp) :
+      pin(attachToPin),
+      headlamp(attachToHeadlamp) {
+    }
+
+    void setup() {
+      pinMode(pin, OUTPUT);
+      digitalWrite(pin, LOW);
+      braking = false;
+    }
+
+    void loop() {
+      if (braking) {
+        digitalWrite(pin, HIGH);
+      }
+      else if (!headlamp.isOn) {
+        digitalWrite(pin, LOW);
+      }
+      else {
+        digitalWrite(pin, (millis() & 0b1110000000) == 0 ? HIGH : LOW);
+      }
+    }
+};
+</pre>
+				<p>And once again, it works. A long click turns the headlamp on
+					and starts the flashing taillight. Short clicks advance the
+					brighness. A long click turns everything off. Another long click
+					starts the falshing and sends a series of clicks to the brightness
+					to bring it back up to where it was.</p>
+				<p></p>
+				<p></p>
+			</div>
+
+			<div class="section" id="brakeSensor">
+				<a name="brakeSensor"></a>
+				<h3>Adding the brake switch</h3>
+				<p>You know what? I am not going to bother with making up a
+					brake switch object. I'll just have the tail light read the pin
+					itself. It's justifiable because, well, its a brake light so its ok
+					to have it listen to a brake pin.</p>
+				<p>
+					Easy as. I'll put the switch on pin 6. I'll reorder the constructor
+					arguments so that inputs come first, then outputs. And since the
+					taillight now is dealing with two pins, I'll rename
+					<tt>pin</tt>
+					to
+					<tt>ledOutPin</tt>
+				</p>
+				<p></p>
+				<p></p>
+				<p></p>
+				<p></p>
+			</div>
+
+			<div class="section" id="theFullSketch2">
+				<a name="theFullSketch2"></a>
+				<h3>The full, working sketch, with tail light</h3>
+				<p>And here's the final result. It seems to work exactly right.</p>
+				<pre>
+class ClickQueue {
+    const int pin;
+    // make these slow for testing
+    const unsigned CLICK_DOWN_MS = 250;
+    const unsigned CLICK_TOTAL_MS = 1000;
+
+    enum State {
+      NOT_CLICKING = 0,
+      CLICK_DOWN = 1,
+      CLICK_PAUSE = 2
+    } state;
+
+    unsigned long clickStartMs;
+    int pendingClicks;
+
+  public:
+    ClickQueue(int attachTo) :
+      pin(attachTo) {
+    }
+
+    void setup() {
+      pinMode(pin, OUTPUT);
+      state = NOT_CLICKING;
+      pendingClicks = 0;
+    }
+
+    void loop() {
+      switch (state) {
+        case NOT_CLICKING:
+          if (pendingClicks > 0) {
+            pendingClicks --;
+            digitalWrite(pin, HIGH);
+            clickStartMs = millis();
+            state = CLICK_DOWN;
+          }
+          break;
+        case CLICK_DOWN:
+          if (millis() - clickStartMs > CLICK_DOWN_MS) {
+            digitalWrite(pin, LOW);
+            state = CLICK_PAUSE;
+          }
+          break;
+        case CLICK_PAUSE:
+          if (millis() - clickStartMs > CLICK_TOTAL_MS) {
+            state = NOT_CLICKING;
+          }
+          break;
+      }
+    }
+
+    void addAClick() {
+      pendingClicks++;
+    }
+
+    void addClicks(int clicks) {
+      pendingClicks += clicks;
+    }
+
+    void cancel() {
+      pendingClicks = 0;
+      digitalWrite(pin, LOW);
+      state = NOT_CLICKING;
+    }
+};
+
+class Headlamp {
+    const int powerOutPin;
+    ClickQueue brightnessClicker;
+    int brightness;
+
+  public:
+    boolean isOn;
+
+    Headlamp(int powerOutAttach, int brightnessOutAttach) :
+      powerOutPin(powerOutAttach),
+      brightnessClicker(brightnessOutAttach)
+    {
+    }
+
+    void setup() {
+      brightnessClicker.setup();
+
+      pinMode(powerOutPin, OUTPUT);
+      isOn = false;
+      digitalWrite(powerOutPin, LOW);
+
+      brightness = 0;
+    }
+
+    void loop() {
+      brightnessClicker.loop();
+    }
+
+    void powerToggle() {
+      if (isOn) {
+        brightnessClicker.cancel();
+        digitalWrite(powerOutPin, LOW);
+        isOn = false;
+      }
+      else {
+        digitalWrite(powerOutPin, HIGH);
+        delay(50);
+        brightnessClicker.addClicks(brightness);
+        isOn = true;
+      }
+    }
+
+    void brightnessClick() {
+      if (isOn) {
+        brightnessClicker.addAClick();
+        brightness = (brightness + 1 ) % 5;
+      }
+    }
+
+} ;
+
+class Button {
+    const int pin;
+    int state;
+    unsigned long buttonDownMs;
+
+  protected:
+    virtual void shortClick();
+    virtual void longClick();
+
+  public:
+    Button(int attachTo) :
+      pin(attachTo)
+    {
+    }
+
+
+    void setup() {
+      pinMode(pin, INPUT_PULLUP);
+      state = HIGH;
+    }
+
+    void loop() {
+      int prevState = state;
+      state = digitalRead(pin);
+      if (prevState == HIGH && state == LOW) {
+        buttonDownMs = millis();
+      }
+      else if (prevState == LOW && state == HIGH) {
+        if (millis() - buttonDownMs < 50) {
+          // ignore this for debounce
+        }
+        else if (millis() - buttonDownMs < 250) {
+          shortClick();
+        }
+        else  {
+          longClick();
+        }
+      }
+    }
+
+};
+
+class HeadlampControlButton: public Button {
+    Headlamp &lamp;
+
+  public:
+    HeadlampControlButton(int attachToPin, Headlamp &attachToHeadlamp) :
+      Button(attachToPin),
+      lamp(attachToHeadlamp) {
+    }
+  protected:
+    void shortClick() {
+      // short click
+      lamp.brightnessClick();
+    }
+
+    void longClick() {
+      // long click
+      lamp.powerToggle();
+    }
+};
+
+class Taillight {
+    const int brakeSensePin;
+    const int ledOutPin;
+    Headlamp &headlamp;
+
+  public:
+    Taillight(int attachToBrakeSense, Headlamp &attachToHeadlamp, int attachToLedPin) :
+      brakeSensePin(attachToBrakeSense),
+      ledOutPin(attachToLedPin),
+      headlamp(attachToHeadlamp) {
+    }
+
+    void setup() {
+      pinMode(brakeSensePin, INPUT_PULLUP);
+      pinMode(ledOutPin, OUTPUT);
+      digitalWrite(ledOutPin, LOW);
+    }
+
+    void loop() {
+      if (digitalRead(brakeSensePin) == LOW) {
+        digitalWrite(ledOutPin, HIGH);
+      }
+      else if (!headlamp.isOn) {
+        digitalWrite(ledOutPin, LOW);
+      }
+      else {
+        digitalWrite(ledOutPin, (millis() & 0b1110000000) == 0 ? HIGH : LOW);
+      }
+    }
+};
+
+Headlamp headlamp(10, 11);
+HeadlampControlButton button(7, headlamp);
+Taillight taillight(6, headlamp, 12);
+
+void setup() {
+  button.setup();
+  headlamp.setup();
+  taillight.setup();
+}
+
+void loop() {
+  button.loop();
+  headlamp.loop();
+  taillight.loop();
+}
+</pre>
+			</div>
+
+			<div class="section" id="finalThoughts">
+				<a name="finalThoughts"></a>
+				<h2>Final thoughts</h2>
+				<p>Well, that seems like a lot of code. But review what this
+					sketch does - two inputs, one of them timer based, and three
+					outputs. Flashing, internal state, a little routine that must be
+					done when the light comes on. It's all there, and it all works seamlessly.</p>
+				<p>Using the "objects where each gets a time slice" pattern, no
+					individual step was particularly difficult to do. At each step, I
+					could check that the object I had written so far worked. And once
+					it worked, I mostly didn't have to go back to revisit things.</p>
+				<p>Yes, it does require programming skills beyond the
+					cut-and-paste cookbook approach. You actually have to know how to
+					program in C++. I appreciate that many Arduino hobbyists are more
+					interested in hardware and electronics than in programming. What
+					can I say? If you want your program to do something complex,
+					grinding away at a wall of nested if/else-if statements is a recipe
+					for long frustrating hours and at the end of it all, you can't be
+					100% confident that you really have thought of everything, caught
+					every possible condition.</p>
+				<p>
+					Writing this stuff is much quicker and easier than writing <em>about</em>
+					it. With this approach, your new project works basically the same
+					as your previous one. Which is good. Your code matches the physical
+					components you have. If you decide that your bike doesn't need a
+					taillight, removing it from the sketch above is just a matter of a
+					couple of lines, not of hunting through the code to find every
+					place where it is mentioned.
+				</p>
+				<p>The sketch has some issues, and I wouldn't sell it like that.
+					The way the taillight depends on the lamp is not good. What I
+					probably need is a 'pushbutton to toggle' class. A software
+					t-flipflop. Both the headlamp and the brake light would read that.
+					I'd have a 'runnable' abstract class for things that have a setup
+					and loop, and manage them with an array rather than hard-coding
+					individual things into the main setup and loop.</p>
+				<p>But, there you have it. This is one way that a dude who has
+					been making a living programming for 30 years addresses Arduino
+					projects.</p>
+			</div>
+
+		</div>
+	</div>
+</body>
+</html>
