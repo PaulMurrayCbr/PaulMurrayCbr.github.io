@@ -275,7 +275,7 @@ pre {
 				<p>Ok, let's start with the control button. I will drop it onto
 					pin 7.</p>
 				<pre>
-const int BUTTON_PIN = 7;
+const byte BUTTON_PIN = 7;
 
 class Button {
 };
@@ -312,7 +312,7 @@ void loop() {
 					.
 				</p>
 				<pre>			
-const int BUTTON_PIN = 7;
+const byte BUTTON_PIN = 7;
 
 class Button {
   public:
@@ -356,7 +356,7 @@ void loop() {
 				<p>At this stage, we can introduce the usual code for button
 					behaviour which you have all seen a million times before.</p>
 				<pre>
-const int BUTTON_PIN = 7;
+const byte BUTTON_PIN = 7;
 
 class Button {
     int state;
@@ -412,12 +412,12 @@ void loop() {
 				</p>
 				<pre>
 class Button {
-    const int pin;
+    const byte pin;
     int state;
     unsigned long buttonDownMs;
 
   public:
-    Button(int attachTo) :
+    Button(byte attachTo) :
       pin(attachTo)
     {
     }
@@ -475,12 +475,12 @@ void loop() {
 					response to a long click.</p>
 				<pre>
 class Button {
-    const int pin;
+    const byte pin;
     int state;
     unsigned long buttonDownMs;
 
   public:
-    Button(int attachTo) :
+    Button(byte attachTo) :
       pin(attachTo)
     {
     }
@@ -555,7 +555,7 @@ void loop() {
 				<p>Without further ado, the code looks like this:</p>
 				<pre>
 class ClickQueue {
-    const int pin;
+    const byte pin;
     // make these slow for testing
     const unsigned CLICK_DOWN_MS = 250;
     const unsigned CLICK_TOTAL_MS = 1000;
@@ -571,7 +571,7 @@ class ClickQueue {
     int pendingClicks;
 
   public:
-    ClickQueue(int attachTo) :
+    ClickQueue(byte attachTo) :
       pin(attachTo) {
     }
 
@@ -781,11 +781,11 @@ void loop() {
 					class:</p>
 				<pre>
 class Headlamp {
-    const int powerOutPin;
-    const int brightnessOutPin;
+    const byte powerOutPin;
+    const byte brightnessOutPin;
 
   public:
-    Headlamp(int powerOutAttach, int brightnessOutAttach) :
+    Headlamp(byte powerOutAttach, byte brightnessOutAttach) :
       powerOutPin(powerOutAttach),
       brightnessOutPin(brightnessOutAttach)
     {
@@ -865,11 +865,11 @@ void loop() {
 				<p>The result looks line this:</p>
 				<pre>
 class Headlamp {
-    const int powerOutPin;
+    const byte powerOutPin;
     ClickQueue brightnessClicker;
 
   public:
-    Headlamp(int powerOutAttach, int brightnessOutAttach) :
+    Headlamp(byte powerOutAttach, byte brightnessOutAttach) :
       powerOutPin(powerOutAttach),
       brightnessClicker(brightnessOutAttach)
     {
@@ -907,13 +907,13 @@ class Headlamp {
 					looks like this:</p>
 				<pre>
 class Headlamp {
-    const int powerOutPin;
+    const byte powerOutPin;
     ClickQueue brightnessClicker;
     boolean isOn;
     int brightness;
 
   public:
-    Headlamp(int powerOutAttach, int brightnessOutAttach) :
+    Headlamp(byte powerOutAttach, byte brightnessOutAttach) :
       powerOutPin(powerOutAttach),
       brightnessClicker(brightnessOutAttach)
     {
@@ -988,7 +988,7 @@ class Headlamp {
 				</p>
 				<pre>
 class Button {
-    const int pin;
+    const byte pin;
     int state;
     unsigned long buttonDownMs;
 
@@ -997,7 +997,7 @@ class Button {
     virtual void longClick();
 
   public:
-    Button(int attachTo) :
+    Button(byte attachTo) :
       pin(attachTo)
     {
     }
@@ -1042,7 +1042,7 @@ class Button {
 				<pre>
 class HeadlampControlButton: public Button {
   public:
-    HeadlampControlButton(int attachTo) :
+    HeadlampControlButton(byte attachTo) :
       Button(attachTo) {
     }
   protected:
@@ -1092,7 +1092,7 @@ class HeadlampControlButton: public Button {
     Headlamp &lamp;
 
   public:
-    HeadlampControlButton(int attachToPin, Headlamp &attachToHeadlamp) :
+    HeadlampControlButton(byte attachToPin, Headlamp &attachToHeadlamp) :
       Button(attachToPin),
       lamp(attachToHeadlamp) {
     }
@@ -1134,7 +1134,7 @@ void loop() {
 					and snippets, here is the full thing.</p>
 				<pre>
 class ClickQueue {
-    const int pin;
+    const byte pin;
     // make these slow for testing
     const unsigned CLICK_DOWN_MS = 250;
     const unsigned CLICK_TOTAL_MS = 1000;
@@ -1149,7 +1149,7 @@ class ClickQueue {
     int pendingClicks;
 
   public:
-    ClickQueue(int attachTo) :
+    ClickQueue(byte attachTo) :
       pin(attachTo) {
     }
 
@@ -1199,13 +1199,13 @@ class ClickQueue {
 };
 
 class Headlamp {
-    const int powerOutPin;
+    const byte powerOutPin;
     ClickQueue brightnessClicker;
     boolean isOn;
     int brightness;
 
   public:
-    Headlamp(int powerOutAttach, int brightnessOutAttach) :
+    Headlamp(byte powerOutAttach, byte brightnessOutAttach) :
       powerOutPin(powerOutAttach),
       brightnessClicker(brightnessOutAttach)
     {
@@ -1249,7 +1249,7 @@ class Headlamp {
 } ;
 
 class Button {
-    const int pin;
+    const byte pin;
     int state;
     unsigned long buttonDownMs;
 
@@ -1258,7 +1258,7 @@ class Button {
     virtual void longClick();
 
   public:
-    Button(int attachTo) :
+    Button(byte attachTo) :
       pin(attachTo)
     {
     }
@@ -1294,7 +1294,7 @@ class HeadlampControlButton: public Button {
     Headlamp &lamp;
 
   public:
-    HeadlampControlButton(int attachToPin, Headlamp &attachToHeadlamp) :
+    HeadlampControlButton(byte attachToPin, Headlamp &attachToHeadlamp) :
       Button(attachToPin),
       lamp(attachToHeadlamp) {
     }
@@ -1348,12 +1348,12 @@ void loop() {
 					just code up one of those.</p>
 				<pre>
 class Taillight {
-    const int pin;
+    const byte pin;
     boolean flashing;
     boolean braking;
     
   public:
-    Taillight(int attachToPin) :
+    Taillight(byte attachToPin) :
       pin(attachToPin) {
     }
 
@@ -1445,7 +1445,7 @@ void loop() {
 				<p>So, the variables at the top of the headlamp class now look
 					like this:</p>
 				<pre>
-    const int powerOutPin;
+    const byte powerOutPin;
     ClickQueue brightnessClicker;
     int brightness;
 
@@ -1462,12 +1462,12 @@ Taillight taillight(12, headlamp);
 				<p>And the taillight looks like this:</p>
 				<pre>
 class Taillight {
-    const int pin;
+    const byte pin;
     Headlamp &headlamp;
     boolean braking;
 
   public:
-    Taillight(int attachToPin, Headlamp &attachToHeadlamp) :
+    Taillight(byte attachToPin, Headlamp &attachToHeadlamp) :
       pin(attachToPin),
       headlamp(attachToHeadlamp) {
     }
@@ -1527,7 +1527,7 @@ class Taillight {
 				<p>And here's the final result. It seems to work exactly right.</p>
 				<pre>
 class ClickQueue {
-    const int pin;
+    const byte pin;
     // make these slow for testing
     const unsigned CLICK_DOWN_MS = 250;
     const unsigned CLICK_TOTAL_MS = 1000;
@@ -1542,7 +1542,7 @@ class ClickQueue {
     int pendingClicks;
 
   public:
-    ClickQueue(int attachTo) :
+    ClickQueue(byte attachTo) :
       pin(attachTo) {
     }
 
@@ -1592,14 +1592,14 @@ class ClickQueue {
 };
 
 class Headlamp {
-    const int powerOutPin;
+    const byte powerOutPin;
     ClickQueue brightnessClicker;
     int brightness;
 
   public:
     boolean isOn;
 
-    Headlamp(int powerOutAttach, int brightnessOutAttach) :
+    Headlamp(byte powerOutAttach, byte brightnessOutAttach) :
       powerOutPin(powerOutAttach),
       brightnessClicker(brightnessOutAttach)
     {
@@ -1643,7 +1643,7 @@ class Headlamp {
 } ;
 
 class Button {
-    const int pin;
+    const byte pin;
     int state;
     unsigned long buttonDownMs;
 
@@ -1652,7 +1652,7 @@ class Button {
     virtual void longClick();
 
   public:
-    Button(int attachTo) :
+    Button(byte attachTo) :
       pin(attachTo)
     {
     }
@@ -1688,7 +1688,7 @@ class HeadlampControlButton: public Button {
     Headlamp &lamp;
 
   public:
-    HeadlampControlButton(int attachToPin, Headlamp &attachToHeadlamp) :
+    HeadlampControlButton(byte attachToPin, Headlamp &attachToHeadlamp) :
       Button(attachToPin),
       lamp(attachToHeadlamp) {
     }
@@ -1705,12 +1705,12 @@ class HeadlampControlButton: public Button {
 };
 
 class Taillight {
-    const int brakeSensePin;
-    const int ledOutPin;
+    const byte brakeSensePin;
+    const byte ledOutPin;
     Headlamp &headlamp;
 
   public:
-    Taillight(int attachToBrakeSense, Headlamp &attachToHeadlamp, int attachToLedPin) :
+    Taillight(byte attachToBrakeSense, Headlamp &attachToHeadlamp, byte attachToLedPin) :
       brakeSensePin(attachToBrakeSense),
       ledOutPin(attachToLedPin),
       headlamp(attachToHeadlamp) {
