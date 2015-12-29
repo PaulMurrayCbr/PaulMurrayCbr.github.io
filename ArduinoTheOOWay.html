@@ -81,6 +81,8 @@ pre {
 					</ol>
 				</li>
 				<li><a href="#finalThoughts">Final Thoughts</a></li>
+				<li><a href="#thespookyway">Appendix - automatically
+						managing runnables</a></li>
 			</ol>
 
 			<div class="section" id="Introduction">
@@ -1808,6 +1810,381 @@ void loop() {
 					projects.</p>
 			</div>
 
+			<div class="section" id="thespookyway">
+				<a name="thespookyway"></a>
+				<h2>Appendix - automatically managing runnables</h2>
+				<p>
+					One of the irritations of this pattern is making sure that you give
+					a time-slice to every component. Your main
+					<tt>setup</tt>
+					and
+					<tt>loop</tt>
+					have to include everything explicitly by name.
+				</p>
+				<p>
+					One thing that will occur as being obvious to any C++ programmer is
+					that there should be an abstract superclass named - let's say
+					<tt>Runnable</tt>
+					- and that all the classes should <u>inherit</u> that class:
+				</p>
+
+				<pre>
+class Runnable {
+  public:
+    virtual void setup();
+    virtual void loop();
+};
+
+class ClickQueue: public Runnable {
+	&hellip;
+
+class Headlamp: public Runnable {
+	&hellip;
+
+class Button: public Runnable {
+	&hellip;
+
+class HeadlampControlButton: public Button {
+	&hellip;
+ 
+class Taillight: public Runnable {
+	&hellip;
+</pre>
+				<p>That way, you just keep an array of runnables and iterate
+					through them in your loop and setup</p>
+				<div class="sidebar">C++ forbids arrays of references, so we
+					use pointers.</div>
+				<pre>
+Headlamp headlamp(10, 11);
+HeadlampControlButton button(7, headlamp);
+Taillight taillight(6, headlamp, 12);
+
+Runnable *runMe[] = {
+  &button,
+  &headlamp,
+  &taillight
+};
+
+void setup() {
+  for (int i = 0; i < sizeof(runMe) / sizeof(*runMe); i++)
+    runMe[i]->setup();
+}
+
+void loop() {
+  for (int i = 0; i < sizeof(runMe) / sizeof(*runMe); i++)
+    runMe[i]->loop();
+}
+</pre>
+				<p>
+					Pretty snazzy. But maintianing that array of pointers is a bit of a
+					wart. What we can do, however, is to have the
+					<tt>Runnable</tt>
+					constructors automagically build a linked list of runnables.
+				</p>
+				<div class="sidebar">
+					We have to provide an empty default for
+					<tt>setup</tt>
+					and
+					<tt>loop</tt>
+					, or the compiler complains. Each subclass <em>overrides</em> this
+					definition.
+				</div>
+				<pre>
+class Runnable {
+  public:
+    Runnable *nextRunnable;
+    Runnable();
+    virtual void setup() {}
+    virtual void loop() {}
+};
+
+Runnable *headRunnable = NULL;
+
+Runnable::Runnable()
+{
+  nextRunnable = headRunnable;
+  headRunnable = this;
+}
+</pre>
+				<p>The main section of the sketch now looks like this:</p>
+				<pre>
+Headlamp headlamp(10, 11);
+HeadlampControlButton button(7, headlamp);
+Taillight taillight(6, headlamp, 12);
+
+void setup() {
+  for (Runnable *r = headRunnable; r; r = r->nextRunnable)
+    r->setup();
+}
+
+void loop() {
+  for (Runnable *r = headRunnable; r; r = r->nextRunnable)
+    r->loop();
+}
+</pre>
+				<p>
+					A little spooky, because all the runnable objects get put on the
+					queue invisibly. But it works. And you can remove the bit inside
+					<tt>Headlamp</tt>
+					where it calls the
+					<tt>setup</tt>
+					and
+					<tt>loop</tt>
+					of its embedded
+					<tt>ClickQueue</tt>
+					. The embedded
+					<tt>ClickQueue</tt>
+					also automagically adds itself to the list of
+					<tt>Runnables</tt>
+				</p>
+				<p>Now of course you may be wondering, "Wait! What? What order
+					will things get run in?"</p>
+				<p>
+					<em>It doesn't matter.</em> Everything gets a time-slice. We could
+					write this thing so that each
+					<tt>loop</tt>
+					, one <em>random</em> runnable was selected and run. It would still
+					work. Everything would (most probably) get a time-slice in a
+					reasonable amount of time.
+				</p>
+				<p>Anyway. Here again is the complete sketch.</p>
+<pre>
+class Runnable {
+  public:
+    Runnable *nextRunnable;
+    Runnable();
+    virtual void setup() {}
+    virtual void loop() {}
+};
+
+Runnable *headRunnable = NULL;
+
+Runnable::Runnable()
+{
+  nextRunnable = headRunnable;
+  headRunnable = this;
+}
+
+class ClickQueue: public Runnable {
+    const byte pin;
+    // make these slow for testing
+    const unsigned CLICK_DOWN_MS = 250;
+    const unsigned CLICK_TOTAL_MS = 1000;
+
+    enum State {
+      NOT_CLICKING = 0,
+      CLICK_DOWN = 1,
+      CLICK_PAUSE = 2
+    } state;
+
+    unsigned long clickStartMs;
+    int pendingClicks;
+
+  public:
+    ClickQueue(byte attachTo) :
+      pin(attachTo) {
+    }
+
+    void setup() {
+      pinMode(pin, OUTPUT);
+      state = NOT_CLICKING;
+      pendingClicks = 0;
+    }
+
+    void loop() {
+      switch (state) {
+        case NOT_CLICKING:
+          if (pendingClicks > 0) {
+            pendingClicks --;
+            digitalWrite(pin, HIGH);
+            clickStartMs = millis();
+            state = CLICK_DOWN;
+          }
+          break;
+        case CLICK_DOWN:
+          if (millis() - clickStartMs > CLICK_DOWN_MS) {
+            digitalWrite(pin, LOW);
+            state = CLICK_PAUSE;
+          }
+          break;
+        case CLICK_PAUSE:
+          if (millis() - clickStartMs > CLICK_TOTAL_MS) {
+            state = NOT_CLICKING;
+          }
+          break;
+      }
+    }
+
+    void addAClick() {
+      pendingClicks++;
+    }
+
+    void addClicks(int clicks) {
+      pendingClicks += clicks;
+    }
+
+    void cancel() {
+      pendingClicks = 0;
+      digitalWrite(pin, LOW);
+      state = NOT_CLICKING;
+    }
+};
+
+class Headlamp: public Runnable {
+    const byte powerOutPin;
+    ClickQueue brightnessClicker;
+    int brightness;
+
+  public:
+    boolean isOn;
+
+    Headlamp(byte powerOutAttach, byte brightnessOutAttach) :
+      powerOutPin(powerOutAttach),
+      brightnessClicker(brightnessOutAttach)
+    {
+    }
+
+    void setup() {
+      pinMode(powerOutPin, OUTPUT);
+      isOn = false;
+      digitalWrite(powerOutPin, LOW);
+      brightness = 0;
+    }
+
+    void loop() {
+    }
+
+    void powerToggle() {
+      if (isOn) {
+        brightnessClicker.cancel();
+        digitalWrite(powerOutPin, LOW);
+        isOn = false;
+      }
+      else {
+        digitalWrite(powerOutPin, HIGH);
+        delay(50);
+        brightnessClicker.addClicks(brightness);
+        isOn = true;
+      }
+    }
+
+    void brightnessClick() {
+      if (isOn) {
+        brightnessClicker.addAClick();
+        brightness = (brightness + 1 ) % 5;
+      }
+    }
+
+} ;
+
+class Button: public Runnable {
+    const byte pin;
+    int state;
+    unsigned long buttonDownMs;
+
+  protected:
+    virtual void shortClick();
+    virtual void longClick();
+
+  public:
+    Button(byte attachTo) :
+      pin(attachTo)
+    {
+    }
+
+
+    void setup() {
+      pinMode(pin, INPUT_PULLUP);
+      state = HIGH;
+    }
+
+    void loop() {
+      int prevState = state;
+      state = digitalRead(pin);
+      if (prevState == HIGH && state == LOW) {
+        buttonDownMs = millis();
+      }
+      else if (prevState == LOW && state == HIGH) {
+        if (millis() - buttonDownMs < 50) {
+          // ignore this for debounce
+        }
+        else if (millis() - buttonDownMs < 250) {
+          shortClick();
+        }
+        else  {
+          longClick();
+        }
+      }
+    }
+
+};
+
+class HeadlampControlButton: public Button {
+    Headlamp &lamp;
+
+  public:
+    HeadlampControlButton(byte attachToPin, Headlamp &attachToHeadlamp) :
+      Button(attachToPin),
+      lamp(attachToHeadlamp) {
+    }
+  protected:
+    void shortClick() {
+      // short click
+      lamp.brightnessClick();
+    }
+
+    void longClick() {
+      // long click
+      lamp.powerToggle();
+    }
+};
+
+class Taillight: public Runnable {
+    const byte brakeSensePin;
+    const byte ledOutPin;
+    Headlamp &headlamp;
+
+  public:
+    Taillight(byte attachToBrakeSense, Headlamp &attachToHeadlamp, byte attachToLedPin) :
+      brakeSensePin(attachToBrakeSense),
+      ledOutPin(attachToLedPin),
+      headlamp(attachToHeadlamp) {
+    }
+
+    void setup() {
+      pinMode(brakeSensePin, INPUT_PULLUP);
+      pinMode(ledOutPin, OUTPUT);
+      digitalWrite(ledOutPin, LOW);
+    }
+
+    void loop() {
+      if (digitalRead(brakeSensePin) == LOW) {
+        digitalWrite(ledOutPin, HIGH);
+      }
+      else if (!headlamp.isOn) {
+        digitalWrite(ledOutPin, LOW);
+      }
+      else {
+        digitalWrite(ledOutPin, (millis() & 0b1110000000) == 0 ? HIGH : LOW);
+      }
+    }
+};
+
+Headlamp headlamp(10, 11);
+HeadlampControlButton button(7, headlamp);
+Taillight taillight(6, headlamp, 12);
+
+void setup() {
+  for (Runnable *r = headRunnable; r; r = r->nextRunnable)
+    r->setup();
+}
+
+void loop() {
+  for (Runnable *r = headRunnable; r; r = r->nextRunnable)
+    r->loop();
+}
+</pre>				
+			</div>
 		</div>
 	</div>
 </body>
