@@ -1937,6 +1937,8 @@ void loop() {
 					also automagically adds itself to the list of
 					<tt>Runnables</tt>
 				</p>
+				<div class="sidebar">I should move this discussion a bit
+					further up in this article. It's important.</div>
 				<p>Now of course you may be wondering, "Wait! What? What order
 					will things get run in?"</p>
 				<p>
@@ -1947,8 +1949,26 @@ void loop() {
 					work. Everything would (most probably) get a time-slice in a
 					reasonable amount of time.
 				</p>
+				<p>The key to that is that if an object exposes methods that
+					defer things to be done later, during their loop, it must be done
+					in such a way that it can handle any number of calls on those
+					methods before loop gets done.</p>
+				<p>That is, any object that works this way must either maintain
+					some sort of queue of things-to-do, or expose a "ready" method that
+					the things that use it interrogate. In our case, the clickqueue
+					holds a queue of pending events simply by keeping the number of
+					pending clicks. More complex things that use this model may need to
+					maintain some sort of buffer or use the heap.</p>
+				<p>Can this result in deadlocks? Sure! If your buffers aren't
+					big enough, if you are asking your arduino to do something that it
+					just plain doesn't have enough memory for, if your serial cable
+					falls out, or (here's the salient bit) if you program it up wrong.</p>
+				<p>But even then, using objects makes it much easier do draw up
+					dependency and data-flow diagrams to try to work out what's
+					jamming, because you already know what rectangles you need to draw
+					and where the arrows go.</p>
 				<p>Anyway. Here again is the complete sketch.</p>
-<pre>
+				<pre>
 class Runnable {
   public:
     Runnable *nextRunnable;
@@ -2183,7 +2203,7 @@ void loop() {
   for (Runnable *r = headRunnable; r; r = r->nextRunnable)
     r->loop();
 }
-</pre>				
+</pre>
 			</div>
 		</div>
 	</div>
