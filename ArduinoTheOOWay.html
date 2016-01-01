@@ -120,6 +120,24 @@ pre {
 					message boards - seems to be stuck at step 3. But OO coding has a
 					great deal to offer in terms of making Arduino code simpler and
 					more robust. it's well worthwhile getting your head around it.</p>
+				<div class="sidebar">
+					See <a
+						href="https://en.wikipedia.org/wiki/Parkinson's_law_of_triviality">bikeshedding</a>
+					at wikipedia in regards to the quibbling about data types.
+				</div>
+				<p>
+					<strong>This page is about how I personally address a
+						typical project posted on the Aruino boards, using C++ objects.</strong> It
+					works for me. The discussion on the discussion boards is about this
+					page is <a href="http://forum.arduino.cc/index.php?topic=368295.0">here</a>.
+					You may want to consider some criticisms there of this page here,
+					although it might be worthwhile skipping some of the quibbling
+					about using
+					<tt>byte</tt>
+					instead of
+					<tt>int</tt>
+					.
+				</p>
 			</div>
 
 			<div class="section" id="TheProblem">
@@ -205,13 +223,13 @@ pre {
 				<p>An object is a bundle of variables (holding state) and
 					functions that operate on those variables.</p>
 				<p>
-					Of course, whenever you code things for an arduino this is what you
-					wind up doing anyway. You will always have sets of variables that
-					work togther (in OO language: that have strong cohesion), and
-					blocks of code that mainly deal with those variables. A function is
-					just a block of code that you have separated out and given a name.
-					If you have a thing that needs to blink, your will inevitably have
-					a set of variables like
+					Whenever you code things for an arduino this is what you wind up
+					doing anyway. You will always have sets of variables that work
+					togther (in OO language: that have strong cohesion), and blocks of
+					code that mainly deal with those variables. A function is just a
+					block of code that you have separated out and given a name. If you
+					have a thing that needs to blink, your will inevitably have a set
+					of variables like
 					<tt>blinkTimeMs</tt>
 					and
 					<tt>blinkState</tt>
@@ -349,16 +367,22 @@ void loop() {
   button.loop();
 }
 </pre>
+				<div class="sidebar">Well, more correctly it's "co-operative
+					multitaksing", or something like that. Each object yields control -
+					we are not using an interrupt to manage sharing out the time.</div>
 				<p>
 					And this is the key to this pattern for building Arduino projects.
-					It's called "time-slicing". Every object gets a turn, even if it
-					does nothing. And every object guaranteed that it returns <em>quickly</em>
-					from it's
+					Every object gets a turn, even if it does nothing. And every object
+					guarantees that it returns <em>quickly</em> from it's
 					<tt>loop</tt>
-					method.
+					method. And each object does not rely on the other objects getting
+					their slices of time in any particular order. We rely on the fact
+					that there is a single thread in an Ardiono sketch. Each object
+					guarantees that at the end of each iteration of its
+					<tt>loop</tt>
+					, it is in a suitable <u>state</u> for other objects to interrogate
+					it and call its public methods.
 				</p>
-				<p>In effect, each object works like a mini-sketch that does
-					something.</p>
 				<p>
 					Notice that I have had to introduce a
 					<tt>public</tt>
@@ -476,17 +500,17 @@ void loop() {
 </pre>
 				<div class="sidebar">
 					<p>The colon syntax allows you to initialise things inside your
-						class that themselves have constructors, but that's beyond what we
-						are doing here.
+						class that themselves have constructors, which we will be doing
+						later.
 					<p>
 				</div>
 				<p>You can do other things inside your constructor, but in this
 					case all we are doing is assigning a simple variable.</p>
-				<p>At this point, our button is complete, except for the code
-					for what actually gets done when a long and short click is
-					performed. So just for testing purposes, let's have our button
-					change the state of a pair of LEDs on pin 8 and 9. The LED on pin 8
-					will change for a short click, and the LED on pin 9 will change in
+				<p>At this point our button is complete, except for the code for
+					what actually gets done when a long and short click is performed.
+					So just for testing purposes, let's have our button change the
+					state of a pair of LEDs on pin 8 and 9. The LED on pin 8 will
+					change for a short click, and the LED on pin 9 will change in
 					response to a long click.</p>
 				<pre>
 class Button {
@@ -665,7 +689,21 @@ class ClickQueue {
 					are using the right one. It also means that you can use namespaces,
 					for instance if you have several things each with an INIT state.
 				</p>
-				<p>Each branch of the switch statement follows the form:</p>
+				<div class="sidebar">
+					<p>If tight timing is very important, then this state-driven
+						programming style may not be appropriate.
+					<p>
+				</div>
+				<p>
+					The
+					<tt>loop</tt>
+					method reads any state that it needs to (millis(), pin reads,
+					<tt>getValue()</tt>
+					calls to other objects), and this is followed by a switch statement
+					that operates as a <u>state machine</u>. We have a branch for each
+					state that the object might be in, and each branch of the switch
+					statement follows the form:
+				</p>
 				<pre>
 if(some condition) {
   do stuff;
@@ -681,7 +719,7 @@ else {
 }
 </pre>
 				<p>
-					Of course, you can skip the final
+					You can skip the final
 					<tt>else</tt>
 					. If the "do stuff" or the conditions are complex, move them into a
 					function. However, the assignment of the state should be done in
@@ -689,11 +727,6 @@ else {
 					loop alone you can map put the flow of state changes in the object.
 				</p>
 
-				<div class="sidebar">
-					<p>If tight timing is very important, then this state-driven
-						programming style may not be appropriate.
-					<p>
-				</div>
 				<p>
 					You might notice that I don't handle the case where a button
 					finished being pressed but there are more presses on the queue. It
@@ -705,9 +738,13 @@ else {
 					<tt>delay()s</tt>
 					.
 				</p>
-				<p>But alternatively, then yes you can make the 'end of click'
-					processing do it. The problem is that there are then two places
-					where whatever needs to be done to start a click gets done.</p>
+				<p>
+					But alternatively, then yes you can make the 'end of click'
+					processing do it. The problem is that there would then be two
+					places where whatever needs to be done to start a click gets done.
+					A block of duplicate code. This is usually a <a
+						href="http://c2.com/cgi/wiki?BadThing">Bad&nbsp;Thing.</a>
+				</p>
 				<p>
 					So what you would normally do is pull out the code (the digital
 					write and the setting of the start time) into a private function
@@ -1822,10 +1859,14 @@ void loop() {
 					have to include everything explicitly by name.
 				</p>
 				<p>
-					One thing that will occur as being obvious to any C++ programmer is
-					that there should be an abstract superclass named - let's say
+					As every one of these objects has a
+					<tt>setup</tt>
+					and
+					<tt>loop</tt>
+					method, there's a pattern there. Perhaps there should be an
+					abstract superclass named - let's say
 					<tt>Runnable</tt>
-					- and that all the classes should <u>inherit</u> that class:
+					- and all these classes should <u>inherit</u> that class:
 				</p>
 
 				<pre>
@@ -1850,8 +1891,14 @@ class HeadlampControlButton: public Button {
 class Taillight: public Runnable {
 	&hellip;
 </pre>
-				<p>That way, you just keep an array of runnables and iterate
-					through them in your loop and setup</p>
+				<p>
+					That way, you just keep an array of runnables and iterate through
+					them in your
+					<tt>loop</tt>
+					and
+					<tt>setup</tt>
+					.
+				</p>
 				<div class="sidebar">C++ forbids arrays of references, so we
 					use pointers.</div>
 				<pre>
@@ -1937,10 +1984,17 @@ void loop() {
 					also automagically adds itself to the list of
 					<tt>Runnables</tt>
 				</p>
+				<p>
+					Why do this? Well - I like it that way. Sometimes, it just comes
+					down to personal preference. I like the way that, using this
+					pattern, you simply create a runnable object and suddenly it comes
+					alive. You can make an array of them if you want and they <em>all</em>
+					come alive.
+				</p>
 				<div class="sidebar">I should move this discussion a bit
 					further up in this article. It's important.</div>
-				<p>Now of course you may be wondering, "Wait! What? What order
-					will things get run in?"</p>
+				<p>Now you may be wondering, "Wait! What? What order will things
+					get run in?"</p>
 				<p>
 					<em>It doesn't matter.</em> Everything gets a time-slice. We could
 					write this thing so that each
