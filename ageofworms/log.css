@@ -1,0 +1,206 @@
+div.head {
+	border-style: double; 
+	font-family: Papyrus; 
+	margin-left: 19.09%; 
+	margin-right: 19.09%; 
+	margin-bottom: 1em; 
+	padding: 1em 1em; 
+	text-align: justify;
+}
+
+.blurb {
+  font-size: 75%;
+  font-family: Papyrus, serif;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+
+.cutscene {
+	font-family: cursive; 
+	margin: 1em; 
+	padding: 1em; 
+	border-style: groove;
+	border-width: thin;
+	text-align: justify;
+}
+
+.bigger {
+	text-align: center; font-size: 161%;
+}
+
+.smaller {
+	font-size: 75%; margin-left: 5%;
+}
+
+.todo {
+	font-size: 75%; color: gray;
+	display: none;
+}
+
+div.text {
+	font-family: Comic Sans MS;
+}
+
+.sideh {
+	background-color: #ffa;
+	color: #116;
+	text-align: center;
+	font-family:Papyrus; 
+	font-size: 125%;
+	border-width: thin;
+	border-bottom: solid; 
+	border-top: none; 
+	font-weight: bold;
+}
+.sidel {
+	float: left;
+	margin-right: 1em;
+background-image: url("images/Paper.png");
+background-repeat: repeat;
+	color: #114;
+	width: 296px;
+	font-family:Serif; 
+	font-size: 75%;
+	text-align: justify;
+	border-width: thin;
+	border-top: solid;
+	border-bottom: solid; 
+	padding: 2px 2px;
+}
+
+.sider {
+	float: right;
+	margin-left: 1em;
+	background-color: #ffc;
+	color: #114;
+	width: 296px;
+	font-family:Serif; 
+	font-size: 75%;
+	text-align: justify;
+	border-width: thin;
+	border-top: solid;
+	border-bottom: solid; 
+	padding: 2px 2px;
+}
+
+.visionr {
+	float: right;
+	margin-left: 1em;
+	background-color: #600;
+	color: #eee;
+	width: 296px;
+	font-family: Papyrus; 
+	font-size: 75%;
+	text-align: justify;
+	border-width: thin;
+	padding: 1em 1em;
+}
+
+.img450 {
+	float: right;
+	margin-left: 1em;
+	width: 450px;
+	font-size: 75%;
+	text-align: justify;}
+
+.img300 {
+	float: right;
+	margin-left: 1em;
+	width: 300px;
+	font-size: 75%;
+	text-align: justify;
+}
+
+
+.prevnext {
+	float: right;
+	margin-left: 1em;
+	color: #411;
+	font-family:sans-serif; 
+}
+    
+.dlbody {
+background-image: url("images/DL-Background.jpg");
+background-repeat: repeat;
+background-attachment: fixed;
+background-position: top center;
+}
+.wcbody {
+background-image: url("images/WC-Background.jpg");
+background-repeat: repeat;
+background-attachment: fixed;
+background-position: top center;
+}    
+.tfebody {
+background-image: url("images/TFE-Background.jpg");
+background-repeat: repeat;
+background-attachment: fixed;
+background-position: top center;
+} 
+.ebkbody {
+background-image: url("images/EBK-Background.jpg");
+background-repeat: repeat;
+background-attachment: fixed;
+background-position: top center;
+}
+.hhrbody {
+background-image: url("images/HHR-Background6.jpg");
+background-repeat: repeat;
+background-attachment: fixed;
+background-position: top center;
+}
+.sharnbody {
+background-image: url("images/Sharn-Background.jpg");
+background-repeat: repeat;
+background-attachment: fixed;
+background-position: top center;
+}
+.morgravebody {
+background-image: url("images/Morgrave-Background.jpg");
+background-repeat: repeat;
+background-attachment: fixed;
+background-position: top center;
+}
+.cbbody {
+background-image: url("images/CB-Background.jpeg");
+background-repeat: repeat;
+background-attachment: fixed;
+background-position: top center;
+}
+.gwbody {
+background-image: url("images/GW-Background.jpeg");
+background-repeat: repeat;
+background-attachment: fixed;
+background-position: top center;
+}
+.gwbackpic1 {
+background-image: url("images/GW-BackPic1.png");
+background-repeat: no-repeat;
+background-attachment: scroll;
+background-position: bottom right;
+}
+.gwbackpic2 {
+background-image: url("images/GW-BackPic2.png");
+background-repeat: no-repeat;
+background-attachment: scroll;
+background-position: bottom right;
+}
+.ropebridgeback {
+background-image: url("images/TFE-RopeBridge.png");
+background-repeat: no-repeat;
+background-attachment: scroll;
+background-position: bottom left;
+}
+.divbreak { clear: both; text-align: center;}
+
+.text i {color: rgb(64,0,192);  font-variant: small-caps; font-weight: bold;
+background-image: url("images/AOW-Magic.png");
+}
+
+.text .smaller i {color: black;  font-variant: none; font-weight: normal; font-style: italic;
+background-image: none;
+}
+
