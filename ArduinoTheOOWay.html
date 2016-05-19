@@ -1872,8 +1872,8 @@ void loop() {
 				<pre>
 class Runnable {
   public:
-    virtual void setup();
-    virtual void loop();
+    virtual void setup() = 0;
+    virtual void loop() = 0;
 };
 
 class ClickQueue: public Runnable {
@@ -1929,29 +1929,37 @@ void loop() {
 					constructors automagically build a linked list of runnables.
 				</p>
 				<div class="sidebar">
-					We have to provide an empty default for
-					<tt>setup</tt>
-					and
-					<tt>loop</tt>
-					, or the compiler complains. Each subclass <em>overrides</em> this
-					definition.
+					It took me a while to discover the 'foo()=0' idiom for pure virtual functions in C++.
+					There are a number of nasty hacks in C++ owing to its history: OO was bolted onto C
+   					originally as a preprocessor. This is one of them.
 				</div>
 				<pre>
 class Runnable {
-  public:
+    static Runnable *headRunnable;
     Runnable *nextRunnable;
-    Runnable();
-    virtual void setup() {}
-    virtual void loop() {}
+
+  public:
+    Runnable() {
+      nextRunnable = headRunnable;
+      headRunnable = this;
+    }
+
+    virtual void setup() = 0;
+    virtual void loop() = 0;
+
+    static void setupAll() {
+      for (Runnable *r = headRunnable; r; r = r->nextRunnable)
+        r->setup();
+    }
+
+    static void loopAll() {
+      for (Runnable *r = headRunnable; r; r = r->nextRunnable)
+        r->loop();
+    }
+
 };
 
-Runnable *headRunnable = NULL;
-
-Runnable::Runnable()
-{
-  nextRunnable = headRunnable;
-  headRunnable = this;
-}
+Runnable *Runnable::headRunnable = NULL;
 </pre>
 				<p>The main section of the sketch now looks like this:</p>
 				<pre>
@@ -1960,13 +1968,11 @@ HeadlampControlButton button(7, headlamp);
 Taillight taillight(6, headlamp, 12);
 
 void setup() {
-  for (Runnable *r = headRunnable; r; r = r->nextRunnable)
-    r->setup();
+  Runnable::setupAll();
 }
 
 void loop() {
-  for (Runnable *r = headRunnable; r; r = r->nextRunnable)
-    r->loop();
+  Runnable::loopAll();
 }
 </pre>
 				<p>
@@ -2023,21 +2029,33 @@ void loop() {
 					and where the arrows go.</p>
 				<p>Anyway. Here again is the complete sketch.</p>
 				<pre>
+
 class Runnable {
-  public:
+    static Runnable *headRunnable;
     Runnable *nextRunnable;
-    Runnable();
-    virtual void setup() {}
-    virtual void loop() {}
+
+  public:
+    Runnable() {
+      nextRunnable = headRunnable;
+      headRunnable = this;
+    }
+
+    virtual void setup() = 0;
+    virtual void loop() = 0;
+
+    static void setupAll() {
+      for (Runnable *r = headRunnable; r; r = r->nextRunnable)
+        r->setup();
+    }
+
+    static void loopAll() {
+      for (Runnable *r = headRunnable; r; r = r->nextRunnable)
+        r->loop();
+    }
+
 };
 
-Runnable *headRunnable = NULL;
-
-Runnable::Runnable()
-{
-  nextRunnable = headRunnable;
-  headRunnable = this;
-}
+Runnable *Runnable::headRunnable = NULL;
 
 class ClickQueue: public Runnable {
     const byte pin;
@@ -2248,14 +2266,13 @@ Headlamp headlamp(10, 11);
 HeadlampControlButton button(7, headlamp);
 Taillight taillight(6, headlamp, 12);
 
+
 void setup() {
-  for (Runnable *r = headRunnable; r; r = r->nextRunnable)
-    r->setup();
+  Runnable::setupAll();
 }
 
 void loop() {
-  for (Runnable *r = headRunnable; r; r = r->nextRunnable)
-    r->loop();
+  Runnable::loopAll();
 }
 </pre>
 			</div>
