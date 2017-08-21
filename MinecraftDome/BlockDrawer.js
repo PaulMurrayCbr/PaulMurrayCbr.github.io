@@ -17,22 +17,18 @@ function BlockDrawer(app, displayController) {
   this.showingLines = false;
   this.showingMc = false;
   
-  // for each surface point, maintain a Vector3 for it
-  this.pointVec = new Map();
   // all grid lines at x = p.x
   this.xline = new Map();
   // all grid lines at z = p.z
   this.zline = new Map();
   
-  this.mcColumns = new Map();
-  this.mcComputed = new Map(); // for purposes of outputting the result
-  
   this.isJoinFaces = false;
   
   this.fullRenderTimeMs = 0;
+  
+  // I use push and pop to reuse blocks
+  this.mcBlockCache = [];
 }
-
-
 
 BlockDrawer.prototype.init = function() {
   this.container = this.drawer.offsetter;
@@ -41,15 +37,27 @@ BlockDrawer.prototype.init = function() {
 }
 
 BlockDrawer.prototype.reset = function() {
-  this.pointVec.clear();
   this.xline.clear();
   this.zline.clear();
-  // this.mcColumns.clear();
   
   while(this.lineContainer.children.length >0) this.lineContainer.remove(this.lineContainer.children[0]);
-  while(this.mcContainer.children.length >0)
-  this.mcContainer.remove(this.mcContainer.children[0]);
-  this.mcColumns.clear();
+  while(this.mcContainer.children.length >0) {
+    this.mcContainer.remove(this.mcContainer.children[0]);
+  }
+  
+  for(i in uniquePoint) {
+    for(j in uniquePoint[i]) {
+      var col = uniquePoint[i][j].mcColumn;
+      if(col) {
+        while(col.children.length >0) {
+          var block = col.children[0]
+          col.remove(block);
+          this.mcBlockCache.push(block);
+        }
+      }
+    }
+  }
+
 }
 
 BlockDrawer.prototype.blockShape = new THREE.BoxGeometry(7/8, 7/8, 7/8);
@@ -72,32 +80,31 @@ BlockDrawer.prototype.gridMaterial = new THREE.LineBasicMaterial({ color: 0xFFFF
 
 BlockDrawer.prototype.anchorMesh = function() { return new THREE.Mesh(this.anchorShape, this.anchorMaterial); }
 
-BlockDrawer.prototype.mcBlockMesh = function() { return new THREE.Mesh(this.blockShape, this.mcMaterial); }
-
-BlockDrawer.prototype.getPointVec = function(p) {
-  if(!this.pointVec.has(p)) {
-    var v = new THREE.Vector3(p.x, 0, p.z);
-    this.pointVec.set(p, v);
-  }
-  return this.pointVec.get(p);  
+BlockDrawer.prototype.mcBlockMesh = function() { 
+  var mesh = this.mcBlockCache.pop();
+  if(mesh) 
+    return mesh;
+  else
+    return new THREE.Mesh(this.blockShape, this.mcMaterial); 
 }
 
 BlockDrawer.prototype.getMcColumn = function(p) {
-  if(!this.mcColumns.has(p)) {
+
+  if(!p.mcColumn) {
     var g = new THREE.Group();
     g.position.x = p.x;
     g.position.z = p.z;
-    this.mcColumns.set(p, g);
+    p.mcColumn = g;
   }
-  return this.mcColumns.get(p);  
+  return p.mcColumn;  
 }
 
 BlockDrawer.prototype.getMcComputed = function(p) {
-  if(!this.mcComputed.has(p)) {
+  if(!p.mcComputed) {
     var o = {x: p.x, z: p.z, maxX: 0, minY: 0};
-    this.mcComputed.set(p, o);
+    p.mcComputed = o;
   }
-  return this.mcComputed.get(p);  
+  return p.mcComputed;  
 }
 
 BlockDrawer.prototype.surfaceUpdateAll = function() {
@@ -106,10 +113,6 @@ BlockDrawer.prototype.surfaceUpdateAll = function() {
   var startRender = new Date().getTime();
   
   var c = this;
-  this.app.blocks.forEach(function (p) {
-    c.getPointVec(p).y = c.app.getY(p);
-  });
-  
   if(this.showingMc) {
     this.app.blocks.forEach(function (p) {
       c.rebuildMcColumn(p);
@@ -149,7 +152,7 @@ BlockDrawer.prototype.rebuildXline = function(x) {
       if(!thegeom) {
         thegeom = new THREE.Geometry();
       }
-      thegeom.vertices.push(this.getPointVec(p));
+      thegeom.vertices.push(p);
     }
     else {
       if(thegeom) {
@@ -183,7 +186,7 @@ BlockDrawer.prototype.rebuildZline = function(z) {
       if(!thegeom) {
         thegeom = new THREE.Geometry();
       }
-      thegeom.vertices.push(this.getPointVec(p));
+      thegeom.vertices.push(p);
     }
     else {
       if(thegeom) {
@@ -206,8 +209,11 @@ BlockDrawer.prototype.rebuildZline = function(z) {
 
 BlockDrawer.prototype.rebuildMcColumn = function(p) {
   var col = this.getMcColumn(p);
+
   while(col.children.length > 0) {
-    col.remove(col.children[0]);
+    var block = col.children[0]
+    col.remove(block);
+    this.mcBlockCache.push(block);
   }
   
   if(!this.app.blocks.has(p)) {
@@ -217,27 +223,27 @@ BlockDrawer.prototype.rebuildMcColumn = function(p) {
   
   this.mcContainer.add(col);
   
-  var thisY = this.app.getY(p);
+  var thisY = p.y;
   var maxY = thisY;
   var minY = thisY;
   
   if(this.app.blocks.has(up(p.x+1,p.z))) {
-    var y = (this.app.getY(up(p.x+1,p.z)) + thisY) /2;
+    var y = (up(p.x+1,p.z).y + thisY) /2;
     maxY = Math.max(maxY, y);
     minY = Math.min(minY, y);
   }
   if(this.app.blocks.has(up(p.x-1,p.z))) {
-    var y = (this.app.getY(up(p.x-1,p.z)) + thisY) /2;
+    var y = (up(p.x-1,p.z).y + thisY) /2;
     maxY = Math.max(maxY, y);
     minY = Math.min(minY, y);
   }
   if(this.app.blocks.has(up(p.x,p.z+1))) {
-    var y = (this.app.getY(up(p.x,p.z+1)) + thisY) /2;
+    var y = (up(p.x,p.z+1).y + thisY) /2;
     maxY = Math.max(maxY, y);
     minY = Math.min(minY, y);
   }
   if(this.app.blocks.has(up(p.x,p.z-1))) {
-    var y = (this.app.getY(up(p.x,p.z-1)) + thisY) /2;
+    var y = (up(p.x,p.z-1).y + thisY) /2;
     maxY = Math.max(maxY, y);
     minY = Math.min(minY, y);
   }
@@ -309,7 +315,6 @@ BlockDrawer.prototype.surfaceUpdate = function(p, added) {
 }
 
 BlockDrawer.prototype.surfaceUpdateY = function(p) {
-  this.getPointVec(p).y = this.app.getY(p);
   if(this.showingMc) {
     this.rebuildMcColumn(p);
   }
