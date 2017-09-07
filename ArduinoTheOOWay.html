@@ -1,7 +1,7 @@
 <html>
 <head>
 <title>Arduino the Object Way</title>
-
+ <meta charset="UTF-8">
 <style type="text/css">
 body {
 	background: lightgray;
@@ -54,7 +54,7 @@ pre {
 					<ol>
 						<li><a href="#TheProblem">The Problem</a></li>
 						<li><a href="#TheOOWay">The Object Oriented Way</a></li>
-						<li><a href="#WhatIsAnObject">What is an Object?</a></li>
+						<li><a href="#WhatIsAnObject">What is an Object?</a> (if the intro is tl;dr, then start here 😃)</li>
 					</ol></li>
 
 				<li>Part I - the headlamp and control button
@@ -95,6 +95,8 @@ pre {
 					commercially, spurred by the introduction of OO features to
 					existing languages, such as C++, and by new languages and platforms
 					such as Java</p>
+				<p>Ok, that was a total lie, too. The truth is: I learned Java back in the late 90's
+					and got myself a java job in 2000 or so. And that was when I personally started doing this stuff.</p>
 				<p>Object oriented programming is part of a progression in
 					language design over the last 50 years:</p>
 				<div class="sidebar">
@@ -111,11 +113,15 @@ pre {
 					<li>Block-structured languages</li>
 					<li>Object-oriented languages</li>
 				</ol>
-				<p>At each stage in this progression, the nitty-gritty details
-					of the previous stage have been wrapped, hidden. This allows a
-					programmer to make more complex things, because at each stage of
-					programming there is less to think about, fewer balls to keep in
-					the air.</p>
+				<p>At each stage in this progression, the new programming languages provide constructs
+that "wrap" blocks of code that you had to write in the old one. Assembler macros wrap chunks of assembler. Compiled languages
+such as Fortran did the grunt work of converting expressions into assembler. "Fortran" is a shortening of "formula translation": the new
+thing was that a compiler would turn "a * (b + c)" into machine code. Block-structured languages replaced the usual idioms for
+flow of control with "if" and "while" statements, which Wirth proved mathematically was sufficient to do anything that you could do with GOTO.
+Functions and subroutines and the idea of a "stack" &hellip; well, that had been around for a long time - there's support for it on the chip. But "functions" are a formalisation of it.
+</p>
+<p>At each stage of the progression it becomes easier to make more complex things. The features of the language mean that
+there's fewer balls in the air as you code. Once you write a function and get it right, you no longer need to think about what is in that function - you just use it for what it <em>does</em>. Another very important feature is that this isolation of chunks of code makes it much easier for teams of programmers to build something.</p>
 				<p>Arduino programming - at least, what you see on the Arduino
 					message boards - seems to be stuck at step 3. But OO coding has a
 					great deal to offer in terms of making Arduino code simpler and
