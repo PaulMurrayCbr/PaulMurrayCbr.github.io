@@ -1053,8 +1053,8 @@ class Button {
     unsigned long buttonDownMs;
 
   protected:
-    virtual void shortClick();
-    virtual void longClick();
+    virtual void shortClick() = 0;
+    virtual void longClick() = 0;
 
   public:
     Button(byte attachTo) :
@@ -1314,8 +1314,8 @@ class Button {
     unsigned long buttonDownMs;
 
   protected:
-    virtual void shortClick();
-    virtual void longClick();
+    virtual void shortClick() = 0;
+    virtual void longClick() = 0;
 
   public:
     Button(byte attachTo) :
@@ -1708,8 +1708,8 @@ class Button {
     unsigned long buttonDownMs;
 
   protected:
-    virtual void shortClick();
-    virtual void longClick();
+    virtual void shortClick() = 0;
+    virtual void longClick() = 0;
 
   public:
     Button(byte attachTo) :
@@ -2183,8 +2183,8 @@ class Button: public Runnable {
     unsigned long buttonDownMs;
 
   protected:
-    virtual void shortClick();
-    virtual void longClick();
+    virtual void shortClick() = 0;
+    virtual void longClick() = 0;
 
   public:
     Button(byte attachTo) :
