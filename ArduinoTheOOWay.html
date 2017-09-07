@@ -52,9 +52,9 @@ pre {
 			<ol>
 				<li><a href="#Introduction">Introduction</a>
 					<ol>
-						<li><a href="#TheProblem">The Problem</a></li>
 						<li><a href="#TheOOWay">The Object Oriented Way</a></li>
-						<li><a href="#WhatIsAnObject">What is an Object?</a> (if the intro is tl;dr, then start here 😃)</li>
+						<li><a href="#WhatIsAnObject">What is an Object?</a></li>
+						<li><a href="#TheProblem">The Example Problem</a> (if the intro is tl;dr, then start here 😃)</li>
 					</ol></li>
 
 				<li>Part I - the headlamp and control button
@@ -144,60 +144,6 @@ there's fewer balls in the air as you code. Once you write a function and get it
 					<tt>int</tt>
 					.
 				</p>
-			</div>
-
-			<div class="section" id="TheProblem">
-				<a name="TheProblem"></a>
-				<h3>The Problem</h3>
-				<p>In the code that is sometimes posted to the Arduino message
-					boards, things start to get messy when coders are having to deal
-					with several independent devices, which is to say clusters of pins
-					- input and output.</p>
-				<div class="sidebar">
-					<p>The other symptom of a need for an OO approach is when a
-						post appears on the board with the title "Need help combining two
-						codes into one code! Urgent!"</p>
-				</div>
-				<p>
-					One example is here: <a
-						href="http://forum.arduino.cc/index.php?topic=367748.0">#367748
-						- Reading length of button-press</a>.
-				</p>
-				<p>The OP has a bike headlamp. this headlamp has a button that
-					you can press 5 times to cycle through 5 output settings, and a
-					power switch. the OP would like to have one button to control it. A
-					long click should turn the lamp on and off, and a short click
-					should cycle the brighness. Furthermore, when the lamp is turned
-					on, the OP would like the arduino to cycle the light up to its
-					previous level of brightness. The outputs to cycle the lamp should
-					be pulses with a duration of 100ms, separated by 100ms. The output
-					to turn the lamp on and off should simply be HIGH/LOW on a digital
-					out.</p>
-				<p>
-					Simple stuff - you would think. But the output clicks to cycle the
-					lamp up to a level of brightness take time. What happens if there's
-					a short click <em>while</em> this is happening? A long click? How
-					do the timing of the input clicks on the controller button interact
-					with the timing of the output to the lamp? Oh, and there should be
-					a 50ms debounce delay on the button, too.
-				</p>
-				<p>
-					What happens is that people try to code this up by having long
-					chains of nested
-					<tt>if</tt>
-					statements, trying to account for all the possibilities. This never
-					works out, because the number of possibilities explodes
-					combinatorially. These sketches also tend to have a rat's nest of
-					variables declared at the top.
-				</p>
-				<p>Let's add something to the OP's sketch - a tail light and a
-					brake sensor. If the headlamp is on, then the tail light should
-					flash intermittently (100ms every second). The tail light should
-					also shine continuously if the brakes are on.</p>
-				<p>Adding this to a sketch structured in the usual way people
-					attempt to write these things - you'd just give up. But if you code
-					things the Object Oriented way, it becomes easy. Easier, anyway.
-					Do-able.</p>
 			</div>
 
 			<div class="section" id=""TheOOWay"">
@@ -305,6 +251,62 @@ there's fewer balls in the air as you code. Once you write a function and get it
 					managing asynchonous, event-driven interfaces to sketches much
 					easier and more natural to do. Blink-without-delay for everything.</p>
 			</div>
+
+
+			<div class="section" id="TheProblem">
+				<a name="TheProblem"></a>
+				<h3>The Example Problem</h3>
+				<p>In the code that is sometimes posted to the Arduino message
+					boards, things start to get messy when coders are having to deal
+					with several independent devices, which is to say clusters of pins
+					- input and output.</p>
+				<div class="sidebar">
+					<p>The other symptom of a need for an OO approach is when a
+						post appears on the board with the title "Need help combining two
+						codes into one code! Urgent!"</p>
+				</div>
+				<p>
+					One example is here: <a
+						href="http://forum.arduino.cc/index.php?topic=367748.0">#367748
+						- Reading length of button-press</a>.
+				</p>
+				<p>The OP has a bike headlamp. this headlamp has a button that
+					you can press 5 times to cycle through 5 output settings, and a
+					power switch. the OP would like to have one button to control it. A
+					long click should turn the lamp on and off, and a short click
+					should cycle the brighness. Furthermore, when the lamp is turned
+					on, the OP would like the arduino to cycle the light up to its
+					previous level of brightness. The outputs to cycle the lamp should
+					be pulses with a duration of 100ms, separated by 100ms. The output
+					to turn the lamp on and off should simply be HIGH/LOW on a digital
+					out.</p>
+				<p>
+					Simple stuff - you would think. But the output clicks to cycle the
+					lamp up to a level of brightness take time. What happens if there's
+					a short click <em>while</em> this is happening? A long click? How
+					do the timing of the input clicks on the controller button interact
+					with the timing of the output to the lamp? Oh, and there should be
+					a 50ms debounce delay on the button, too.
+				</p>
+				<p>
+					What happens is that people try to code this up by having long
+					chains of nested
+					<tt>if</tt>
+					statements, trying to account for all the possibilities. This never
+					works out, because the number of possibilities explodes
+					combinatorially. These sketches also tend to have a rat's nest of
+					variables declared at the top.
+				</p>
+				<p>Let's add something to the OP's sketch - a tail light and a
+					brake sensor. If the headlamp is on, then the tail light should
+					flash intermittently (100ms every second). The tail light should
+					also shine continuously if the brakes are on.</p>
+				<p>Adding this to a sketch structured in the usual way people
+					attempt to write these things - you'd just give up. But if you code
+					things the Object Oriented way, it becomes easy. Easier, anyway.
+					Do-able.</p>
+			</div>
+
 
 			<h2>Part I - the headlamp and control button</h2>
 
