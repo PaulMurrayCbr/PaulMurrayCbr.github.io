@@ -1028,7 +1028,20 @@ class Headlamp {
 					turn it off and on; and when the lamp is turned on there's a series
 					of clicks to bring it up to the previous level of brightness.</p>
 				<p>Job done. Well - there's some refinements to make.</p>
+
+			<div id="anAside" style="margin-left: 2em; font-size: 80%;">
+				<a name="anAside"></a>
+				<h4>An aside</h4>
+<p>
+Re-reading this after having not visited for a few months, there's something worth noting in this section. The comment "now that we have a thing that can click the clicky thing". I don't say "I have a function" to do it or "come code" to do it. I have a thingy to do it. 
+</p>
+<p>
+When you code the OO way, once you have built an object you proceed to think of it as a black box. It's like plugging an IC into a circuit. None of the code in <tt>Headlamp</tt> "thinks" about <tt>brightnessClicker</tt> in terms of pins, timings, internal state. It's a <tt>ClickQueue</tt>. It knows how to click, you can add as many clicks to it as you want, and you can at any time cancel all the clicks. And that's all that  <tt>Headlamp</tt> knows about it. Which is good. The whole point of the exercise is that once you have written <tt>ClickQueue</tt> you can unload from your current train-of-thought all the design you did about <em>how</em> it works, and all you need to care about from here on in is <em>what it does</em>.
+</p>
+</div>
+
 			</div>
+
 
 			<div class="section" id="buttonWithInheritance">
 				<a name="buttonWithInheritance"></a>
@@ -1499,7 +1512,7 @@ void loop() {
 					knowing about it. This could put the object into an invalid state.
 					YOu would not do this if you were writing a library class, meant to
 					be used by other people.</p>
-				<p>But in this case, I know what I'm doing. I need the taillight
+				<p>But in this case, it's just me personally writing this thing. So - meh. I need the taillight
 					to hold a reference to a headlamp, and I actually don't need the
 					'flashing' variable at all.</p>
 				<p>So, the variables at the top of the headlamp class now look
