@@ -274,7 +274,7 @@ there's fewer balls in the air as you code. Once you write a function and get it
 					you can press 5 times to cycle through 5 output settings, and a
 					power switch. the OP would like to have one button to control it. A
 					long click should turn the lamp on and off, and a short click
-					should cycle the brighness. Furthermore, when the lamp is turned
+					should cycle the brightness. Furthermore, when the lamp is turned
 					on, the OP would like the arduino to cycle the light up to its
 					previous level of brightness. The outputs to cycle the lamp should
 					be pulses with a duration of 100ms, separated by 100ms. The output
@@ -585,13 +585,13 @@ void loop() {
 				<a name="step2"></a>
 				<h3>Step 2 - the light.</h3>
 				<p>Next step is the light controller. It has two outputs - a
-					power on/of and a brighness cycle. The brightness cycler switch
+					power on/of and a brightness cycle. The brightness cycler switch
 					needs pauses between clicks. For purposes of my demo, I will make
 					the pauses long: a 250ms on and a 750ms off.</p>
 				<p>
 					The controller needs two inputs - power on/off and brightness
 					cycle. Our problem is: what happens if things happen <em>while</em>
-					the brighness is cycling?
+					the brightness is cycling?
 				</p>
 				<p>I'll over-engineer this a little and make the brightness
 					cycle a sub-object. It has two input events: a "cycle by one" and a
@@ -860,7 +860,7 @@ class Headlamp {
     void powerToggle() {
     }
 
-    void brighnessClick() {
+    void brightnessClick() {
     }
 
 } headlamp(10, 11);
@@ -872,7 +872,7 @@ class Headlamp {
           // short click
           // TEST BY TOGGLING PIN 8
           digitalWrite(8, !digitalRead(8));
-          <b>headlamp.brighnessClick();</b>
+          <b>headlamp.brightnessClick();</b>
         }
         else  {
           // long click
@@ -902,10 +902,10 @@ void loop() {
 </pre>
 				<p>Now, at this point I want to think about pins. I want to
 					think of the headlamp as a single object, with a power output pin
-					and a brightness click oputput pin. But the brighness pin needs to
+					and a brightness click output pin. But the brightness pin needs to
 					be operated by a ClickQueue. What I have will kinda work, because
-					both the click queue and the headlamp ar hooed to pin 11, but
-					that's the wrong way to go about things: a pin sould be "owned" by
+					both the click queue and the headlamp are listening to pin 11, but
+					that's the wrong way to go about things: a pin should be "owned" by
 					only one object.</p>
 				<p>
 					So what I am going to do is to build a compound object by <u>composition</u>.
@@ -916,7 +916,7 @@ void loop() {
 					<tt>Headlamp</tt>
 					class needs to have the the
 					<tt>ClickQueue</tt>
-					classinside it. Instead, it means that the
+					class inside it. Instead, it means that the
 					<tt>Headlamp</tt>
 					class has an <u>instance</u> of the
 					<tt>ClickQueue</tt>
@@ -946,13 +946,13 @@ class Headlamp {
     void powerToggle() {
     }
 
-    void brighnessClick() {
+    void brightnessClick() {
     }
 
 } headlamp(10, 11);
 </pre>
 				<p>
-					Because the brighness clicker is <u>part of</u> the headlamp, the
+					Because the brightness clicker is <u>part of</u> the headlamp, the
 					headlamp becomes responsible for setting it up with its
 					constructor, and for calling its
 					<tt>setup</tt>
@@ -1393,7 +1393,7 @@ void loop() {
 					Before I do, stop and think what sort of a challenge this would be
 					with the usual way of coding - one big
 					<tt>loop</tt>
-					method doing the lamp on of, keeping track of the brighness,
+					method doing the lamp on of, keeping track of the brightness,
 					bringning the brightness up when the lamp is turned in, the whole
 					thing. Coding this way - the OO way - means that adding another
 					thingumajig is mostly more of the same.
@@ -1553,7 +1553,7 @@ class Taillight {
 </pre>
 				<p>And once again, it works. A long click turns the headlamp on
 					and starts the flashing taillight. Short clicks advance the
-					brighness. A long click turns everything off. Another long click
+					brightness. A long click turns everything off. Another long click
 					starts the falshing and sends a series of clicks to the brightness
 					to bring it back up to where it was.</p>
 				<p></p>
