@@ -286,8 +286,8 @@ class Filter {
 		}
 
 		// this is just a sanity check
-		const filter = Filter.fromGuess(guess, result);
-		if (!filter.permits(target)) throw { guess: guess, target: target, result: result, filter: filter };
+		// const filter = Filter.fromGuess(guess, result);
+		// if (!filter.permits(target)) throw { guess: guess, target: target, result: result, filter: filter };
 
 		return result;
 	}
