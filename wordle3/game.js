@@ -51,10 +51,10 @@ class Words {
 			if (ww.length === 6) {
 				Words.guessList[Guesses.l6].add(ww);
 			}
-			if(ww.length === 5) {
+			if (ww.length === 5) {
 				Words.guessList[Guesses.l5].add(ww);
 			}
-			
+
 		};
 
 		for (const w of lewd5Words) {
@@ -110,7 +110,7 @@ class PossibleTargets {
 	static #currentGrid = [];
 	static #currentGame;
 
-	static init() {
+	static {
 		GameChange.$gameChange.subscribe(g => {
 			if (g.targetsChanged()) {
 				PossibleTargets.#currentGame = g;
@@ -155,10 +155,11 @@ class PossibleTargets {
 			rxjs.filter(v => f.permits(v)),
 			rxjs.tap(OutputGui.targetListItem),
 			rxjs.reduce(
-				(acc, val) => { 
-					acc.push(val); 
+				(acc, val) => {
+					acc.push(val);
 					OutputGui.targetListBitsRequired(Math.log2(acc.length))
-					return acc; },
+					return acc;
+				},
 				[]
 			),
 			rxjs.takeUntil(PossibleTargets.$targets),
@@ -286,8 +287,8 @@ class Filter {
 		}
 
 		// this is just a sanity check
-		// const filter = Filter.fromGuess(guess, result);
-		// if (!filter.permits(target)) throw { guess: guess, target: target, result: result, filter: filter };
+		const filter = Filter.fromGuess(guess, result);
+		if (!filter.permits(target)) throw { guess: guess, target: target, result: result, filter: filter };
 
 		return result;
 	}
@@ -350,22 +351,15 @@ class Filter {
 }
 
 class Analyzer {
-	static init() {
+	static {
 		const onGameChange = GameChange.$gameChange.pipe(
-			rxjs.map(g => { return { change: 'g', value: g }; })
+			rxjs.map(g => { return { game: g }; })
 		);
 		const onTargetChange = PossibleTargets.$targets.pipe(
-			rxjs.map(t => { return { change: 't', value: t }; })
+			rxjs.map(t => { return { targets: t }; })
 		);
 		rxjs.merge(onGameChange, onTargetChange).pipe(
-			rxjs.scan(
-				(acc, val) => {
-					if (val.change === 'g')
-						return { game: val.value, targets: acc.targets };
-					else
-						return { game: acc.game, targets: val.value };
-				}
-				, { game: null, targets: [] }
+			rxjs.scan((acc, val) => Object.assign(acc, val), { game: null, targets: [] }
 			)
 		).subscribe(v => Analyzer.analyze(v.game, v.targets));
 	}
@@ -389,7 +383,7 @@ class Analyzer {
 		rxjs.from(asyncof(guesses)).pipe(
 			rxjs.tap(v => OutputGui.analysisStatus(v + " " + ++guessesDone + "/" + guesses.size)),
 			rxjs.map(guess =>
-				rxjs.from(asyncof(targets, 500)).pipe(
+				rxjs.from(asyncof(targets, 100)).pipe(
 					rxjs.reduce(
 						(partitions, target) => {
 							const result = Filter.resultOf(guess, target);
@@ -415,7 +409,7 @@ class Analyzer {
 			rxjs.mergeAll(),
 			rxjs.scan((acc, val) => {
 				if (acc.list.length === 5 && (acc.list[4].entropy >= val.entropy)) {
-					return { change: false, list: acc.list};
+					return { change: false, list: acc.list };
 				} else {
 					acc.list.push(val);
 					acc.list.sort((a, b) => b.entropy - a.entropy);
@@ -431,22 +425,17 @@ class Analyzer {
 			rxjs.takeUntil(PossibleTargets.$targets),
 			rxjs.finalize(() => OutputGui.analysisStatus(''))
 		).subscribe(OutputGui.showBestGuesses)
-
 	}
-
 }
 
-async function* asyncof(o, nn) {
-	if(!nn) nn = 31;
-	let n = 0;
+async function* asyncof(o, blocksize) {
+	if (!blocksize) blocksize = 31;
+	let n = blocksize;
 	for (i of o) {
-		if (++n == nn) {
-			n = 0;
+		if (!--n) {
+			n = blocksize;
 			await new Promise(callback => window.setTimeout(callback, 0));
 		}
 		yield i;
 	}
 }
-
-PossibleTargets.init();
-Analyzer.init();

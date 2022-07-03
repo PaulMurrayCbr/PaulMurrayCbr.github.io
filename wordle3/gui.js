@@ -1,6 +1,6 @@
 /**
- * This file should be the only javascript that knows about how our screen is arranged and what the ids and classes
- * of the componets are.
+ * This file should be the only javascript that knows about how our screen is arranged 
+ * and what the ids and classes of the components are.
  */
 
 $(() => { GameOptionsGui.init(); })
@@ -182,10 +182,7 @@ class OutputGui {
 				$('#best-guess-analysis').append(b);
 			}
 		}
-		
 	}				
-	
-	
 }
 
 

@@ -1,5 +1,9 @@
 /**
- * 
+ * This file contains code that deals with the selection of which game we are playing:
+ * lewdle, nyt wordle, hard mode yes/no, etc.
+ *
+ * Code interested in such things should subscribe to 
+ * 		GameChange.$gameChange: Observable<GameChange> 
  */
 
 class Games {
@@ -19,15 +23,9 @@ class Guesses {
 }
 
 class GameChange {
-	static #currentgame = new GameChange(
-		Games.none,
-		Guesses.none,
-		false,
-		Games.none,
-		Guesses.none,
-		false);
+	static $gameChange = new rxjs.Subject();
 
-	static $gameChange = new rxjs.Subject(GameChange.#currentgame);
+	static #pushGameChange = new rxjs.Subject();
 
 	static #validCombos = {
 		[Games.none]: { [Guesses.none]: true },
@@ -36,25 +34,27 @@ class GameChange {
 		[Games.nyt]: { [Guesses.none]: true, [Guesses.nytC]: true, [Guesses.nytA]: true }
 	};
 
-	prevgame;
-	prevguesses;
-	prevhardmode;
-	game;
-	guesses;
-	hardmode;
+	static {
+		let startgame = new GameChange(null, Games.none, Guesses.none, false);
+		startgame.prev = startgame; // an inital loop
 
-	constructor(prevgame, prevguesses, prevhardmode, game, guesses, hardmode) {
-		this.prevgame = prevgame;
-		this.prevguesses = prevguesses;
-		this.prevhardmode = prevhardmode;
-		this.game = game;
-		this.guesses = guesses;
-		this.hardmode = hardmode;
+		GameChange.#pushGameChange.pipe(
+			rxjs.scan((prev, next) => {
+				// we could leave this to create a memento chain, but 
+				// there's no 'back' functionality, so why leave 
+				// things laying about?
+				prev.prev = null;
+				// but we want to tie the new one to the old one so that 'whatschanged?' works
+				// we could use a new valueobject, but there's no need
+				next.prev = prev;
+				return next;
+			}, startgame)
+		).subscribe(GameChange.$gameChange);
 	}
 
 	static set(game, guesses, hardmode) {
 
-		// enforce valid combinations
+		// enforce valid combinations. Should never happen if the UI is behavng itself.
 
 		if (!GameChange.#validCombos[game]) {
 			game = Games.none;
@@ -66,30 +66,34 @@ class GameChange {
 			console.log(guesses.toString() + " is not a valid guess selection for " + game.toString());
 		}
 
-		GameChange.#currentgame = new GameChange(
-			this.#currentgame.game,
-			this.#currentgame.guesses,
-			this.#currentgame.hardmode,
-			game,
-			guesses,
-			hardmode
-		);
-
-		GameChange.$gameChange.next(GameChange.#currentgame)
+		GameChange.#pushGameChange.next(new GameChange(null, game, guesses, hardmode));
 	}
 
-	targetsChanged() { return this.game !== this.prevgame; }
+	/////// Instance variables and methods 
+
+	prev;
+	game;
+	guesses;
+	hardmode;
+
+	constructor(prev, game, guesses, hardmode) {
+		this.prev = prev;
+		this.game = game;
+		this.guesses = guesses;
+		this.hardmode = hardmode;
+	}
+
+	targetsChanged() { return this.game !== this.prev.game; }
 
 	guessesChanged() {
-		return this.guesses !== this.prevguesses
-			|| this.hardmode !== this.prevhardmode;
+		return this.guesses !== this.prev.guesses
+			|| this.hardmode !== this.prev.hardmode;
 	}
 
 	toString() {
 		return 'GameChange '
-			+ this.prevgame.toString() + '/' + this.prevguesses.toString() + '/' + this.prevhardmode
+			+ this.prev
 			+ " -> "
 			+ this.game.toString() + '/' + this.guesses.toString() + '/' + this.hardmode;
 	}
 }
-
