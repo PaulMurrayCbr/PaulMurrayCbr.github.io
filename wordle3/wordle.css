@@ -1,0 +1,101 @@
+@charset "UTF-8";
+
+/*
+table {
+	border: thin solid red;
+}
+thead {
+	border: thin solid yellow;
+}
+tbody {
+	border: thin solid yellow;
+}
+tfoot {
+	border: thin solid yellow;
+}
+tr {
+	border: thin solid red;
+}
+th {
+	border: thin solid blue;
+}
+td {
+	border: thin solid green;
+}*/
+body {
+	background: #404040;
+	color: #E0E0E0;
+	font-family: sans-serif;
+}
+
+.templates {
+	border: thin dashed lightgray;
+	margin: 2px 0;
+	display: none;
+}
+
+.templates>* {
+	border: thin dashed lightgray;
+	margin: 2px 0;
+}
+
+h1 {
+	font-size: 1.5em;
+}
+
+h2 {
+	font-size: 1.2em;
+	margin-bottom: 0;
+}
+
+p {
+	font-size: 80%;
+	margin: .5em 0;
+}
+
+.info {
+	margin: 1em 2em;
+	padding: 0 1em;
+	border: thin solid #E0E0E0;
+	display: none;
+}
+
+#blocktable thead {
+	font-size: 80%;
+}
+
+#blocktable input {
+	font-family: monospace;
+	font-size: 125%;
+}
+
+
+#blocktable .buttontd button {
+	width: 100%
+}
+
+.hide-to-clear {
+	display: none;
+}
+
+.hilite {
+	font-size: 125%;
+	font-weight: bolder;
+	color: #FFFF40;
+}
+
+#best-guess-analysis .result {
+	font-family: monospace;
+}
+
+a {
+	color: #80E0E0;
+};
+
+a:link {
+	color: #8080F0;
+};
+
+a:visited {
+	color: #E080E0;
+};

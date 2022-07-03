@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Wordle Solver 3</title>
+<link rel="stylesheet" href="wordle.css">
+<!-- jquery and rxjs -->
+<script type="text/javascript" src="jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="rxjs.umd.min.js"></script>
+
+<!-- Word lists -->
+<script type="text/javascript" src="lewd5Words.js"></script>
+<script type="text/javascript" src="lewd6Words.js"></script>
+<script type="text/javascript" src="nytCommonWords.js"></script>
+<script type="text/javascript" src="nytUncommonWords.js"></script>
+
+<!-- Scripts  -->
+<script type="text/javascript" src="wordle.js"></script>
+<script type="text/javascript" src="gui.js"></script>
+<script type="text/javascript" src="game.js"></script>
+
+
+</head>
+<body>
+
+	<button id="infobutton" style="float: right;">Info</button>
+	<h1>Wordle Solver</h1>
+	<div class="info">
+		<p>This page helps solve wordle puzzles.</p>
+		<p>
+			The solution is based on the idea of Shannon entropy. A solution
+			dictionary is a set of possible solutions that Wordle might choose.
+			Each answer from wordle cuts down the size of that set by eliminating
+			possible solutions, resulting in a <u>solution set</u>.
+		</p>
+		<p>A player may select from a set of allowable guesses. This is
+			not the same as the initial solution dictionary. The NYT permits
+			guesses to be obscure words never used as solutions. 6-character
+			Lewdle permits 5 and 6 letter guesses. And a player may choose "hard
+			mode", where the next guess must match all previous answers,
+			resulting in a much smaller set of allowable guesses.</p>
+		<p>Each potential next guess partitions the solution set into
+			subsets, according to what green/yellow/gray pattern that next guess
+			would give for each possible solution.</p>
+		<p>The "entropy", the "uncertainty" of each subset is proportional
+			to the log of the size of the subset. We usually use log base 2 to
+			give an uncertainty measured in bits. A subset with only one possible
+			solution has the minimum value of zero - no uncertainty, a definite
+			answer. A subset more potential solutions has a greater uncertainty.
+		</p>
+		<p>For a given potential next guess, the important value is the
+			"expected uncertainty". This is a weighted average - the uncertainty
+			of each subset multiplied by the probability of the solution being in
+			that subset. It means "if you used this guess as your next guess, you
+			would probably still need this amount of information to solve the
+			wordle."</p>
+		<p>The best possible result is when each subset has a size of 1,
+			and an uncertainty of 0. This means that this potential next guess
+			completely distinguishes between all possible answers and will
+			definitely give a win on the next turn.</p>
+	</div>
+	<div class="info">
+		<p>The lewdle dictionary is possibly not quite right. This means
+			that the solver may suggest guesses that are not valid words. If
+			lewdle won't accept the best guess, try one of the other suggested
+			guesses.</p>
+		<p>Maybe it's cheating to load the dictionaries, but computing
+			"solve over the space of all possible 5-letter sequences" would take
+			forever, and anyway that's not what humans do.</p>
+	</div>
+	<div class="info">
+		<p>
+			TBH: The main purpose of this page is not to solve Wordle, but to fool
+			about with <a href="https://rxjs.dev/" target="rxjs.dev" >rxjs</a>.
+		</p>
+	</div>
+
+
+	<div id="control">
+		<form id="control-form">
+
+			<div id="game-control">
+				Game: <span class="radioblock"><label for="game-nyt"><input
+						id="game-nyt" type="radio" name="game" value="nyt" checked>
+						NYT</label> </span> <span class="radioblock"><label for="game-l5"><input
+						id="game-l5" type="radio" name="game" value="l5"> Lewdle 5</label>
+				</span> <span class="radioblock"><label for="game-l6"><input
+						id="game-l6" type="radio" name="game" value="l6"> Lewdle 6</label>
+				</span>
+			</div>
+			<div id="guesses-control">
+				<div id="guesses-for-nyt">
+					Guesses: <span class="radioblock"><label
+						for="guess-nyt-common"><input id="guess-nyt-common"
+							type="radio" name="guesses-for-nyt" value="nytC" checked>
+							Common words only</label></span> <span class="radioblock"
+						id="guess-nyt-all-block"> <label for="guess-nyt-all"><input
+							id="guess-nyt-all" type="radio" name="guesses-for-nyt"
+							value="nytA"> All words</label>
+					</span>
+				</div>
+				<div id="guesses-for-l5"></div>
+				<div id="guesses-for-l6">
+					Guesses: </span> <span class="radioblock"><label for="guess-l6"><input
+							id="guess-l6" type="radio" name="guesses-for-l6" value="l6"
+							checked> 6 letter only</label></span> <span class="radioblock"><label
+						for="guess-l56"><input id="guess-l56" type="radio"
+							name="guesses-for-l6" value="l56"> 5 or 6 letter</label> </span>
+				</div>
+			</div>
+			<div id="hard-mode-control">
+				<label for="hard-mode">Hard Mode: <input id="hard-mode"
+					name="hard-mode" type="checkbox"></label>
+			</div>
+
+		</form>
+
+	</div>
+
+
+	<hr width="62%">
+	<h2>Grid</h2>
+
+	<div>
+
+		<p>
+			"Wordle Says" should be entered as a combination of G,Y, and -. For
+			example: <span style="font-family: monospace;">YY-G-</span>
+		</p>
+
+
+		<div class="templates">
+			<table id="block-template">
+				<tr class="block">
+					<td><input class="guess" size="8"></td>
+					<td><input class="response" size="8"></td>
+					<td class="buttontd"><button class="close-button">-</button></td>
+				</tr>
+			</table>
+			<table id="best-guesses-list-template">
+				<tr>
+					<td class="guess"></td>
+					<td class="entropy"></td>
+				</tr>
+			</table>
+			<table id="best-guess-analysis-template">
+				<tr>
+					<td class="result"></td>
+					<td class="list"></td>
+				</tr>
+			</table>
+		</div>
+
+		<table id="blocktable">
+			<thead>
+				<tr>
+					<td>Your Guess</td>
+					<td>Wordle Says</td>
+					<td></td>
+				</tr>
+			</thead>
+			<tbody id="blocks">
+			</tbody>
+			<tfoot>
+				<tr>
+					<td></td>
+					<td></td>
+					<td class="buttontd">
+						<button id="newblock-button">+</button>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+
+	</div>
+
+
+	<hr width="62%">
+
+	<div>
+		<span id="target-list-status" style="float: right;"></span>
+		<h2>Possible Words</h2>
+		<div class="templates">
+			<div id="target-list-item-template">
+				<span class="target-list-item"></span>
+			</div>
+		</div>
+
+		<span id="target-list"></span>
+		<p>
+			<span id="additional-bits-required">0.000</span> additional bits
+			required.
+		</p>
+	</div>
+
+	<hr width="62%">
+
+	<div>
+		<span id="analysis-status" style="float: right;"></span>
+		<h2>Analysis</h2>
+
+		<div class="hide-to-clear solution-found">
+			Solution found! Match is <span id="solution" class="hilite"></span>.
+		</div>
+		<div id="no-solutions" class="hide-to-clear hilite">No
+			solutions.</div>
+		<div id="best-guesses" class="hide-to-clear">
+			<div>
+				Best guess is <span class=" best-guess hilite"></span>.
+			</div>
+			<h2>Best 5 guesses</h2>
+			<table>
+				<tbody id="best-guesses-list" class="empty-to-clear">
+				</tbody>
+			</table>
+			<h2>
+				Best guess (<span class="best-guess"></span>) breakdown
+			</h2>
+			<table>
+				<tbody id="best-guess-analysis" class="empty-to-clear">
+				</tbody>
+			</table>
+		</div>
+
+	</div>
+</body>
+</html>
