@@ -1,0 +1,116 @@
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="responsive.css">
+
+<script src="https://code.jquery.com/jquery-3.6.1.js"
+	integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI="
+	crossorigin="anonymous"></script>
+<script src="https://unpkg.com/rxjs@^7/dist/bundles/rxjs.umd.js"></script>
+
+<script type="text/javascript">
+
+const pages = ['2022-09-15', '2022-09-27', '2022-10-04', '2022-10-15', '2022-10-18'];
+
+const lastPage = pages.length-1;
+
+class Scroller {
+	constructor(n, prev) {
+		this.n = n;
+		this.isnew = !prev || n != prev.n;
+	}
+	
+	first() {
+		return new Scroller(0, this);
+	}
+	last() {
+		return new Scroller(lastPage, this);
+	}
+	prev() {
+		return new Scroller(Math.max(0, this.n-1), this);
+	}
+	next() {
+		return new Scroller(Math.min(lastPage, this.n+1), this);
+	}
+	label() {
+		const d = new Date(pages[this.n]);
+		const locale = navigator.languages && navigator.languages.length
+			    ? navigator.languages[0]
+			    : navigator.language;
+		return d.toLocaleDateString(locale, { dateStyle: 'medium'});	
+	}
+	
+	file() {
+		return pages[this.n] + '.html';
+	}
+	pushToScreen() {
+		if(this.n==0) {
+			$('.needsprev').addClass('disabled');
+		} else {
+			$('.needsprev').removeClass('disabled');
+		}
+		if(this.n==lastPage) {
+			$('.needsnext').addClass('disabled');
+		} else {
+			$('.needsnext').removeClass('disabled');
+		}
+		$('.at').text(this.label());
+	}
+}
+
+$(()=>{
+	rxjs.fromEvent($('.btn'), 'click').pipe(
+		rxjs.map(e => $(e.target).data("nav")),
+		rxjs.startWith('last'),
+		rxjs.scan((acc, v) => acc[v].call(acc), new Scroller()),
+		rxjs.filter(v => v.isnew),
+		rxjs.tap(v => v.pushToScreen()),
+		rxjs.debounceTime(250),
+		rxjs.map(v => 
+			rxjs.from($.get(v.file()))
+				.pipe(rxjs.materialize())
+		),
+		rxjs.switchAll(),
+		rxjs.filter(v => v.kind != 'C'),
+		rxjs.map(v => {
+			switch(v.kind) {
+			case 'N': return v.value;
+			case 'E': return v.error.responseText;
+			}	
+		})
+	)
+	.subscribe(v => {
+		$('#content').empty();
+		$('#content').append(v);
+	});
+});
+
+</script>
+
+</head>
+<body>
+	<div class="navbar" id="navtop">
+		<span> <span data-nav="first" class="btn disabled needsprev">First</span>
+			<span data-nav="prev" class="btn disabled needsprev">Previous</span>
+			<span class="at"></span> <span data-nav="next"
+			class="btn disabled needsnext">Next</span> <span data-nav="last"
+			class="btn disabled needsnext">Last</span>
+		</span>
+	</div>
+
+
+	<div id="content"></div>
+
+	<div class="navbar" id="navbottom">
+		<span> <span data-nav="first" class="btn disabled needsprev">First</span>
+			<span data-nav="prev" class="btn disabled needsprev">Previous</span>
+			<span class="at"></span> <span data-nav="next"
+			class="btn disabled needsnext">Next</span> <span data-nav="last"
+			class="btn disabled needsnext">Last</span>
+		</span>
+	</div>
+
+
+</body>
+</html>

@@ -98,77 +98,6 @@ class Words {
 
 Words.initAll();
 
-/** 
- * This class watches the current dictionary selection and has a method for the gui to call so that the gui
- * can announce that the user has entered some stuff into the wordle grid. When either of these things change,
- * it compiles a new list of possible matching words and announces it on $targets .
- */
-
-class PossibleTargets {
-	static $targets = new rxjs.Subject();
-
-	static #currentGrid = [];
-	static #currentGame;
-
-	static {
-		GameChange.$gameChange.subscribe(g => {
-			if (g.targetsChanged()) {
-				PossibleTargets.#currentGame = g;
-				PossibleTargets.#process();
-			}
-		});
-	}
-
-	/**
-	 * @param grid array of GridItem
-	 */
-	static newGrid(grid) {
-		try {
-			if (grid.length !== PossibleTargets.#currentGrid.length) throw 'len';
-			for (i in grid) {
-				if (grid[i].guess !== PossibleTargets.#currentGrid[i].guess) throw 'guess';
-				if (grid[i].result !== PossibleTargets.#currentGrid[i].result) throw 'rslt';
-			}
-			return;
-		} catch (e) { }
-
-		PossibleTargets.#currentGrid = grid;
-		PossibleTargets.#process();
-
-	}
-
-	static #process() {
-		// clear targets and notify everyone to stop processing
-		PossibleTargets.$targets.next(null);
-
-		const targets = Words.targetList[PossibleTargets.#currentGame.game];
-
-		OutputGui.targetListClear();
-
-		let f = new Filter();
-		for (const g of PossibleTargets.#currentGrid) {
-			f = f.intersection(Filter.fromGridItem(g))
-		}
-
-		rxjs.from(asyncof(targets, 100)).pipe(
-			rxjs.tap(OutputGui.targetListStatus),
-			rxjs.filter(v => f.permits(v)),
-			rxjs.tap(OutputGui.targetListItem),
-			rxjs.reduce(
-				(acc, val) => {
-					acc.push(val);
-					OutputGui.targetListBitsRequired(Math.log2(acc.length))
-					return acc;
-				},
-				[]
-			),
-			rxjs.takeUntil(PossibleTargets.$targets),
-			rxjs.finalize(() => OutputGui.targetListStatus(''))
-		).subscribe(v => PossibleTargets.$targets.next(v));
-
-	}
-}
-
 class GridItem {
 	guess;
 	result;
@@ -197,6 +126,15 @@ class GridItem {
 
 		}
 		return ss;
+	}
+
+	static arraysEqual(a, b) {
+		if (a.length !== b.length) return false;
+		for (const i in a) {
+			if (a[i].guess !== b.guess) return false;
+			if (a[i].result !== b[i].result) return false;
+		}
+		return true;
 	}
 
 }
@@ -350,12 +288,73 @@ class Filter {
 	}
 }
 
+
+
+/** 
+ * This class watches the current dictionary selection and has a method for the gui to call so that the gui
+ * can announce that the user has entered some stuff into the wordle grid. When either of these things change,
+ * it compiles a new list of possible matching words and announces it on $targets .
+ */
+
+class PossibleTargets {
+	static {		
+		rxjs.merge(
+			$gameChange.pipe(
+				rxjs.filter(g => g.targetsChanged()),
+				rxjs.map(ga => { return { game: ga}; } )
+			),
+			$grid.pipe(
+				zapduplicates(GridItem.arraysEqual),
+				rxjs.map(gr => { return { grid: gr }; })
+			)
+		).pipe(
+			rxjs.scan((acc, val) => Object.assign(Object.assign({}, acc), val),
+				{
+					game: new GameChange(null, Games.none, Guesses.none, false),
+					grid: []
+				}
+			)
+		).subscribe(PossibleTargets.#process);
+	}
+
+	static #process(pt) {
+		// clear targets and notify everyone to stop processing
+		$targets.next(null);
+		
+		const targets = Words.targetList[pt.game.game];
+
+		OutputGui.targetListClear();
+
+		let f = new Filter();
+		for (const g of pt.grid) {
+			f = f.intersection(Filter.fromGridItem(g))
+		}
+
+		rxjs.from(asyncof(targets, 100)).pipe(
+			rxjs.tap(OutputGui.targetListStatus),
+			rxjs.filter(v => f.permits(v)),
+			rxjs.tap(OutputGui.targetListItem),
+			rxjs.reduce(
+				(acc, val) => {
+					acc.push(val);
+					OutputGui.targetListBitsRequired(Math.log2(acc.length))
+					return acc;
+				},
+				[]
+			),
+			rxjs.takeUntil($targets),
+			rxjs.finalize(() => OutputGui.targetListStatus(''))
+		).subscribe(v => $targets.next(v));
+
+	}
+}
+
 class Analyzer {
 	static {
-		const onGameChange = GameChange.$gameChange.pipe(
+		const onGameChange = $gameChange.pipe(
 			rxjs.map(g => { return { game: g }; })
 		);
-		const onTargetChange = PossibleTargets.$targets.pipe(
+		const onTargetChange = $targets.pipe(
 			rxjs.map(t => { return { targets: t }; })
 		);
 		rxjs.merge(onGameChange, onTargetChange).pipe(
@@ -421,8 +420,8 @@ class Analyzer {
 			}, { change: true, list: [] }),
 			rxjs.filter(v => v.change),
 			rxjs.map(v => v.list),
-			rxjs.takeUntil(GameChange.$gameChange),
-			rxjs.takeUntil(PossibleTargets.$targets),
+			rxjs.takeUntil($gameChange),
+			rxjs.takeUntil($targets),
 			rxjs.finalize(() => OutputGui.analysisStatus(''))
 		).subscribe(OutputGui.showBestGuesses)
 	}

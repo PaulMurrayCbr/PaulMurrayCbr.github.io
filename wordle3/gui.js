@@ -157,7 +157,7 @@ class GameBlocksGui {
 			grid.push(new GridItem(item.g, item.r));
 		});
 	
-		PossibleTargets.newGrid(grid);
+		$grid.next(grid);
 	}
 	
 }

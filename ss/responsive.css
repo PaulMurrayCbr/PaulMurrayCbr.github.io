@@ -1,0 +1,174 @@
+@charset "UTF-8";
+
+@font-face {
+	font-family: "deadhand";
+	src: url("TreasureMapDeadhand-yLA3.ttf");
+}
+
+@font-face {
+	font-family: "sscurves";
+	src: url("CCTreacherousCurves.otf");
+}
+
+@font-face {
+	font-family: "sscorners";
+	src: url("CCTreacherousCorners.otf");
+}
+
+@font-face {
+	font-family: "jl";
+	src: url("JubileeLight.otf");
+}
+
+@font-face {
+	font-family: "ooc";
+	src: url("NexusSansTF-Italic.otf");
+}
+
+body {
+	background-image: url("back.jpg");
+	color: #204010;
+	font-family: jl;
+	font-weight: normal;
+	font-size: 18;
+}
+
+h1, h2, h3, h4, h5, h6, h7 {
+	font-family: sscurves;
+	font-weight: normal;
+	margin-top: 0;
+	margin-bottom: .25em;
+}
+
+p {
+	margin: .5em 0;
+}
+
+.ooc {
+	font-family: ooc;
+	font-weight: lighter;
+	font-size: smaller;
+	color: #102040;
+	padding: 0 .5em;
+	margin: .5em .5em;
+	border-left: thin solid #102040;
+}
+
+.dream {
+	font-family: deadhand;
+	font-size: larger;
+	color: #402010;
+	font-weight: lighter;
+	margin: 0 1em;
+}
+
+.gameday {
+	font-family: sscorners;
+	width: 100%;
+	text-align: right;
+}
+
+
+.imgright {
+	margin-left: 1em;
+	margin-right: 1em;
+}
+
+.date {
+	font-family: sscorners;
+	float: right;
+}
+
+.xp .date {
+	font-family: sscorners;
+	text-align: center;
+}
+
+.xp .r {
+	text-align: right;
+	width: 3em;
+}
+
+.xp .gt {
+	text-align: right;
+	border-top: thick double #204010;
+	background: rgba(255,240,64,.25)
+	width: 3em;
+}
+
+.xp .total {
+	text-align: right;
+	border-top: thin solid #204010;
+	width: 3em;
+}
+
+.xp .scene {
+	text-decoration: underline;
+}
+
+.xp table {
+	font-size: smaller;
+}
+
+.xp {
+	border: thin solid #204010;
+	padding: .5em .5em;
+}
+
+.navbar {
+	width: 100%;
+	text-align: center;
+	font-family: sscorners;
+	font-size: 24;
+}
+
+.navbar span {
+	display: inline-block;
+}
+
+.btn {
+	border: thin solid #204010;
+	border-radius: .33em;
+	padding: 0 .25em;
+	cursor: pointer;
+}
+
+.btn:hover {
+	border: thin solid #408010;
+	color: #408010;
+}
+
+.btn.disabled {
+	color: #808080;
+	border: thin solid #808080;
+}
+
+#content {
+	margin: 0 .25em;
+}
+
+
+@media (min-width: 600px) {
+	.dream {
+		margin: 0 2em;
+	}
+	.imgright {
+		width: 38%;
+		float: right;
+		margin-left: 1em;
+	}
+	.xp {
+		width: 10em;
+		float: right;
+		border: thin solid #204010;
+		padding: 0 .5em;
+		margin-left: .5em;
+	}
+	.navbar {
+		font-size: 24;
+	}
+	#content {
+		margin: 1em 2em;
+	}
+}
+

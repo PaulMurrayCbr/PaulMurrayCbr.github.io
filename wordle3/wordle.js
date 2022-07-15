@@ -3,7 +3,7 @@
  * lewdle, nyt wordle, hard mode yes/no, etc.
  *
  * Code interested in such things should subscribe to 
- * 		GameChange.$gameChange: Observable<GameChange> 
+ * 		$gameChange: Observable<GameChange> 
  */
 
 class Games {
@@ -23,8 +23,6 @@ class Guesses {
 }
 
 class GameChange {
-	static $gameChange = new rxjs.Subject();
-
 	static #pushGameChange = new rxjs.Subject();
 
 	static #validCombos = {
@@ -49,7 +47,7 @@ class GameChange {
 				next.prev = prev;
 				return next;
 			}, startgame)
-		).subscribe(GameChange.$gameChange);
+		).subscribe($gameChange);
 	}
 
 	static set(game, guesses, hardmode) {
