@@ -90,8 +90,62 @@ class GameBlocksGui {
 		if(this.guess$.val() === this.g && this.response$.val() === this.r) {
 			return;
 		}
-		this.g = this.guess$.val();
-		this.r = this.response$.val();
+		
+		let nextGuess = "";
+		if(this.guess$.val()) {
+			for(let ch of this.guess$.val().toUpperCase()) {
+				if(ch < 'A' || ch > 'Z') {
+					ch = ' ';
+				}
+				nextGuess += ch;
+			}
+		}
+		
+		let nextResponse = "";
+		if(this.response$.val()) {
+			for(let ch of this.response$.val().toUpperCase()) {
+				switch(ch) {
+					case 'Y': case 'G': case '-': break;
+					default: ch = ' '; break;
+				}
+				nextResponse += ch;
+			}
+		}
+		
+		const n = Math.max(this.g.length, this.r.length, nextGuess.length, nextResponse.length)
+		
+		nextGuess = nextGuess.padEnd(n);
+		nextResponse = nextResponse.padEnd(n);
+		const thisGuess = this.g.padEnd(n);
+		const thisResponse = this.r.padEnd(n);
+		
+		
+		// if a guess letter has changed, then the grid has changed if there is a YG- in the esponse
+		// if a response value has changed, then the grid has changed if there is a corresponding a-z in the guess
+		
+		let change = false;
+		
+		for(let i = 0; i< n; i++) {
+			const ngch = nextGuess.charAt(i);
+			const tgch = thisGuess.charAt(i);
+			const nrch = nextResponse.charAt(i);
+			const trch = thisResponse.charAt(i);
+			
+			if(ngch != tgch && (nrch!=' ' || trch != ' ')) {
+				change = true;
+				break;
+			}
+			
+			if(nrch != trch && (ngch!=' ' || tgch != ' ')) {
+				change = true;
+				break;
+			}
+		}
+		
+		if(!change) return;
+		
+		this.g = nextGuess;
+		this.r = nextResponse;
 		
 		GameBlocksGui.#fireChange();
 	}
