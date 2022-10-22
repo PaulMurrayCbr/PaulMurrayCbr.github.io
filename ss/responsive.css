@@ -92,7 +92,7 @@ p {
 .xp .gt {
 	text-align: right;
 	border-top: thick double #204010;
-	background: rgba(255,240,64,.25)
+	background: rgba(255,240,64,.25);
 	width: 3em;
 }
 

@@ -2,6 +2,7 @@
 <head>
 <title>Ultimate Equipment treasure generator</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <!-- 
 	This HTML file is an implementation of the treasure generator in the Paizo's Ultimate Equipment, for the 
 	Pathfinder gaming sysytem. UE is copyright Paizo Publishing, and the data therin is used without permission.
@@ -1039,6 +1040,9 @@
 			lbl.style.margin = '1px';
 			lbl.style.padding = '1px';
 			lbl.style.cursor = 'pointer';
+			lbl.style.display = 'inline-block';
+			lbl.style['border-radius'] = '.33em';
+
 			lbl.onclick = function(event) { 
 				controller(this).selectTreasureType(treasure); 
 			}
