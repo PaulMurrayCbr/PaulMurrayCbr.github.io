@@ -11,6 +11,8 @@
 
 <script type="text/javascript">
 
+$.ajaxSetup({ cache: false });
+
 const pages = ['2022-09-15', '2022-09-27', '2022-10-04', '2022-10-15', '2022-10-18', '2022-10-26'];
 
 const lastPage = pages.length-1;
@@ -60,7 +62,7 @@ class Scroller {
 }
 
 $(()=>{
-	rxjs.fromEvent($('.btn'), 'click').pipe(
+	rxjs.fromEvent($('.btn[data-nav]'), 'click').pipe(
 		rxjs.map(e => $(e.target).data("nav")),
 		rxjs.startWith('last'),
 		rxjs.scan((acc, v) => acc[v].call(acc), new Scroller()),
@@ -86,31 +88,202 @@ $(()=>{
 	});
 });
 
+
+</script>
+
+<style type="text/css">
+#menucontainer {
+	font-size: 20;
+}
+
+#menutoggle {
+	font-family: sans-serif;
+}
+
+#menu {
+	position: absolute;
+	z-index: 1;
+	border: thin solid #204010;
+	left: .5em;
+	background: #F0DC90;
+	padding: .5em;
+	margin: 0;
+	display: none;
+}
+
+.menuitem {
+	cursor: pointer;
+}
+
+.menuitem:hover {
+	background: #F8E498;
+}
+
+.legal {
+	margin: 2em;
+	padding: 1em;
+	font-size: 66%;
+	font-family: serif;
+	background: #E0E0E0;
+	border: thick double #102040;
+	color: #102040;
+}
+
+</style>
+
+<script type="text/javascript">
+
+const $menuSelect = new rxjs.Subject();
+
+$menuSelect.subscribe((page) => {
+	$('.menupage').hide();
+	$('.menupage[data-menupage=\''+page+'\']').show();
+	$('#menu').hide();
+});
+
+$(()=>{
+	rxjs.fromEvent($('#menutoggle'), 'click')
+	.subscribe(e => {
+		if($('#menu').is(":hidden")) 
+			$('#menu').show();
+		else 
+			$('#menu').hide();
+	});
+
+	rxjs.fromEvent($('.menuitem[data-menuitem]'), 'click')
+	.pipe(
+		rxjs.map(e => $(e.target).data('menuitem'))
+	).subscribe($menuSelect);
+
+	rxjs.zip(
+		rxjs.from($.get('party.xml')),
+		rxjs.from($.get('party-to-menu.xsl'))
+	)
+	.subscribe(loadPartyMenu);
+	
+	rxjs.zip(
+		rxjs.from($.get('party.xml')),
+		rxjs.from($.get('party-to-pages.xsl'))
+	)
+	.subscribe(loadPartyPages);
+});
+
+
+function loadPartyMenu(zip) {
+	const [ xml, xsl ] = zip;
+	
+	const xsltProcessor = new XSLTProcessor();
+	
+	xsltProcessor.importStylesheet(xsl);
+	const resultDocument = xsltProcessor.transformToFragment(xml, document);	
+	
+	document.getElementById("menu-character-roster").appendChild(resultDocument)
+	
+	rxjs.fromEvent($('#menu-character-roster .menuitem[data-menuitem]'), 'click')
+	.pipe(
+		rxjs.map(e => $(e.target).data('menuitem'))
+	).subscribe($menuSelect);
+} 
+
+function loadPartyPages(zip) {
+	const [ xml, xsl ] = zip;
+	
+	const xsltProcessor = new XSLTProcessor();
+	
+	xsltProcessor.importStylesheet(xsl);
+	const resultDocument = xsltProcessor.transformToFragment(xml, document);	
+	
+	console.log("result",resultDocument);
+	
+	document.getElementById("characterpages").appendChild(resultDocument)
+	
+	
+}
+
+
+
 </script>
 
 </head>
 <body>
-	<div class="navbar" id="navtop">
-		<span> <span data-nav="first" class="btn disabled needsprev">First</span>
-			<span data-nav="prev" class="btn disabled needsprev">Previous</span>
-			<span class="at"></span> <span data-nav="next"
-			class="btn disabled needsnext">Next</span> <span data-nav="last"
-			class="btn disabled needsnext">Last</span>
-		</span>
+	<div id="menucontainer" style="float: left;">
+		<span id="menutoggle" class="btn">&#9776;</span>
+		<div id="menu">
+			<div class="menuitem" data-menuitem="chronicle">Chronicle</div>
+			<hr/>
+			<div id="menu-character-roster">
+				<!-- this is read from xml -->
+			</div>
+			<hr/>
+			<div class="menuitem" data-menuitem="lorem">Lorem</div>
+		</div>
 	</div>
+	<h1 style="text-align: center;">Serpent's Skull</h1>
 
+	<div class="menupages">
+		<div class="menupage" data-menupage="chronicle">
+			<div class="navbar navbar-font" id="navtop">
+				<span> <span data-nav="first" class="btn disabled needsprev">First</span>
+					<span data-nav="prev" class="btn disabled needsprev">Previous</span>
+					<span class="at"></span> <span data-nav="next"
+					class="btn disabled needsnext">Next</span> <span data-nav="last"
+					class="btn disabled needsnext">Last</span>
+				</span>
+			</div>
 
-	<div id="content"></div>
+			<div id="content"></div>
 
-	<div class="navbar" id="navbottom">
-		<span> <span data-nav="first" class="btn disabled needsprev">First</span>
-			<span data-nav="prev" class="btn disabled needsprev">Previous</span>
-			<span class="at"></span> <span data-nav="next"
-			class="btn disabled needsnext">Next</span> <span data-nav="last"
-			class="btn disabled needsnext">Last</span>
-		</span>
+			<div class="navbar" id="navbottom">
+				<span> <span data-nav="first" class="btn disabled needsprev">First</span>
+					<span data-nav="prev" class="btn disabled needsprev">Previous</span>
+					<span class="at"></span> <span data-nav="next"
+					class="btn disabled needsnext">Next</span> <span data-nav="last"
+					class="btn disabled needsnext">Last</span>
+				</span>
+			</div>
+		</div>
+		
+		<div id="characterpages">
+		</div>
+		
+		<div class="menupage" data-menupage="lorem" style="display: none;">
+
+			<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras
+				eleifend nisi a gravida porta. Maecenas quis nibh volutpat, placerat
+				elit sed, iaculis nulla. Quisque eget velit eu augue faucibus
+				ullamcorper. Praesent dolor magna, suscipit id libero nec, facilisis
+				tincidunt arcu. Cras eleifend neque velit, a porta nisi maximus ac.
+				Mauris tellus neque, dignissim vitae interdum non, sodales in ante.
+				Vestibulum lacinia leo urna, id feugiat ligula fringilla sit amet.</p>
+			<p>Quisque a pellentesque ex. Donec a nibh dui. Ut iaculis
+				sodales odio. Sed non risus maximus, mollis odio sed, posuere
+				lectus. Pellentesque non dui eu nulla consectetur venenatis et vel
+				augue. Sed nec fermentum orci. Suspendisse potenti.</p>
+			<p>Maecenas elementum commodo eleifend. Curabitur sit amet purus
+				porta, fringilla mi in, elementum ipsum. Cras fermentum, mauris id
+				vehicula ullamcorper, mi lacus consectetur elit, ut luctus leo
+				tellus vitae purus. Nullam ullamcorper mi massa, eu mollis lorem
+				iaculis non. Suspendisse in nibh eget purus fermentum elementum non
+				at elit. Etiam sit amet ante ligula. Morbi quis gravida dui, sit
+				amet vestibulum ex. Aliquam auctor odio a neque porttitor, ac varius
+				sapien tristique.</p>
+			<p>Nullam vitae nunc et magna bibendum porta sit amet sed nulla.
+				Pellentesque nec luctus lacus, nec fermentum orci. Maecenas
+				vulputate aliquet libero, non pretium nulla posuere nec. Nam mollis
+				ante nec sollicitudin semper. Mauris vestibulum est ut venenatis
+				lacinia. Maecenas iaculis enim ut malesuada convallis. Maecenas nec
+				faucibus elit. Duis eget justo aliquet nibh venenatis tempus nec
+				porttitor quam. In ut lobortis lacus. Duis sit amet tincidunt orci.
+				Mauris dapibus vitae urna et faucibus.</p>
+			<p>Aenean vel felis metus. Nunc viverra urna non luctus lobortis.
+				Sed a auctor enim, vitae pretium elit. Curabitur rutrum varius
+				pellentesque. In in bibendum nunc, eget auctor arcu. Nulla vitae
+				efficitur nunc. Nam feugiat magna id viverra suscipit. Curabitur
+				pulvinar sodales sem, et auctor ligula ornare quis. Nulla congue
+				lectus sed nunc eleifend ultricies. Sed pellentesque mattis ipsum in
+				convallis. Nullam lacinia et justo nec bibendum.</p>
+		</div>
 	</div>
-
 
 </body>
 </html>
