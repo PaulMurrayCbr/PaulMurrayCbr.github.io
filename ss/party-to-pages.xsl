@@ -242,6 +242,16 @@
 						</tr>
 					</xsl:for-each>
 
+					<xsl:for-each select="saves/allsaves">
+						<tr>
+							<td colspan="7">
+								<xsl:call-template
+									name="do-situational-modifiers" />
+							</td>
+						</tr>
+					</xsl:for-each>
+
+
 				</table>
 
 				<h3>Other Defenses</h3>
@@ -270,7 +280,8 @@
 				<xsl:value-of select="maneuvers/@cmd" />
 				<strong>, (flat-footed): </strong>
 				<xsl:value-of select="maneuvers/@cmdflatfooted" />
-
+							<xsl:call-template
+								name="do-situational-modifiers" />
 
 				<h3>Attacks</h3>
 				<div class='attacks'>
@@ -355,6 +366,13 @@
 <td style="text-align: right;"><xsl:value-of select="@attrbonus"/> </td>
 <td  style="text-align: center;"><xsl:if test="@armorcheck='yes'"><B>!</B></xsl:if></td>
 </tr>
+<xsl:for-each select="situationalmodifiers[@*|*]">
+	<tr>
+		<td colspan="7">
+			<xsl:call-template name="do-situational-modifier" />
+		</td>
+	</tr>
+</xsl:for-each>
 </xsl:for-each>
 
 				</table>
@@ -384,6 +402,27 @@
 				<xsl:call-template name="has-description"/>
 				</div>
 				</xsl:for-each>
+				
+								<xsl:if test="otherspecials/*">
+				<h3>Other Specials</h3>
+				<xsl:for-each select="otherspecials/special">
+				<div class="special">
+				<xsl:value-of select="@name"/>
+				<xsl:call-template name="has-description"/>
+				</div>
+				</xsl:for-each>
+				</xsl:if>
+
+				<h3>Feats</h3>
+				<xsl:for-each select="feats/feat">
+				<div class="feat">
+				<xsl:value-of select="@name"/>
+				(<xsl:value-of select="@categorytext"/>)
+				<xsl:call-template name="has-description"/>
+				</div>
+				</xsl:for-each>
+				
+				
 				<h3>Spells</h3>
 TODO
 				<h3>Magic Items</h3>
@@ -425,6 +464,11 @@ TODO
 
 	<xsl:template name="do-situational-modifiers">
 		<xsl:for-each select="situationalmodifiers">
+			<xsl:call-template name="do-situational-modifier"/>
+		</xsl:for-each>
+	</xsl:template>
+
+	<xsl:template name="do-situational-modifier">
 			<xsl:choose>
 				<xsl:when test="situationalmodifier">
 					<xsl:for-each select="situationalmodifier">
@@ -443,7 +487,6 @@ TODO
 					</div>
 				</xsl:otherwise>
 			</xsl:choose>
-		</xsl:for-each>
 	</xsl:template>
 
 	<xsl:template name="has-description">
