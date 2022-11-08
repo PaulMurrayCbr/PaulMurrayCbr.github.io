@@ -7,7 +7,7 @@ Pathfinder® and associated marks and logos are trademarks of Paizo Inc.®, and 
             <version version="8.9h" primary="8" secondary="9" tertiary="h" build="957"></version>
         </program>
         <localization language="eng" units="imperial"></localization>
-        <character active="yes" characterindex="1" nature="normal" role="pc" relationship="ally" type="Hero" name="Jack Profile" playername="">
+        <character characterindex="1" nature="normal" role="pc" relationship="ally" type="Hero" name="Jack Profile" playername="">
             <race racetext="human" name="human" ethnicity=""></race>
             <alignment name="True Neutral"></alignment>
             <templates summary=""></templates>
@@ -6559,7 +6559,7 @@ A character can also use this ability to influence a magical beast with an Intel
             <settings summary="Advanced Class Guide: Advanced Class Guide; Advanced Player's Guide: Advanced Player's Guide, Advanced Player's Guide Familiars, Advanced Player's Guide Traits, Advanced Player's Guide New Combat Maneuvers; Advanced Race Guide: Advanced Race Guide; Pathfinder Unchained -&gt; Chapter 4: Magic: Scaling Items; Ultimate Campaign -&gt; Ultimate Campaign Character Backgrounds: Unrestricted Traits &amp; Drawbacks; Ultimate Combat: Ultimate Combat; Ultimate Equipment: Ultimate Equipment; Ultimate Intrigue: Ultimate Intrigue; Ultimate Magic: Ultimate Magic, Ultimate Magic Familiars; Bestiary: Bestiary, Bestiary 2, Bestiary 3, Bestiary 5, Bestiary Familiars, Bestiary Free Content, Bonus Bestiary, Villain Codex; Player Companion: Sargava, the Lost Colony, Weapon Master's Handbook; Campaign Setting: Heart of the Jungle, Inner Sea Races, Inner Sea World Guide; Miscellaneous Content: Character Traits Web Enhancement, Core Rulebook Deities, GameMastery Guide; Pathfinder Adventure Paths: Serpent's Skull; Advancement Speed: Medium Advancement; Firearm Availability: Emerging Guns; Experimental Options: Show statblock summary window; Output Options: Hide Ammo (in weapons), Hide Unusable Skills, Show Activated Abilities &amp; Adjustments, Show Feat / Ability Descriptions, Show Hero Portrait, Show Sourcebook Report"></settings>
             <minions></minions>
         </character>
-        <character characterindex="1" nature="normal" role="pc" relationship="ally" type="Hero" name="Voikg Ireverder" playername="">
+        <character active="yes" characterindex="1" nature="normal" role="pc" relationship="ally" type="Hero" name="Voikg Ireverder" playername="">
             <race racetext="dwarf" name="dwarf" ethnicity=""></race>
             <alignment name="Neutral Good"></alignment>
             <templates summary=""></templates>
@@ -6589,7 +6589,7 @@ A character can also use this ability to influence a magical beast with an Intel
             </senses>
             <auras></auras>
             <favoredclasses></favoredclasses>
-            <health hitdice="3d8+6" hitpoints="20" damage="0" nonlethal="0" currenthp="20"></health>
+            <health hitdice="3d8+9" hitpoints="23" damage="0" nonlethal="0" currenthp="23"></health>
             <xp total="4094"></xp>
             <money total="20" pp="0" gp="20" sp="0" cp="0" cn1="0" cn2="0" cn3="0" cn4="0" valuables="0"></money>
             <personal gender="" age="51" hair="" eyes="" skin="">
@@ -6660,7 +6660,7 @@ A character can also use this ability to influence a magical beast with an Intel
             <immunities></immunities>
             <resistances></resistances>
             <weaknesses></weaknesses>
-            <armorclass ac="16" touch="10" flatfooted="16" fromarmor="+4" fromshield="+2" fromdexterity="" fromwisdom="" fromcharisma="" fromsize="" fromnatural="" fromdeflect="" fromdodge="" frommisc="">
+            <armorclass ac="14" touch="10" flatfooted="14" fromarmor="+4" fromshield="" fromdexterity="" fromwisdom="" fromcharisma="" fromsize="" fromnatural="" fromdeflect="" fromdodge="" frommisc="">
                 <situationalmodifiers text="Defensive Training +4: +4 dodge bonus vs. Giants">
                     <situationalmodifier text="+4 dodge bonus vs. Giants" source="Defensive Training +4"></situationalmodifier>
                 </situationalmodifiers>
@@ -6872,7 +6872,7 @@ Special: You can use a rope to haul a character upward (or lower a character) th
 Continued - Core Rulebook, pg. 90</description>
                     <situationalmodifiers text=""></situationalmodifiers>
                 </skill>
-                <skill name="Diplomacy" ranks="1" attrbonus="-1" attrname="CHA" value="3" classskill="yes">
+                <skill name="Diplomacy" ranks="2" attrbonus="-1" attrname="CHA" value="4" classskill="yes">
                     <description>You can use this skill to persuade others to agree with your arguments, to resolve differences, and to gather valuable information or rumors from people. This skill is also used to negotiate conflicts by using the proper etiquette and manners suitable to the problem.
 
 Check: You can change the initial attitudes of nonplayer characters with a successful check. The DC of this check depends on the creature's starting attitude toward you, adjusted by its Charisma modifier. If you succeed, the character's attitude toward you is improved by one step. For every 5 by which your check result exceeds the DC, the character's attitude toward you increases by one additional step. A creature's attitude cannot be shifted more than two steps up in this way, although the GM can override this rule in some situations. If you fail the check by 4 or less, the character's attitude toward you is unchanged. If you fail by 5 or more, the character's attitude toward you is decreased by one step.
@@ -7083,7 +7083,7 @@ An animal can be trained for only one general purpose, though if the creature is
 Continued - Core Rulebook, pg. 97.</description>
                     <situationalmodifiers text=""></situationalmodifiers>
                 </skill>
-                <skill name="Heal" ranks="2" attrbonus="3" attrname="WIS" value="8" classskill="yes" tools="uses">
+                <skill name="Heal" ranks="3" attrbonus="3" attrname="WIS" value="9" classskill="yes" tools="uses">
                     <description>You are skilled at tending to wounds and ailments.
 
 Check: The DC and effect of a Heal check depend on the task you attempt.
@@ -7379,7 +7379,7 @@ Special: If you are invisible, you gain a +40 bonus on Stealth checks if you are
 If you have the Stealthy feat, you get a bonus on Stealth checks (see Chapter 5).</description>
                     <situationalmodifiers text=""></situationalmodifiers>
                 </skill>
-                <skill name="Survival" ranks="0" attrbonus="3" attrname="WIS" value="3">
+                <skill name="Survival" ranks="1" attrbonus="3" attrname="WIS" value="7" classskill="yes">
                     <description>You are skilled at surviving in the wild and at navigating in the wilderness. You also excel at following trails and tracks left by others.
 
 Check: You can keep yourself and others safe and fed in the wild. The table below gives the DCs for various tasks that require Survival checks.
@@ -7442,7 +7442,9 @@ Special: If you are trained in Survival, you can automatically determine where t
 A ranger gains a bonus on Survival checks when using this skill to find or follow the tracks of a favored enemy.
 
 If you have the Self-Sufficient feat, you get a bonus on Survival checks (see Chapter 5).</description>
-                    <situationalmodifiers text=""></situationalmodifiers>
+                    <situationalmodifiers text="Child of Nature: +2 Trait bonus to find food and water">
+                        <situationalmodifier text="+2 Trait bonus to find food and water" source="Child of Nature"></situationalmodifier>
+                    </situationalmodifiers>
                 </skill>
                 <skill name="Swim" ranks="0" attrbonus="0" attrname="STR" value="-6" armorcheck="yes">
                     <description>You know how to swim and can do so even in stormy water.
@@ -7567,8 +7569,17 @@ Normal: When using a weapon with which you are not proficient, you take a –4 p
 Special: All characters except for druids, monks, and wizards are automatically proficient with all simple weapons. They need not select this feat.</description>
                     <featcategory>Combat</featcategory>
                 </feat>
+                <feat name="Toughness" categorytext="">
+                    <description>You have enhanced physical stamina.
+
+Benefit: You gain +3 hit points. For every Hit Die you possess beyond 3, you gain an additional +1 hit point. If you have more than 3 Hit Dice, you gain +1 hit points whenever you gain a Hit Die (such as when you gain a level).</description>
+                </feat>
             </feats>
             <traits>
+                <trait name="Child of Nature (Survival)" categorytext="Religion">
+                    <description>You have been blessed by Gozreh to be as comfortable in the wilderness as you are at home. You gain a +2 trait bonus on Survival checks to find food and water, and a +1 trait bonus on Knowledge (nature) checks. One of these skills (your choice) is always a class skill for you.</description>
+                    <traitcategory>Religion</traitcategory>
+                </trait>
                 <trait name="Mwangi Scholar" categorytext="Serpent's Skull, Campaign">
                     <description>The Mwangi Expanse is one of the richest regions in all of Golarion, and also one of the most mysterious. Despite its history of countless years and its fostering of nameless empires, very little is known of the Mwangi Expanse by outsiders or even natives of the primeval, jungle-covered land. You have long studied the region and its lore, and count yourself among a small handful of genuine experts throughout the Inner Sea. The Jenivere promises to take you to the very subject of your fascination, and you eagerly await firsthand investigation of the deep jungles and cyclopean ruins of Garund’s interior. You gain Polyglot as a bonus language and receive a +1 trait bonus on all Knowledge (history) checks regarding the Mwangi Expanse.
 
@@ -7626,7 +7637,7 @@ You can hurl ordinary stones with a sling, but stones are not as dense or as rou
                 </weapon>
             </ranged>
             <defenses>
-                <armor name="Heavy wooden shield" ac="+2" equipped="yes" quantity="1">
+                <armor name="Heavy wooden shield" ac="+2" quantity="1">
                     <weight text="10 lbs" value="10"></weight>
                     <cost text="7 gp" value="7"></cost>
                     <description>A heavy wooden shield is essentially the same as a heavy steel shield, except that it responds differently to some spells and effects (such as rusting grasp). A druid can use a heavy wooden shield, but not a heavy steel shield.
@@ -7865,7 +7876,7 @@ A cleric who is neither good nor evil and whose deity is neither good nor evil c
             </otherspecials>
             <spellsknown></spellsknown>
             <spellsmemorized>
-                <spell name="Bless (x2)" level="1" class="Cleric" casttime="1 action" range="50 ft." target="" area="the caster and all allies within a 50-ft. burst, centered on the caster" effect="" duration="1 min./level" save="none" resist="yes (harmless)" dc="14" casterlevel="3" componenttext="Verbal, Somatic, Divine Focus" schooltext="Enchantment" subschooltext="Compulsion" descriptortext="Mind-Affecting" savetext="Harmless, None" resisttext="Harmless, Yes" castsleft="2">
+                <spell name="Bless" level="1" class="Cleric" casttime="1 action" range="50 ft." target="" area="the caster and all allies within a 50-ft. burst, centered on the caster" effect="" duration="1 min./level" save="none" resist="yes (harmless)" dc="14" casterlevel="3" componenttext="Verbal, Somatic, Divine Focus" schooltext="Enchantment" subschooltext="Compulsion" descriptortext="Mind-Affecting" savetext="Harmless, None" resisttext="Harmless, Yes" castsleft="1">
                     <description>Bless fills your allies with courage. Each ally gains a +1 morale bonus on attack rolls and on saving throws against fear effects.
 
 Bless counters and dispels bane.</description>
@@ -7876,21 +7887,29 @@ Bless counters and dispels bane.</description>
                     <spellsubschool>Compulsion</spellsubschool>
                     <spelldescript>Mind-Affecting</spelldescript>
                 </spell>
-                <spell name="Create Water" level="0" class="Cleric" casttime="1 action" range="close (25 + 5 ft./2 levels)" target="" area="" effect="up to 2 gallons of water/level" duration="instantaneous" save="none" resist="no" dc="13" casterlevel="3" componenttext="Verbal, Somatic" schooltext="Conjuration" subschooltext="Creation" descriptortext="Water" savetext="None" resisttext="No" unlimited="yes">
-                    <description>This spell generates wholesome, drinkable water, just like clean rain water. Water can be created in an area as small as will actually contain the liquid, or in an area three times as large - possibly creating a downpour or filling many small receptacles. This water disappears after 1 day if not consumed.
-
-Note: Conjuration spells can't create substances or objects within a creature. Water weighs about 8 pounds per gallon. One cubic foot of water contains roughly 8 gallons and weighs about 60 pounds.</description>
-                    <spellcomp>Verbal</spellcomp>
-                    <spellcomp>Somatic</spellcomp>
-                    <spellschool>Conjuration</spellschool>
-                    <spellsubschool>Creation</spellsubschool>
-                    <spelldescript>Water</spelldescript>
-                </spell>
-                <spell name="Detect Poison" level="0" class="Cleric" casttime="1 action" range="close (25 + 5 ft./2 levels)" target="one creature, one object, or a 5-ft. cube" area="" effect="" duration="instantaneous" save="none" resist="no" dc="13" casterlevel="3" componenttext="Verbal, Somatic" schooltext="Divination" subschooltext="" descriptortext="" savetext="None" resisttext="No" unlimited="yes">
-                    <description>You determine whether a creature, object, or area has been poisoned or is poisonous. You can determine the exact type of poison with a DC 20 Wisdom check. A character with the Craft (alchemy) skill may try a DC 20 Craft (alchemy) check if the Wisdom check fails, or may try the Craft (alchemy) check prior to the Wisdom check. The spell can penetrate barriers, but 1 foot of stone, 1 inch of common metal, a thin sheet of lead, or 3 feet of wood or dirt blocks it.</description>
+                <spell name="Guidance" level="0" class="Cleric" casttime="1 action" range="touch" target="creature touched" area="" effect="" duration="1 minute or until discharged" save="Will negates (harmless)" resist="yes" dc="13" casterlevel="3" componenttext="Verbal, Somatic" schooltext="Divination, Void Elemental" subschooltext="" descriptortext="" savetext="Harmless, Will negates" resisttext="Yes" unlimited="yes">
+                    <description>This spell imbues the subject with a touch of divine guidance. The creature gets a +1 competence bonus on a single attack roll, saving throw, or skill check. It must choose to use the bonus before making the roll to which it applies.</description>
                     <spellcomp>Verbal</spellcomp>
                     <spellcomp>Somatic</spellcomp>
                     <spellschool>Divination</spellschool>
+                    <spellschool>Void Elemental</spellschool>
+                </spell>
+                <spell name="Hide from Undead" level="1" class="Cleric" casttime="1 action" range="touch" target="one touched creature/level" area="" effect="" duration="10 min./level (D)" save="DC 14 Will negates (harmless); see text" resist="yes" dc="14" casterlevel="3" componenttext="Verbal, Somatic, Divine Focus" schooltext="Abjuration" subschooltext="" descriptortext="" savetext="See Text, Will negates" resisttext="Yes" castsleft="1">
+                    <description>Undead cannot see, hear, or smell creatures warded by this spell. Even extraordinary or supernatural sensory capabilities, such as blindsense, blindsight, scent, and tremorsense, cannot detect or locate warded creatures. Nonintelligent undead creatures (such as skeletons or zombies) are automatically affected and act as though the warded creatures are not there. An intelligent undead creature gets a single Will saving throw. If it fails, the subject can't see any of the warded creatures. If it has reason to believe unseen opponents are present, however, it can attempt to find or strike them. If a warded creature attempts to channel positive energy, turn or command undead, touches an undead creature, or attacks any creature (even with a spell), the spell ends for all recipients.</description>
+                    <spellcomp>Verbal</spellcomp>
+                    <spellcomp>Somatic</spellcomp>
+                    <spellcomp>Divine Focus</spellcomp>
+                    <spellschool>Abjuration</spellschool>
+                </spell>
+                <spell name="Light" level="0" class="Cleric" casttime="1 action" range="touch" target="object touched" area="" effect="" duration="10 min./level" save="none" resist="no" dc="13" casterlevel="3" componenttext="Verbal, Material or Divine Focus" schooltext="Evocation, Wood Elemental" subschooltext="" descriptortext="Light" savetext="None" resisttext="No" unlimited="yes">
+                    <description>This spell causes a touched object to glow like a torch, shedding normal light in a 20-foot radius, and increasing the light level for an additional 20 feet by one step, up to normal light (darkness becomes dim light, and dim light becomes normal light). In an area of normal or bright light, this spell has no effect. The effect is immobile, but it can be cast on a movable object. You can only have one light spell active at any one time. If you cast this spell while another casting is still in effect, the previous casting is dispelled. If you make this spell permanent (through permanency or a similar effect), it does not count against this limit.
+
+Light can be used to counter or dispel any darkness spell of equal or lower spell level.</description>
+                    <spellcomp>Verbal</spellcomp>
+                    <spellcomp>Material or Divine Focus</spellcomp>
+                    <spellschool>Evocation</spellschool>
+                    <spellschool>Wood Elemental</spellschool>
+                    <spelldescript>Light</spelldescript>
                 </spell>
                 <spell name="Obscuring Mist" level="1" class="" casttime="1 action" range="20 ft." target="" area="" effect="cloud spreads in 20-ft. radius from you, 20 ft. high" duration="1 min./level (D)" save="none" resist="no" dc="14" casterlevel="3" componenttext="Verbal, Somatic" schooltext="Conjuration, Water Elemental" subschooltext="Creation" descriptortext="" savetext="None" resisttext="No" castsleft="1">
                     <description>A misty vapor arises around you. It is stationary. The vapor obscures all sight, including darkvision, beyond 5 feet. A creature 5 feet away has concealment (attacks have a 20% miss chance). Creatures farther away have total concealment (50% miss chance, and the attacker cannot use sight to locate the target). A moderate wind (11+ mph), such as from a gust of wind spell, disperses the fog in 4 rounds. A strong wind (21+ mph) disperses the fog in 1 round. A fireball, flame strike, or similar spell burns away the fog in the explosive or fiery spell's area. A wall of fire burns away the fog in the area into which it deals damage. This spell does not function underwater.</description>
@@ -7900,11 +7919,21 @@ Note: Conjuration spells can't create substances or objects within a creature. W
                     <spellschool>Water Elemental</spellschool>
                     <spellsubschool>Creation</spellsubschool>
                 </spell>
-                <spell name="Purify Food and Drink" level="0" class="Cleric" casttime="1 action" range="10 ft." target="1 cu. ft./level of contaminated food and water" area="" effect="" duration="instantaneous" save="DC 13 Will negates (object)" resist="yes (object)" dc="13" casterlevel="3" componenttext="Verbal, Somatic" schooltext="Transmutation" subschooltext="" descriptortext="" savetext="Will negates" resisttext="Yes" unlimited="yes">
-                    <description>This spell makes spoiled, rotten, diseased, poisonous, or otherwise contaminated food and water pure and suitable for eating and drinking. This spell does not prevent subsequent natural decay or spoilage. Unholy water and similar food and drink of significance is spoiled by purify food and drink, but the spell has no effect on creatures of any type nor upon magic potions. Water weighs about 8 pounds per gallon. One cubic foot of water contains roughly 8 gallons and weighs about 60 pounds.</description>
+                <spell name="Read Magic" level="0" class="Cleric" casttime="1 action" range="personal" target="you" area="" effect="" duration="10 min./level" save="" resist="" dc="13" casterlevel="3" componenttext="Verbal, Somatic, Focus" schooltext="Divination" subschooltext="" descriptortext="" savetext="" resisttext="" unlimited="yes">
+                    <description>You can decipher magical inscriptions on objects - books, scrolls, weapons, and the like - that would otherwise be unintelligible. This deciphering does not normally invoke the magic contained in the writing, although it may do so in the case of a cursed or trapped scroll. Furthermore, once the spell is cast and you have read the magical inscription, you are thereafter able to read that particular writing without recourse to the use of read magic. You can read at the rate of one page (250 words) per minute. The spell allows you to identify a glyph of warding with a DC 13 Spellcraft check, a greater glyph of warding with a DC 16 Spellcraft check, or any symbol spell with a Spellcraft check (DC 10 + spell level).
+
+Read magic can be made permanent with a permanency spell.</description>
                     <spellcomp>Verbal</spellcomp>
                     <spellcomp>Somatic</spellcomp>
-                    <spellschool>Transmutation</spellschool>
+                    <spellcomp>Focus</spellcomp>
+                    <spellschool>Divination</spellschool>
+                </spell>
+                <spell name="Restoration, Lesser" level="2" class="Cleric" casttime="3 rounds" range="touch" target="creature touched" area="" effect="" duration="instantaneous" save="Will negates (harmless)" resist="yes (harmless)" dc="15" casterlevel="3" componenttext="Verbal, Somatic" schooltext="Conjuration" subschooltext="Healing" descriptortext="" savetext="Harmless, Will negates" resisttext="Yes" castsleft="1">
+                    <description>Lesser restoration dispels any magical effects reducing one of the subject's ability scores or cures 1d4 points of temporary ability damage to one of the subject's ability scores. It also eliminates any fatigue suffered by the character, and improves an exhausted condition to fatigued. It does not restore permanent ability drain.</description>
+                    <spellcomp>Verbal</spellcomp>
+                    <spellcomp>Somatic</spellcomp>
+                    <spellschool>Conjuration</spellschool>
+                    <spellsubschool>Healing</spellsubschool>
                 </spell>
                 <spell name="Shield of Faith" level="1" class="Cleric" casttime="1 action" range="touch" target="creature touched" area="" effect="" duration="1 min./level" save="Will negates (harmless)" resist="yes (harmless)" dc="14" casterlevel="3" componenttext="Verbal, Somatic, Material" schooltext="Abjuration" subschooltext="" descriptortext="" savetext="Harmless, Will negates" resisttext="Yes" castsleft="1">
                     <description>This spell creates a shimmering, magical field around the target that averts and deflects attacks. The spell grants the subject a +2 deflection bonus to AC, with an additional +1 to the bonus for every six levels you have (maximum +5 deflection bonus at 18th level).</description>
@@ -7912,6 +7941,14 @@ Note: Conjuration spells can't create substances or objects within a creature. W
                     <spellcomp>Somatic</spellcomp>
                     <spellcomp>Material</spellcomp>
                     <spellschool>Abjuration</spellschool>
+                </spell>
+                <spell name="Sound Burst" level="2" class="Cleric" casttime="1 action" range="close (25 + 5 ft./2 levels)" target="" area="10-ft.-radius spread" effect="" duration="instantaneous" save="DC 15 Fortitude partial" resist="yes" dc="15" casterlevel="3" componenttext="Verbal, Somatic, Focus or Divine Focus" schooltext="Evocation" subschooltext="" descriptortext="Sonic" savetext="Fortitude partial" resisttext="Yes" castsleft="1">
+                    <description>You blast an area with a tremendous cacophony. Every creature in the area takes 1d8 points of sonic damage and must succeed on a Fortitude save to avoid being stunned for 1 round. Creatures that cannot hear are not stunned but are still damaged.</description>
+                    <spellcomp>Verbal</spellcomp>
+                    <spellcomp>Somatic</spellcomp>
+                    <spellcomp>Focus or Divine Focus</spellcomp>
+                    <spellschool>Evocation</spellschool>
+                    <spelldescript>Sonic</spelldescript>
                 </spell>
                 <spell name="Stabilize" level="0" class="Cleric" casttime="1 action" range="close (25 + 5 ft./2 levels)" target="one living creature" area="" effect="" duration="instantaneous" save="Will negates (harmless)" resist="yes (harmless)" dc="13" casterlevel="3" componenttext="Verbal, Somatic" schooltext="Conjuration" subschooltext="Healing" descriptortext="" savetext="Harmless, Will negates" resisttext="Harmless, Yes" unlimited="yes">
                     <description>Upon casting this spell, you target a living creature that has -1 or fewer hit points. That creature is automatically stabilized and does not lose any further hit points. If the creature later takes damage, it continues dying normally.</description>
@@ -7926,7 +7963,7 @@ Note: Conjuration spells can't create substances or objects within a creature. W
                 <spellclass name="Cleric" maxspelllevel="2" spells="Memorized">
                     <spelllevel level="0" maxcasts="4" used="4"></spelllevel>
                     <spelllevel level="1" maxcasts="3" used="3"></spelllevel>
-                    <spelllevel level="2" maxcasts="2" used="0"></spelllevel>
+                    <spelllevel level="2" maxcasts="2" used="2"></spelllevel>
                 </spellclass>
             </spellclasses>
             <journals>
@@ -7963,9 +8000,7 @@ Note: Conjuration spells can't create substances or objects within a creature. W
             </journals>
             <images></images>
             <validation>
-                <report>Feats: Resource Underspent: 1 of 2; Skill Points: Resource Underspent: 6 of 9; Cleric: Add more domain spells!; You don't have enough XP to get to this level. You need to adventure some more, or record the advent</report>
-                <validmessage>Warning: Feats: Resource Underspent: 1 of 2</validmessage>
-                <validmessage>Warning: Skill Points: Resource Underspent: 6 of 9</validmessage>
+                <report>Cleric: Add more domain spells!; You don't have enough XP to get to this level. You need to adventure some more, or record the advent</report>
                 <validmessage>Error: Cleric: Add more domain spells!</validmessage>
                 <validmessage>Error: You don't have enough XP to get to this level. You need to adventure some more, or record the adventures you've been on in the Journal!</validmessage>
             </validation>

@@ -273,20 +273,154 @@
 
 
 				<h3>Attacks</h3>
-				TODO
-				<h3>Skills</h3>
-				TODO
-				<h3>Feats</h3>
-				TODO
-				<h3>Spells</h3>
-				TODO
+				<div class='attacks'>
+					<xsl:for-each select="attack[@*|*|text()]">
+						<div class="attack">
+							<span>
+								Attack bonus:
+								<xsl:value-of select="@attackbonus" />
+							</span>
+							<span>
+								Melee:
+								<xsl:value-of select="@meleeattack" />
+							</span>
+							<span>
+								Ranged:
+								<xsl:value-of select="@rangedattack" />
+							</span>
+							<span>
+								Base attack:
+								<xsl:value-of select="@baseattack" />
+							</span>
+							<xsl:for-each select="special[@*|*|text()]">
+								<div>
+									Special:
+									<xsl:value-of select="@name" />
+									(<xsl:value-of select="@sourcetext" />)
+									<xsl:call-template name="has-description"></xsl:call-template>
+								</div>
+							</xsl:for-each>
+						</div>
+					</xsl:for-each>
 
+
+					<xsl:for-each select="melee[@*|*|text()]">
+						<div class="melee">
+							Melee:
+							<xsl:for-each select="weapon[@*|*|text()]">
+								<xsl:call-template name="do-weapon" />
+							</xsl:for-each>
+						</div>
+					</xsl:for-each>
+					<xsl:for-each select="ranged[@*|*|text()]">
+						<div class="ranged">
+						Ranged:
+							<xsl:for-each select="weapon[@*|*|text()]">
+								<xsl:call-template name="do-weapon" />
+							</xsl:for-each>
+						</div>
+					</xsl:for-each>
+
+				</div>
+				<div class="skills">
+				<h3>Skills</h3>
+				
+					<xsl:for-each select="skillabilities/special">
+						<div>
+							<div class="has-description">
+								<xsl:value-of select="@name" />
+							</div>
+							<xsl:call-template name="has-description" />
+						</div>
+					</xsl:for-each>
+				
+				<table>
+				<tr>
+<td></td>
+<td></td>
+<td>ranks</td>
+<td>class</td>
+<td colspan="2">attr</td>
+<td>armour
+<xsl:value-of select='penalties/penalty[@name="Armor Check Penalty"]/@value'/>
+</td>
+</tr>
+<xsl:for-each select="skills/skill">
+<tr>
+<td><xsl:value-of select="@name"/> </td>
+<td style="text-align: right;"><xsl:value-of select="@value"/></td>
+<td style="text-align: right;"><xsl:value-of select="@ranks"/></td>
+<td style="text-align: center;"><xsl:if test="@classskill='yes'">*</xsl:if></td>
+<td><xsl:value-of select="@attrname"/></td>
+<td style="text-align: right;"><xsl:value-of select="@attrbonus"/> </td>
+<td  style="text-align: center;"><xsl:if test="@armorcheck='yes'"><B>!</B></xsl:if></td>
+</tr>
+</xsl:for-each>
+
+				</table>
+					<xsl:for-each select="skills/skill"></xsl:for-each>				
+				</div>
+				
+				<xsl:if test="skilltricks/*">
+				<h3>Skill Tricks</h3>
+				TODO
+				</xsl:if>
+				
+				<xsl:if test="animaltricks/*">
+				<h3>Animal Tricks</h3>
+				<xsl:for-each select="animaltricks/animaltrick">
+				<div class="animaltrick">
+				<xsl:value-of select="@name"/>
+				<xsl:call-template name="has-description"/>
+				</div>
+				</xsl:for-each>
+				</xsl:if>
+
+				<h3>Feats</h3>
+				<xsl:for-each select="feats/feat">
+				<div class="feat">
+				<xsl:value-of select="@name"/>
+				(<xsl:value-of select="@categorytext"/>)
+				<xsl:call-template name="has-description"/>
+				</div>
+				</xsl:for-each>
+				<h3>Spells</h3>
+TODO
+				<h3>Magic Items</h3>
+TODO
+				<h3>Gear</h3>
+TODO
 				<div class="legal">
 					<xsl:copy-of
 						select="/document/public/program/programinfo/text()" />
 				</div>
 			</div>
 		</xsl:for-each>
+	</xsl:template>
+
+	<xsl:template name="do-weapon">
+		<div class="weapon">
+			<span>
+				<xsl:value-of select="@name" />
+			</span>
+			-
+			<span>
+				<xsl:value-of select="@categorytext" />
+			</span>
+			<span>(<xsl:value-of select="weptype" />)</span>
+			<span>
+				<xsl:value-of select="@attack" />
+			</span>
+			<span>
+				(<xsl:value-of select="@crit" />)
+			</span>
+			<span>
+				<xsl:value-of select="@damage" />
+			</span>
+			<xsl:call-template name="do-situational-modifiers"></xsl:call-template>
+			<xsl:call-template name="has-description"></xsl:call-template>
+		</div>
+
 	</xsl:template>
 
 	<xsl:template name="do-situational-modifiers">
@@ -315,34 +449,9 @@
 	<xsl:template name="has-description">
 		<xsl:for-each select="description">
 			<div class="description">
-				<xsl:call-template name="paratext">
-					<xsl:with-param name="pText" select="text()" />
-				</xsl:call-template>
+				<xsl:value-of select="." />
 			</div>
 		</xsl:for-each>
 	</xsl:template>
-
-	<!-- Take text in a parm named pText and break it into <p> elements by finding 
-		newlines -->
-
-	<xsl:template name="paratext">
-		<xsl:param name="pText" />
-		<xsl:variable name='newline'>
-			<xsl:text>&#xa;</xsl:text>
-		</xsl:variable>
-		<xsl:variable name="before"
-			select="substring-before(concat($pText,$newline),$newline)"></xsl:variable>
-		<xsl:variable name="after"
-			select="substring-after($pText,$newline)"></xsl:variable>
-		<p>
-			<xsl:value-of select="$before" />
-		</p>
-		<xsl:if test="string-length($after)>0">
-			<xsl:call-template name="paratext">
-				<xsl:with-param name="pText" select="$after" />
-			</xsl:call-template>
-		</xsl:if>
-	</xsl:template>
-
 
 </xsl:stylesheet> 
