@@ -13,7 +13,7 @@
 
 $.ajaxSetup({ cache: false });
 
-const pages = ['2022-09-15', '2022-09-27', '2022-10-04', '2022-10-15', '2022-10-18', '2022-10-26', '2022-11-02'];
+const pages = ['2022-09-15', '2022-09-27', '2022-10-04', '2022-10-15', '2022-10-18', '2022-10-26', '2022-11-02', '2022-11-13'];
 
 const lastPage = pages.length-1;
 
@@ -127,6 +127,24 @@ $(()=>{
 	background: #E0E0E0;
 	border: thick double #102040;
 	color: #102040;
+}
+
+.boxtext {
+	background: #F8E498;
+	border-top: thick double #886428;
+	border-bottom: thick double #886428;
+	color: #886428;
+	padding: .5em;
+	font-family: deadhand;
+}
+
+@media (min-width: 600px) {
+	.boxtext {
+		width: 12em;
+		float: left;
+		margin-right: .5em;
+		margin-bottom: .5em;
+	}
 }
 
 .situational-modifier { margin-left: 1em; font-size:80%; font-family: serif;}
