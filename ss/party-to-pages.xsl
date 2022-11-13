@@ -422,10 +422,77 @@
 				</div>
 				</xsl:for-each>
 				
-				
-				<h3>Spells</h3>
-TODO
+				<xsl:for-each select="*[spell]">
+					<h3>Spells</h3>
+				<xsl:for-each select="spell">
+ <xsl:sort select="@level"/>
+<div class="spell">
+	<h4>
+		<xsl:value-of select="@name" />
+	</h4>
+	<div>
+	<span>
+		<xsl:value-of select="@schooltext" />
+		<xsl:if test="@subschooltext!=''">
+			<xsl:text> </xsl:text>
+			[<xsl:value-of select="@subschooltext" />]
+		</xsl:if>
+		<xsl:if test="@descriptortext!=''">
+			<xsl:text> </xsl:text>
+			(<xsl:value-of select="@descriptortext" />)
+		</xsl:if>
+	</span>
+	<span>
+			<xsl:text> </xsl:text>
+		<xsl:value-of select="@class" />
+		(<xsl:value-of select="@level" />)
+	</span>
+	</div>
+	<div class="spellblock">
+	<xsl:if test="@casttime!=''">
+	<div>
+	<b>Casting Time: </b><xsl:value-of select="@casttime" />
+	</div>
+	</xsl:if>
+	<xsl:if test="@componenttext!=''">
+	<div>
+	<b>Components: </b><xsl:value-of select="@componenttext" />
+	</div>
+	</xsl:if>
+	<xsl:if test="@range!=''">
+	<div>
+	<b>Range: </b><xsl:value-of select="@range" />
+	</div>
+	</xsl:if>
+	<xsl:if test="@area!=''">
+	<div>
+	<b>Area: </b><xsl:value-of select="@area" />
+	</div>
+	</xsl:if>
+	<xsl:if test="@target!=''">
+	<div>
+	<b>Target: </b><xsl:value-of select="@target" />
+	</div>
+	</xsl:if>
+	<xsl:if test="@duration!=''">
+	<div>
+	<b>Duration: </b><xsl:value-of select="@duration" />
+	</div>
+	</xsl:if>
+	<div>
+	<b>Saving Throw: </b><xsl:value-of select="@save" />
+	DC <xsl:value-of select="@dc" />
+	SR <xsl:value-of select="@resist" />
+	</div>
+	</div>
+<xsl:call-template name="has-description"></xsl:call-template>	
+</div>
+
+				</xsl:for-each>
+				</xsl:for-each>
 				<h3>Magic Items</h3>
+TODO
+				<h3>Tracked Resources</h3>
 TODO
 				<h3>Gear</h3>
 TODO

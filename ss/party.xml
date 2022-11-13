@@ -1430,7 +1430,25 @@ The spell does not enable you to control the charmed person as if it were an aut
                     <spellsubschool>Charm</spellsubschool>
                     <spelldescript>Mind-Affecting</spelldescript>
                 </spell>
-                <spell name="Comprehend Languages" level="1" class="Bard" casttime="1 action" range="personal" target="you" area="" effect="" duration="10 min./level" save="" resist="" dc="14" casterlevel="3" componenttext="Verbal, Somatic, Material or Divine Focus" schooltext="Divination" subschooltext="" descriptortext="" savetext="" resisttext="" spontaneous="yes">
+                <spell name="Comprehend Languages" 
+                level="1" class="Bard"
+                 casttime="1 action" 
+                 range="personal" 
+                 target="you" 
+                 area="" 
+                 effect="" 
+                 duration="10 min./level" 
+                 save="" 
+                 resist="" 
+                 dc="14" 
+                 casterlevel="3" 
+                 componenttext="Verbal, Somatic, Material or Divine Focus" 
+                 schooltext="Divination" 
+                 subschooltext="" 
+                 descriptortext="" 
+                 savetext="" 
+                 resisttext="" 
+                 spontaneous="yes">
                     <description>You can understand the spoken words of creatures or read otherwise incomprehensible written messages. The ability to read does not necessarily impart insight into the material, merely its literal meaning. The spell enables you to understand or read an unknown language, not speak or write it. Written material can be read at the rate of one page (250 words) per minute. Magical writing cannot be read, though the spell reveals that it is magical. This spell can be foiled by certain warding magic (such as the secret page and illusory script spells). It does not decipher codes or reveal messages concealed in otherwise normal text.
 
 Comprehend languages can be made permanent with a permanency spell.</description>
@@ -4084,7 +4102,7 @@ Special: You can gain this feat multiple times. Its effects do not stack. Each t
 Check: You can use Acrobatics to move on narrow surfaces and uneven ground without falling. A successful check allows you to move at half speed across such surfaces - only one check is needed per round. Use the following table to determine the base DC, which is then modified by the Acrobatics skill modifiers noted on page 89. While you are using Acrobatics in this way, you are considered flat-footed and lose your Dexterity bonus to your AC (if any). If you take damage while using Acrobatics, you must immediately make another Acrobatics check at the same DC to avoid falling or being knocked prone.
 
 Surface Width: Base Acrobatics DC
-Greater than 3 feet wide: 0*
+Greater than 3 feet wide: 0
 1-3 feet wide: 5*
 7-11 inches wide: 10
 2-6 inches wide 15
@@ -7876,7 +7894,16 @@ A cleric who is neither good nor evil and whose deity is neither good nor evil c
             </otherspecials>
             <spellsknown></spellsknown>
             <spellsmemorized>
-                <spell name="Bless" level="1" class="Cleric" casttime="1 action" range="50 ft." target="" area="the caster and all allies within a 50-ft. burst, centered on the caster" effect="" duration="1 min./level" save="none" resist="yes (harmless)" dc="14" casterlevel="3" componenttext="Verbal, Somatic, Divine Focus" schooltext="Enchantment" subschooltext="Compulsion" descriptortext="Mind-Affecting" savetext="Harmless, None" resisttext="Harmless, Yes" castsleft="1">
+                <spell name="Bless" level="1" class="Cleric" 
+                casttime="1 action" range="50 ft." target="" 
+                area="the caster and all allies within a 50-ft. burst, centered on the caster" 
+                effect="" 
+                duration="1 min./level" 
+                save="none" resist="yes (harmless)" 
+                dc="14" casterlevel="3" 
+                componenttext="Verbal, Somatic, Divine Focus" schooltext="Enchantment" 
+                subschooltext="Compulsion" descriptortext="Mind-Affecting" 
+                savetext="Harmless, None" resisttext="Harmless, Yes" castsleft="1">
                     <description>Bless fills your allies with courage. Each ally gains a +1 morale bonus on attack rolls and on saving throws against fear effects.
 
 Bless counters and dispels bane.</description>
@@ -7928,7 +7955,17 @@ Read magic can be made permanent with a permanency spell.</description>
                     <spellcomp>Focus</spellcomp>
                     <spellschool>Divination</spellschool>
                 </spell>
-                <spell name="Restoration, Lesser" level="2" class="Cleric" casttime="3 rounds" range="touch" target="creature touched" area="" effect="" duration="instantaneous" save="Will negates (harmless)" resist="yes (harmless)" dc="15" casterlevel="3" componenttext="Verbal, Somatic" schooltext="Conjuration" subschooltext="Healing" descriptortext="" savetext="Harmless, Will negates" resisttext="Yes" castsleft="1">
+                <spell name="Restoration, Lesser" level="2" 
+                class="Cleric" casttime="3 rounds" range="touch" 
+                target="creature touched" area="" effect="" 
+                duration="instantaneous" save="Will negates (harmless)" 
+                resist="yes (harmless)" dc="15" casterlevel="3" 
+                componenttext="Verbal, Somatic" 
+                schooltext="Conjuration" 
+                subschooltext="Healing" 
+                descriptortext="" 
+                savetext="Harmless, Will negates"
+                 resisttext="Yes" castsleft="1">
                     <description>Lesser restoration dispels any magical effects reducing one of the subject's ability scores or cures 1d4 points of temporary ability damage to one of the subject's ability scores. It also eliminates any fatigue suffered by the character, and improves an exhausted condition to fatigued. It does not restore permanent ability drain.</description>
                     <spellcomp>Verbal</spellcomp>
                     <spellcomp>Somatic</spellcomp>
