@@ -68,7 +68,6 @@ p {
 	text-align: right;
 }
 
-
 .imgright {
 	margin-left: 1em;
 	margin-right: 1em;
@@ -92,7 +91,7 @@ p {
 .xp .gt {
 	text-align: right;
 	border-top: thick double #204010;
-	background: rgba(255,240,64,.25);
+	background: rgba(255, 240, 64, .25);
 	width: 3em;
 }
 
@@ -127,8 +126,6 @@ p {
 	font-size: 24;
 }
 
-
-
 .navbar span {
 	display: inline-block;
 }
@@ -154,8 +151,20 @@ p {
 	margin: 0 .25em;
 }
 
+.boxtext {
+	border-top: thin solid #806040;
+	border-bottom: thin solid #806040;
+	display: inline-block;
+	color: #806040;
+}
 
-@media (min-width: 600px) {
+.boxtext .title {
+	font-family: sscorners;
+	font-size: 18;
+}
+
+
+@media ( min-width : 600px) {
 	.dream {
 		margin: 0 2em;
 	}
@@ -177,5 +186,12 @@ p {
 	#content {
 		margin: 1em 2em;
 	}
+	.boxtext {
+		width: 20em;
+		text-align: justify;
+		float: left;
+		clear: left;
+		margin-right: 1em;
+		margin-bottom: .5em;
+	}
 }
-
