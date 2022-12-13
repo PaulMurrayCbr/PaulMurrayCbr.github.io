@@ -9,6 +9,8 @@
 				<xsl:attribute name="data-menupage"><xsl:value-of
 					select="@name" /></xsl:attribute>
 
+				<xsl:variable name="character_id" select="concat('char-', position())"/>
+
 				<div class="namerace">
 					<h2>
 						<xsl:value-of select="@name" />
@@ -28,6 +30,8 @@
 				</div>
 
 				<xsl:for-each select="classes/class">
+					<xsl:variable name="class_id" select="concat($character_id, '-', position())"/>
+				
 					<div class="classsummary">
 						<xsl:text> </xsl:text>
 						<xsl:value-of select="@name" />
@@ -71,6 +75,7 @@
 						<xsl:value-of select="initiative/@misctext" />
 					</div>
 					<xsl:for-each select="initiative">
+						<xsl:variable name="initiative_id" select="concat($character_id, '-init-', position())"/>
 						<xsl:call-template
 							name="do-situational-modifiers" />
 					</xsl:for-each>
@@ -144,12 +149,14 @@
 						</xsl:if>
 
 						<xsl:for-each select="penalties/penalty">
+							<xsl:variable name="penalty_id" select="concat($character_id, '-penalty-', position())"/>
 							<xsl:text>, </xsl:text>
 							<xsl:value-of select="@name" />
 							<xsl:text> </xsl:text>
 							<xsl:value-of select="@text" />
 						</xsl:for-each>
 						<xsl:for-each select="armorclass">
+							<xsl:variable name="armorclass_id" select="concat($character_id, '-armorclass-', position())"/>
 							<xsl:call-template
 								name="do-situational-modifiers" />
 						</xsl:for-each>
@@ -161,11 +168,15 @@
 				<xsl:if test="senses/special">
 					<h3>Senses</h3>
 					<xsl:for-each select="senses/special">
+						<xsl:variable name="senses_id" select="concat($character_id, '-senses-', position())"/>
 						<div>
+							<xsl:attribute name="click-source"><xsl:value-of select="$senses_id" /></xsl:attribute>
 							<div class="has-description">
 								<xsl:value-of select="@name" />
 							</div>
-							<xsl:call-template name="has-description" />
+							<xsl:call-template name="has-description">
+								<xsl:with-param name="id"><xsl:value-of select="$senses_id" /></xsl:with-param>
+							</xsl:call-template>
 						</div>
 					</xsl:for-each>
 				</xsl:if>
@@ -175,6 +186,7 @@
 
 				<table class="stats">
 					<xsl:for-each select="attributes/attribute">
+						<xsl:variable name="attribute_id" select="concat($character_id, '-attr-', position())"/>
 						<tr>
 							<td>
 								<xsl:value-of select="@name" />
@@ -211,6 +223,7 @@
 						<th>misc</th>
 					</tr>
 					<xsl:for-each select="saves/save">
+						<xsl:variable name="save_id" select="concat($character_id, '-save-', position())"/>
 						<tr>
 							<td>
 								<xsl:value-of select="@abbr" />
@@ -243,6 +256,7 @@
 					</xsl:for-each>
 
 					<xsl:for-each select="saves/allsaves">
+						<xsl:variable name="allsaves_id" select="concat($character_id, '-allsaves-', position())"/>
 						<tr>
 							<td colspan="7">
 								<xsl:call-template
@@ -256,6 +270,7 @@
 
 				<h3>Other Defenses</h3>
 				<xsl:for-each select="defensive/special">
+					<xsl:variable name="defense_id" select="concat($character_id, '-defense-', position())"/>
 					<div>
 						<xsl:value-of select="@name" />
 						<xsl:text> (</xsl:text>
@@ -264,12 +279,15 @@
 					</div>
 				</xsl:for-each>
 				<xsl:for-each select="damagereduction[*|text()]">
+					<xsl:variable name="damagereduction_id" select="concat($character_id, '-damagereduction-', position())"/>
 					damagereduction TODO!
 				</xsl:for-each>
 				<xsl:for-each select="immunities[*|text()]">
+						<xsl:variable name="immunity_id" select="concat($character_id, '-immunity-', position())"/>
 					immunities TODO!
 				</xsl:for-each>
 				<xsl:for-each select="weaknesses[*|text()]">
+						<xsl:variable name="weakness_id" select="concat($character_id, '-weakness-', position())"/>
 					weaknesses TODO!
 				</xsl:for-each>
 
@@ -286,6 +304,7 @@
 				<h3>Attacks</h3>
 				<div class='attacks'>
 					<xsl:for-each select="attack[@*|*|text()]">
+						<xsl:variable name="attack_id" select="concat($character_id, '-attack-', position())"/>
 						<div class="attack">
 							<span>
 								Attack bonus:
@@ -304,11 +323,15 @@
 								<xsl:value-of select="@baseattack" />
 							</span>
 							<xsl:for-each select="special[@*|*|text()]">
+								<xsl:variable name="attack_special_id" select="concat($attack_id, '-special-', position())"/>
 								<div>
+									<xsl:attribute name="click-source"><xsl:value-of select="$attack_special_id" /></xsl:attribute>
 									Special:
 									<xsl:value-of select="@name" />
 									(<xsl:value-of select="@sourcetext" />)
-									<xsl:call-template name="has-description"></xsl:call-template>
+									<xsl:call-template name="has-description">
+										<xsl:with-param name="id"><xsl:value-of select="$attack_special_id" /></xsl:with-param>
+									</xsl:call-template>
 								</div>
 							</xsl:for-each>
 						</div>
@@ -316,18 +339,26 @@
 
 
 					<xsl:for-each select="melee[@*|*|text()]">
+						<xsl:variable name="melee_id" select="concat($character_id, '-melee-', position())"/>
 						<div class="melee">
 							Melee:
 							<xsl:for-each select="weapon[@*|*|text()]">
-								<xsl:call-template name="do-weapon" />
+								<xsl:variable name="melee_weapon_id" select="concat($melee_id, '-weapon-', position())"/>
+								<xsl:call-template name="do-weapon">
+									<xsl:with-param name="id"><xsl:value-of select="$melee_weapon_id"/></xsl:with-param> 
+								</xsl:call-template>
 							</xsl:for-each>
 						</div>
 					</xsl:for-each>
 					<xsl:for-each select="ranged[@*|*|text()]">
+						<xsl:variable name="ranged_id" select="concat($character_id, '-ranged-', position())"/>
 						<div class="ranged">
 						Ranged:
 							<xsl:for-each select="weapon[@*|*|text()]">
-								<xsl:call-template name="do-weapon" />
+								<xsl:variable name="ranged_weapon_id" select="concat($ranged_id, '-weapon-', position())"/>
+								<xsl:call-template name="do-weapon" >
+									<xsl:with-param name="id"><xsl:value-of select="$ranged_weapon_id"/></xsl:with-param> 
+								</xsl:call-template>
 							</xsl:for-each>
 						</div>
 					</xsl:for-each>
@@ -337,11 +368,15 @@
 				<h3>Skills</h3>
 				
 					<xsl:for-each select="skillabilities/special">
+						<xsl:variable name="skillability_id" select="concat($character_id, '-skillability-', position())"/>
 						<div>
+							<xsl:attribute name="click-source"><xsl:value-of select="$skillability_id" /></xsl:attribute>
 							<div class="has-description">
 								<xsl:value-of select="@name" />
 							</div>
-							<xsl:call-template name="has-description" />
+							<xsl:call-template name="has-description">
+								<xsl:with-param name="id"><xsl:value-of select="$skillability_id" /></xsl:with-param>
+							</xsl:call-template>
 						</div>
 					</xsl:for-each>
 				
@@ -357,6 +392,7 @@
 </td>
 </tr>
 <xsl:for-each select="skills/skill">
+	<xsl:variable name="skill_id" select="concat($character_id, '-skill-', position())"/>
 <tr>
 <td><xsl:value-of select="@name"/> </td>
 <td style="text-align: right;"><xsl:value-of select="@value"/></td>
@@ -367,6 +403,7 @@
 <td  style="text-align: center;"><xsl:if test="@armorcheck='yes'"><B>!</B></xsl:if></td>
 </tr>
 <xsl:for-each select="situationalmodifiers[@*|*]">
+	<xsl:variable name="skill_modifier_id" select="concat($skill_id, '-modifier-', position())"/>
 	<tr>
 		<td colspan="7">
 			<xsl:call-template name="do-situational-modifier" />
@@ -376,7 +413,6 @@
 </xsl:for-each>
 
 				</table>
-					<xsl:for-each select="skills/skill"></xsl:for-each>				
 				</div>
 				
 				<xsl:if test="skilltricks/*">
@@ -385,109 +421,119 @@
 				</xsl:if>
 				
 				<xsl:if test="animaltricks/*">
-				<h3>Animal Tricks</h3>
-				<xsl:for-each select="animaltricks/animaltrick">
-				<div class="animaltrick">
-				<xsl:value-of select="@name"/>
-				<xsl:call-template name="has-description"/>
-				</div>
-				</xsl:for-each>
+					<h3>Animal Tricks</h3>
+					<xsl:for-each select="animaltricks/animaltrick">
+						<xsl:variable name="animaltrick_id" select="concat($character_id, '-animaltrick-', position())"/>
+						<div class="animaltrick">
+							<xsl:attribute name="click-source"><xsl:value-of select="$animaltrick_id" /></xsl:attribute>
+						<xsl:value-of select="@name"/>
+						<xsl:call-template name="has-description">
+								<xsl:with-param name="id"><xsl:value-of select="$animaltrick_id" /></xsl:with-param>
+							</xsl:call-template>
+						</div>
+					</xsl:for-each>
 				</xsl:if>
 
 				<h3>Feats</h3>
 				<xsl:for-each select="feats/feat">
-				<div class="feat">
-				<xsl:value-of select="@name"/>
-				(<xsl:value-of select="@categorytext"/>)
-				<xsl:call-template name="has-description"/>
-				</div>
+					<xsl:variable name="feat_id" select="concat($character_id, '-feat-', position())"/>
+					<div class="feat">
+						<xsl:attribute name="click-source"><xsl:value-of select="$feat_id" /></xsl:attribute>
+						<xsl:value-of select="@name"/>
+						<xsl:if test="@categorytext!=''">(<xsl:value-of select="@categorytext"/>)</xsl:if>
+						<xsl:call-template name="has-description">
+								<xsl:with-param name="id"><xsl:value-of select="$feat_id" /></xsl:with-param>
+							</xsl:call-template>
+					</div>
 				</xsl:for-each>
 				
-								<xsl:if test="otherspecials/*">
-				<h3>Other Specials</h3>
-				<xsl:for-each select="otherspecials/special">
-				<div class="special">
-				<xsl:value-of select="@name"/>
-				<xsl:call-template name="has-description"/>
-				</div>
-				</xsl:for-each>
+				<xsl:if test="otherspecials/*">
+					<h3>Other Specials</h3>
+					<xsl:for-each select="otherspecials/special">
+						<xsl:variable name="otherspecial_id" select="concat($character_id, '-otherspecial-', position())"/>
+						<div class="special">
+							<xsl:attribute name="click-source"><xsl:value-of select="$otherspecial_id" /></xsl:attribute>
+							<xsl:value-of select="@name"/>
+							<xsl:call-template name="has-description">
+								<xsl:with-param name="id"><xsl:value-of select="$otherspecial_id" /></xsl:with-param>
+							</xsl:call-template>
+						</div>
+					</xsl:for-each>
 				</xsl:if>
 
-				<h3>Feats</h3>
-				<xsl:for-each select="feats/feat">
-				<div class="feat">
-				<xsl:value-of select="@name"/>
-				(<xsl:value-of select="@categorytext"/>)
-				<xsl:call-template name="has-description"/>
-				</div>
-				</xsl:for-each>
-				
 				<xsl:for-each select="*[spell]">
+					<xsl:variable name="spellblock_id" select="concat($character_id, '-spellblock-', position())"/>
 					<h3>Spells</h3>
 				<xsl:for-each select="spell">
- <xsl:sort select="@level"/>
-<div class="spell">
-	<h4>
-		<xsl:value-of select="@name" />
-	</h4>
-	<div>
-	<span>
-		<xsl:value-of select="@schooltext" />
-		<xsl:if test="@subschooltext!=''">
-			<xsl:text> </xsl:text>
-			[<xsl:value-of select="@subschooltext" />]
-		</xsl:if>
-		<xsl:if test="@descriptortext!=''">
-			<xsl:text> </xsl:text>
-			(<xsl:value-of select="@descriptortext" />)
-		</xsl:if>
-	</span>
-	<span>
-			<xsl:text> </xsl:text>
-		<xsl:value-of select="@class" />
-		(<xsl:value-of select="@level" />)
-	</span>
-	</div>
-	<div class="spellblock">
-	<xsl:if test="@casttime!=''">
-	<div>
-	<b>Casting Time: </b><xsl:value-of select="@casttime" />
-	</div>
-	</xsl:if>
-	<xsl:if test="@componenttext!=''">
-	<div>
-	<b>Components: </b><xsl:value-of select="@componenttext" />
-	</div>
-	</xsl:if>
-	<xsl:if test="@range!=''">
-	<div>
-	<b>Range: </b><xsl:value-of select="@range" />
-	</div>
-	</xsl:if>
-	<xsl:if test="@area!=''">
-	<div>
-	<b>Area: </b><xsl:value-of select="@area" />
-	</div>
-	</xsl:if>
-	<xsl:if test="@target!=''">
-	<div>
-	<b>Target: </b><xsl:value-of select="@target" />
-	</div>
-	</xsl:if>
-	<xsl:if test="@duration!=''">
-	<div>
-	<b>Duration: </b><xsl:value-of select="@duration" />
-	</div>
-	</xsl:if>
-	<div>
-	<b>Saving Throw: </b><xsl:value-of select="@save" />
-	DC <xsl:value-of select="@dc" />
-	SR <xsl:value-of select="@resist" />
-	</div>
-	</div>
-<xsl:call-template name="has-description"></xsl:call-template>	
+					<xsl:sort select="@level"/>
+					<xsl:sort select="@name"/>
+					<xsl:variable name="spell_id" select="concat($spellblock_id, '-spell-', position())"/>
+					<div class="spell">
+						<xsl:attribute name="click-source"><xsl:value-of select="$spell_id" /></xsl:attribute>
+						<h4>
+							<xsl:value-of select="@name" />
+						</h4>
+						<div>
+						<xsl:attribute name="click-target"><xsl:value-of select="$spell_id"/></xsl:attribute>
+						<div>
+							<span>
+								<xsl:value-of select="@schooltext" />
+								<xsl:if test="@subschooltext!=''">
+									<xsl:text> </xsl:text>
+									[<xsl:value-of select="@subschooltext" />]
+								</xsl:if>
+								<xsl:if test="@descriptortext!=''">
+									<xsl:text> </xsl:text>
+									(<xsl:value-of select="@descriptortext" />)
+								</xsl:if>
+							</span>
+							<span>
+									<xsl:text> </xsl:text>
+								<xsl:value-of select="@class" />
+								(<xsl:value-of select="@level" />)
+							</span>
+						</div>
+						<div class="spellblock">
+							<xsl:if test="@casttime!=''">
+							<div>
+							<b>Casting Time: </b><xsl:value-of select="@casttime" />
+							</div>
+							</xsl:if>
+							<xsl:if test="@componenttext!=''">
+							<div>
+							<b>Components: </b><xsl:value-of select="@componenttext" />
+							</div>
+							</xsl:if>
+							<xsl:if test="@range!=''">
+							<div>
+							<b>Range: </b><xsl:value-of select="@range" />
+							</div>
+							</xsl:if>
+							<xsl:if test="@area!=''">
+							<div>
+							<b>Area: </b><xsl:value-of select="@area" />
+							</div>
+							</xsl:if>
+							<xsl:if test="@target!=''">
+							<div>
+							<b>Target: </b><xsl:value-of select="@target" />
+							</div>
+							</xsl:if>
+							<xsl:if test="@duration!=''">
+							<div>
+							<b>Duration: </b><xsl:value-of select="@duration" />
+							</div>
+							</xsl:if>
+							<div>
+							<b>Saving Throw: </b><xsl:value-of select="@save" />
+							DC <xsl:value-of select="@dc" />
+							SR <xsl:value-of select="@resist" />
+							</div>
+						</div>
+						<!-- not putting the id here, because this whole block is the click target -->
+					<xsl:call-template name="has-description"></xsl:call-template>	
+					</div>
 </div>
-
 				</xsl:for-each>
 				</xsl:for-each>
 				<h3>Magic Items</h3>
@@ -505,6 +551,7 @@ TODO
 	</xsl:template>
 
 	<xsl:template name="do-weapon">
+		<xsl:param name="id"/>
 		<div class="weapon">
 			<span>
 				<xsl:value-of select="@name" />
@@ -524,18 +571,22 @@ TODO
 				<xsl:value-of select="@damage" />
 			</span>
 			<xsl:call-template name="do-situational-modifiers"></xsl:call-template>
-			<xsl:call-template name="has-description"></xsl:call-template>
+			<xsl:call-template name="has-description">
+				<xsl:with-param name="id"><xsl:value-of select="$id" /></xsl:with-param>
+			</xsl:call-template>
 		</div>
 
 	</xsl:template>
 
 	<xsl:template name="do-situational-modifiers">
+		<xsl:param name="id"/>
 		<xsl:for-each select="situationalmodifiers">
 			<xsl:call-template name="do-situational-modifier"/>
 		</xsl:for-each>
 	</xsl:template>
 
 	<xsl:template name="do-situational-modifier">
+		<xsl:param name="id"/>
 			<xsl:choose>
 				<xsl:when test="situationalmodifier">
 					<xsl:for-each select="situationalmodifier">
@@ -557,8 +608,11 @@ TODO
 	</xsl:template>
 
 	<xsl:template name="has-description">
+		<xsl:param name="id"/>
 		<xsl:for-each select="description">
 			<div class="description">
+				<xsl:attribute name="click-target"><xsl:value-of
+					select="$id" /></xsl:attribute>
 				<xsl:value-of select="." />
 			</div>
 		</xsl:for-each>
