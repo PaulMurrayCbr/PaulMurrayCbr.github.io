@@ -14,7 +14,7 @@
 $.ajaxSetup({ cache: false });
 
 const pages = ['2022-09-15', '2022-09-27', '2022-10-04', '2022-10-15', '2022-10-18', '2022-10-26', '2022-11-02', '2022-11-13', 
-	'2022-11-18', '2022-11-27','2022-12-06', ];
+	'2022-11-18', '2022-11-27','2022-12-06','2022-12-13', ];
 
 const lastPage = pages.length-1;
 
@@ -148,17 +148,18 @@ $(()=>{
 	}
 }
 
-.situational-modifier { margin-left: 1em; font-size:80%; font-family: serif;}
-.description {font-size:80%; font-family: serif; white-space: pre-wrap;}
-.health { font-size: 125%; margin: .5em 0; } 
-.health .hp { border: thin solid  #102040; padding: .25em; } 
+
+.characterpage .situational-modifier { margin-left: 1em; font-size:80%; font-family: serif;}
+.characterpage .description {font-size:80%; font-family: serif; white-space: pre-wrap;}
+.characterpage .health { font-size: 125%; margin: .5em 0; } 
+.characterpage .health .hp { border: thin solid  #102040; padding: .25em; } 
 .characterpage table {font-family: serif;}
-.ac .summary { font-size: 125%; margin: .5em 0; } 
-.ac .summary span { border: thin solid  #102040; padding: .25em; } 
-.init .summary { font-size: 125%; margin: .5em 0; } 
-.init .summary span { border: thin solid  #102040; padding: .25em; } 
-.spell {display: inline-block; margin-right: 1em;}
-.spellblock {font-size:80%; font-family: serif;}
+.characterpage .ac .summary { font-size: 125%; margin: .5em 0; } 
+.characterpage .ac .summary span { border: thin solid  #102040; padding: .25em; } 
+.characterpage .init .summary { font-size: 125%; margin: .5em 0; } 
+.characterpage .init .summary span { border: thin solid  #102040; padding: .25em; } 
+.characterpage .spell {display: inline-block; margin-right: 1em;}
+.characterpage .spellblock {font-size:80%; font-family: serif;}
 </style>
 
 <script type="text/javascript">
