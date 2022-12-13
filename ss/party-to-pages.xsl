@@ -326,9 +326,11 @@
 								<xsl:variable name="attack_special_id" select="concat($attack_id, '-special-', position())"/>
 								<div>
 									<xsl:attribute name="click-source"><xsl:value-of select="$attack_special_id" /></xsl:attribute>
+									<span  class="has-description">
 									Special:
 									<xsl:value-of select="@name" />
 									(<xsl:value-of select="@sourcetext" />)
+									</span>
 									<xsl:call-template name="has-description">
 										<xsl:with-param name="id"><xsl:value-of select="$attack_special_id" /></xsl:with-param>
 									</xsl:call-template>
@@ -341,7 +343,6 @@
 					<xsl:for-each select="melee[@*|*|text()]">
 						<xsl:variable name="melee_id" select="concat($character_id, '-melee-', position())"/>
 						<div class="melee">
-							Melee:
 							<xsl:for-each select="weapon[@*|*|text()]">
 								<xsl:variable name="melee_weapon_id" select="concat($melee_id, '-weapon-', position())"/>
 								<xsl:call-template name="do-weapon">
@@ -353,7 +354,6 @@
 					<xsl:for-each select="ranged[@*|*|text()]">
 						<xsl:variable name="ranged_id" select="concat($character_id, '-ranged-', position())"/>
 						<div class="ranged">
-						Ranged:
 							<xsl:for-each select="weapon[@*|*|text()]">
 								<xsl:variable name="ranged_weapon_id" select="concat($ranged_id, '-weapon-', position())"/>
 								<xsl:call-template name="do-weapon" >
@@ -426,7 +426,7 @@
 						<xsl:variable name="animaltrick_id" select="concat($character_id, '-animaltrick-', position())"/>
 						<div class="animaltrick">
 							<xsl:attribute name="click-source"><xsl:value-of select="$animaltrick_id" /></xsl:attribute>
-						<xsl:value-of select="@name"/>
+						<span  class="has-description"><xsl:value-of select="@name"/></span>
 						<xsl:call-template name="has-description">
 								<xsl:with-param name="id"><xsl:value-of select="$animaltrick_id" /></xsl:with-param>
 							</xsl:call-template>
@@ -439,8 +439,9 @@
 					<xsl:variable name="feat_id" select="concat($character_id, '-feat-', position())"/>
 					<div class="feat">
 						<xsl:attribute name="click-source"><xsl:value-of select="$feat_id" /></xsl:attribute>
-						<xsl:value-of select="@name"/>
+						<span class="has-description"><xsl:value-of select="@name"/>
 						<xsl:if test="@categorytext!=''">(<xsl:value-of select="@categorytext"/>)</xsl:if>
+						</span>
 						<xsl:call-template name="has-description">
 								<xsl:with-param name="id"><xsl:value-of select="$feat_id" /></xsl:with-param>
 							</xsl:call-template>
@@ -453,7 +454,7 @@
 						<xsl:variable name="otherspecial_id" select="concat($character_id, '-otherspecial-', position())"/>
 						<div class="special">
 							<xsl:attribute name="click-source"><xsl:value-of select="$otherspecial_id" /></xsl:attribute>
-							<xsl:value-of select="@name"/>
+							<span class="has-description"><xsl:value-of select="@name"/></span>
 							<xsl:call-template name="has-description">
 								<xsl:with-param name="id"><xsl:value-of select="$otherspecial_id" /></xsl:with-param>
 							</xsl:call-template>
@@ -470,10 +471,10 @@
 					<xsl:variable name="spell_id" select="concat($spellblock_id, '-spell-', position())"/>
 					<div class="spell">
 						<xsl:attribute name="click-source"><xsl:value-of select="$spell_id" /></xsl:attribute>
-						<h4>
-							<xsl:value-of select="@name" />
+						<h4 class="has-description">
+							<xsl:value-of select="@name"/>
 						</h4>
-						<div>
+						<div class="spell-block-toggle">
 						<xsl:attribute name="click-target"><xsl:value-of select="$spell_id"/></xsl:attribute>
 						<div>
 							<span>
@@ -553,27 +554,30 @@ TODO
 	<xsl:template name="do-weapon">
 		<xsl:param name="id"/>
 		<div class="weapon">
-			<span>
-				<xsl:value-of select="@name" />
+			<xsl:attribute name="click-source"><xsl:value-of select="$id"/></xsl:attribute>
+			<span class="has-description">
+				<span>
+					<xsl:value-of select="@name" />
+				</span>
+				-
+				<span>
+					<xsl:value-of select="@categorytext" />
+				</span>
+				<span>(<xsl:value-of select="weptype" />)</span>
+				<span>
+					<xsl:value-of select="@attack" />
+				</span>
+				<span>
+					(<xsl:value-of select="@crit" />)
+				</span>
+				<span>
+					<xsl:value-of select="@damage" />
+				</span>
 			</span>
-			-
-			<span>
-				<xsl:value-of select="@categorytext" />
-			</span>
-			<span>(<xsl:value-of select="weptype" />)</span>
-			<span>
-				<xsl:value-of select="@attack" />
-			</span>
-			<span>
-				(<xsl:value-of select="@crit" />)
-			</span>
-			<span>
-				<xsl:value-of select="@damage" />
-			</span>
-			<xsl:call-template name="do-situational-modifiers"></xsl:call-template>
 			<xsl:call-template name="has-description">
 				<xsl:with-param name="id"><xsl:value-of select="$id" /></xsl:with-param>
 			</xsl:call-template>
+			<xsl:call-template name="do-situational-modifiers"></xsl:call-template>
 		</div>
 
 	</xsl:template>

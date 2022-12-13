@@ -160,6 +160,17 @@ $(()=>{
 .characterpage .init .summary span { border: thin solid  #102040; padding: .25em; } 
 .characterpage .spell {display: inline-block; margin-right: 1em;}
 .characterpage .spellblock {font-size:80%; font-family: serif;}
+
+.characterpage .has-description {cursor: pointer;}
+.characterpage .has-description::after {
+  content: " ⓘ";
+}
+.characterpage .description {display: none; }
+.characterpage .spell .description {display: inline-block; }
+.characterpage .spell-block-toggle {display: none; }
+
+
+
 </style>
 
 <script type="text/javascript">
@@ -227,11 +238,15 @@ function loadPartyPages(zip) {
 	console.log("result",resultDocument);
 	
 	document.getElementById("characterpages").appendChild(resultDocument)
-	
-	
+	$("*[click-source]").bind("click", toggleClick);
 }
 
-
+function toggleClick(e) {
+	const id = $(e.target).attr('click-source') || $(e.target).parents('[click-source]').attr('click-source');
+	if(id) {
+		$("*[click-target='"+id+"']").toggle();
+	}
+}
 
 </script>
 
