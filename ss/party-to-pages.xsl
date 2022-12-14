@@ -385,36 +385,36 @@
 				
 				<table>
 					<xsl:attribute name="click-target"><xsl:value-of select="concat($character_id, '-skill-table')" /></xsl:attribute>
-				<tr>
-<td></td>
-<td></td>
-<td>ranks</td>
-<td>class</td>
-<td colspan="2">attr</td>
-<td>armour
-<xsl:value-of select='penalties/penalty[@name="Armor Check Penalty"]/@value'/>
-</td>
-</tr>
-<xsl:for-each select="skills/skill">
-	<xsl:variable name="skill_id" select="concat($character_id, '-skill-', position())"/>
-<tr>
-<td><xsl:value-of select="@name"/> </td>
-<td style="text-align: right;"><xsl:value-of select="@value"/></td>
-<td style="text-align: right;"><xsl:value-of select="@ranks"/></td>
-<td style="text-align: center;"><xsl:if test="@classskill='yes'">*</xsl:if></td>
-<td><xsl:value-of select="@attrname"/></td>
-<td style="text-align: right;"><xsl:value-of select="@attrbonus"/> </td>
-<td  style="text-align: center;"><xsl:if test="@armorcheck='yes'"><B>!</B></xsl:if></td>
-</tr>
-<xsl:for-each select="situationalmodifiers[@*|*]">
-	<xsl:variable name="skill_modifier_id" select="concat($skill_id, '-modifier-', position())"/>
-	<tr>
-		<td colspan="7">
-			<xsl:call-template name="do-situational-modifier" />
-		</td>
-	</tr>
-</xsl:for-each>
-</xsl:for-each>
+					<tr>
+						<td></td>
+						<td></td>
+						<td>ranks</td>
+						<td>class</td>
+						<td colspan="2">attr</td>
+						<td>armour
+						<xsl:value-of select='penalties/penalty[@name="Armor Check Penalty"]/@value'/>
+						</td>
+					</tr>
+					<xsl:for-each select="skills/skill">
+						<xsl:variable name="skill_id" select="concat($character_id, '-skill-', position())"/>
+						<tr>
+							<td><xsl:value-of select="@name"/> </td>
+							<td style="text-align: right;"><xsl:value-of select="@value"/></td>
+							<td style="text-align: right;"><xsl:value-of select="@ranks"/></td>
+							<td style="text-align: center;"><xsl:if test="@classskill='yes'">*</xsl:if></td>
+							<td><xsl:value-of select="@attrname"/></td>
+							<td style="text-align: right;"><xsl:value-of select="@attrbonus"/> </td>
+							<td  style="text-align: center;"><xsl:if test="@armorcheck='yes'"><B>!</B></xsl:if></td>
+						</tr>
+						<xsl:for-each select="situationalmodifiers[@*|*]">
+							<xsl:variable name="skill_modifier_id" select="concat($skill_id, '-modifier-', position())"/>
+							<tr>
+								<td colspan="7">
+									<xsl:call-template name="do-situational-modifier" />
+								</td>
+							</tr>
+						</xsl:for-each>
+				</xsl:for-each>
 
 				</table>
 				</div>
