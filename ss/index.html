@@ -148,6 +148,9 @@ $(()=>{
 	}
 }
 
+#characterpages {
+	font-family: serif;
+}
 
 .characterpage .situational-modifier { margin-left: 1em; font-size:80%; font-family: serif;}
 .characterpage .description {font-size:80%; font-family: serif; white-space: pre-wrap;}
@@ -160,15 +163,21 @@ $(()=>{
 .characterpage .init .summary span { border: thin solid  #102040; padding: .25em; } 
 .characterpage .spell {display: inline-block; margin-right: 1em;}
 .characterpage .spellblock {font-size:80%; font-family: serif;}
+.characterpage .spell-name {font-weight: bold;}
+
+.characterpage .skills table {display:none;}
 
 .characterpage .has-description {cursor: pointer;}
 .characterpage .has-description::after {
   content: " ⓘ";
 }
 .characterpage .description {display: none; }
+.characterpage .description {display: none; }
 .characterpage .spell .description {display: inline-block; }
 .characterpage .spell-block-toggle {display: none; }
 
+.characterpage .item {display: inline-block; }
+.characterpage .tracked-resource {display: inline-block; }
 
 
 </style>

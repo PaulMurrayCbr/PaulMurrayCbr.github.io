@@ -365,7 +365,10 @@
 
 				</div>
 				<div class="skills">
-				<h3>Skills</h3>
+				<h3 class="has-description">
+					<xsl:attribute name="click-source"><xsl:value-of select="concat($character_id, '-skill-table')" /></xsl:attribute>
+				Skills
+				</h3>
 				
 					<xsl:for-each select="skillabilities/special">
 						<xsl:variable name="skillability_id" select="concat($character_id, '-skillability-', position())"/>
@@ -381,6 +384,7 @@
 					</xsl:for-each>
 				
 				<table>
+					<xsl:attribute name="click-target"><xsl:value-of select="concat($character_id, '-skill-table')" /></xsl:attribute>
 				<tr>
 <td></td>
 <td></td>
@@ -420,27 +424,14 @@
 				TODO
 				</xsl:if>
 				
-				<xsl:if test="animaltricks/*">
-					<h3>Animal Tricks</h3>
-					<xsl:for-each select="animaltricks/animaltrick">
-						<xsl:variable name="animaltrick_id" select="concat($character_id, '-animaltrick-', position())"/>
-						<div class="animaltrick">
-							<xsl:attribute name="click-source"><xsl:value-of select="$animaltrick_id" /></xsl:attribute>
-						<span  class="has-description"><xsl:value-of select="@name"/></span>
-						<xsl:call-template name="has-description">
-								<xsl:with-param name="id"><xsl:value-of select="$animaltrick_id" /></xsl:with-param>
-							</xsl:call-template>
-						</div>
-					</xsl:for-each>
-				</xsl:if>
-
-				<h3>Feats</h3>
-				<xsl:for-each select="feats/feat">
+				<h3>Feats, Traits, Flaws, Tricks, Other Specials</h3>
+				<xsl:for-each select="feats/feat|traits/trait|flaws/flaw|animaltricks/animaltrick|otherspecials/special">
 					<xsl:variable name="feat_id" select="concat($character_id, '-feat-', position())"/>
 					<div class="feat">
 						<xsl:attribute name="click-source"><xsl:value-of select="$feat_id" /></xsl:attribute>
 						<span class="has-description"><xsl:value-of select="@name"/>
 						<xsl:if test="@categorytext!=''">(<xsl:value-of select="@categorytext"/>)</xsl:if>
+						[<xsl:value-of select="name(.)"/>]
 						</span>
 						<xsl:call-template name="has-description">
 								<xsl:with-param name="id"><xsl:value-of select="$feat_id" /></xsl:with-param>
@@ -448,19 +439,6 @@
 					</div>
 				</xsl:for-each>
 				
-				<xsl:if test="otherspecials/*">
-					<h3>Other Specials</h3>
-					<xsl:for-each select="otherspecials/special">
-						<xsl:variable name="otherspecial_id" select="concat($character_id, '-otherspecial-', position())"/>
-						<div class="special">
-							<xsl:attribute name="click-source"><xsl:value-of select="$otherspecial_id" /></xsl:attribute>
-							<span class="has-description"><xsl:value-of select="@name"/></span>
-							<xsl:call-template name="has-description">
-								<xsl:with-param name="id"><xsl:value-of select="$otherspecial_id" /></xsl:with-param>
-							</xsl:call-template>
-						</div>
-					</xsl:for-each>
-				</xsl:if>
 
 				<xsl:for-each select="*[spell]">
 					<xsl:variable name="spellblock_id" select="concat($character_id, '-spellblock-', position())"/>
@@ -471,9 +449,9 @@
 					<xsl:variable name="spell_id" select="concat($spellblock_id, '-spell-', position())"/>
 					<div class="spell">
 						<xsl:attribute name="click-source"><xsl:value-of select="$spell_id" /></xsl:attribute>
-						<h4 class="has-description">
+						<div class="spell-name has-description">
 							<xsl:value-of select="@name"/>
-						</h4>
+						</div>
 						<div class="spell-block-toggle">
 						<xsl:attribute name="click-target"><xsl:value-of select="$spell_id"/></xsl:attribute>
 						<div>
@@ -537,12 +515,36 @@
 </div>
 				</xsl:for-each>
 				</xsl:for-each>
-				<h3>Magic Items</h3>
-TODO
-				<h3>Tracked Resources</h3>
-TODO
-				<h3>Gear</h3>
-TODO
+				
+				<xsl:if test="magicitems/item|gear/item">
+				<h3>Items and Gear</h3>
+				<xsl:for-each select="magicitems/item|gear/item">
+					<xsl:variable name="item_id" select="concat($character_id, '-item-', position())"/>
+
+					<span class="item">
+						<xsl:attribute name="click-source"><xsl:value-of select="$item_id" /></xsl:attribute>
+						<xsl:if test="position()!=1"><xsl:text><![CDATA[ ]]></xsl:text></xsl:if> 
+						<span class="has-description">
+							<xsl:value-of select="@name"/>
+							<xsl:if test="itemslot/text()!=''">
+								[<xsl:value-of select="itemslot"/>]
+							</xsl:if>
+						</span>
+						<xsl:call-template name="has-description">
+								<xsl:with-param name="id"><xsl:value-of select="$item_id" /></xsl:with-param>
+							</xsl:call-template>
+					</span>
+					<xsl:text><![CDATA[ ]]></xsl:text>
+				</xsl:for-each>
+				
+				</xsl:if>
+				<xsl:if test="trackedresources/trackedresource">
+					<h3>Tracked Resources</h3>
+					<xsl:for-each select="trackedresources/trackedresource"> 
+						<xsl:if test="position()!=1"><xsl:text><![CDATA[, ]]></xsl:text></xsl:if>
+						<span class="tracked-resource"><xsl:value-of select="@name"/></span>
+					</xsl:for-each>
+				</xsl:if>
 				<div class="legal">
 					<xsl:copy-of
 						select="/document/public/program/programinfo/text()" />
