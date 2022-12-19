@@ -7,7 +7,7 @@ Pathfinder® and associated marks and logos are trademarks of Paizo Inc.®, and 
             <version version="8.9h" primary="8" secondary="9" tertiary="h" build="957"></version>
         </program>
         <localization language="eng" units="imperial"></localization>
-        <character active="yes" characterindex="1" nature="normal" role="pc" relationship="ally" type="Hero" name="Jack Profile" playername="">
+        <character characterindex="1" nature="normal" role="pc" relationship="ally" type="Hero" name="Jack Profile" playername="">
             <race racetext="human" name="human" ethnicity=""></race>
             <alignment name="True Neutral"></alignment>
             <templates summary=""></templates>
@@ -1607,7 +1607,7 @@ Summon Monster Tables
             <settings summary="Advanced Class Guide: Advanced Class Guide; Advanced Player's Guide: Advanced Player's Guide, Advanced Player's Guide Traits, Advanced Player's Guide New Combat Maneuvers; Advanced Race Guide: Advanced Race Guide; Pathfinder Unchained -&gt; Chapter 4: Magic: Scaling Items; Ultimate Campaign -&gt; Ultimate Campaign Character Backgrounds: Unrestricted Traits &amp; Drawbacks; Ultimate Combat: Ultimate Combat; Ultimate Equipment: Ultimate Equipment; Ultimate Intrigue: Ultimate Intrigue; Ultimate Magic: Ultimate Magic, Ultimate Magic Familiars; Player Companion: Sargava, the Lost Colony, Weapon Master's Handbook; Campaign Setting: Heart of the Jungle, Inner Sea Races, Inner Sea World Guide; Miscellaneous Content: Character Traits Web Enhancement, Core Rulebook Deities, GameMastery Guide; Pathfinder Adventure Paths: Serpent's Skull; Advancement Speed: Medium Advancement; Firearm Availability: Emerging Guns; Experimental Options: Show statblock summary window; Output Options: Hide Ammo (in weapons), Hide Unusable Skills, Show Activated Abilities &amp; Adjustments, Show Feat / Ability Descriptions, Show Hero Portrait, Show Sourcebook Report"></settings>
             <minions></minions>
         </character>
-        <character characterindex="1" nature="normal" role="pc" relationship="ally" type="Hero" name="Kraig" playername="">
+        <character active="yes" characterindex="1" nature="normal" role="pc" relationship="ally" type="Hero" name="Kraig" playername="">
             <race racetext="halfling" name="halfling" ethnicity=""></race>
             <alignment name="Lawful Good"></alignment>
             <templates summary=""></templates>
@@ -1616,10 +1616,10 @@ Summon Monster Tables
                 <reach text="5'" value="5"></reach>
             </size>
             <deity name="Iomedae"></deity>
-            <challengerating value="2" text="CR 2"></challengerating>
-            <xpaward value="600" text="600 XP"></xpaward>
-            <classes level="3" summary="cavalier 3" summaryabbr="Cav 3">
-                <class name="Cavalier" level="3" spells="" casterlevel="0" concentrationcheck="+6" overcomespellresistance="+0" basespelldc="14" castersource=""></class>
+            <challengerating value="3" text="CR 3"></challengerating>
+            <xpaward value="800" text="800 XP"></xpaward>
+            <classes level="4" summary="cavalier 4" summaryabbr="Cav 4">
+                <class name="Cavalier" level="4" spells="" casterlevel="0" concentrationcheck="+6" overcomespellresistance="+0" basespelldc="14" castersource=""></class>
             </classes>
             <factions></factions>
             <types>
@@ -1634,7 +1634,7 @@ Summon Monster Tables
             <favoredclasses>
                 <favoredclass name="Cavalier"></favoredclass>
             </favoredclasses>
-            <health hitdice="3d10+9" hitpoints="30" damage="0" nonlethal="0" currenthp="30"></health>
+            <health hitdice="4d10+13" hitpoints="36" damage="0" nonlethal="0" currenthp="36"></health>
             <xp total="9000"></xp>
             <money total="48" pp="0" gp="48" sp="0" cp="0" cn1="0" cn2="0" cn3="0" cn4="0" valuables="0"></money>
             <personal gender="" age="25" hair="" eyes="" skin="">
@@ -1668,8 +1668,8 @@ Summon Monster Tables
                     <situationalmodifiers text=""></situationalmodifiers>
                 </attribute>
                 <attribute name="Wisdom">
-                    <attrvalue text="11" base="11" modified="11"></attrvalue>
-                    <attrbonus text="0" base="+0" modified="+0"></attrbonus>
+                    <attrvalue text="12" base="12" modified="12"></attrvalue>
+                    <attrbonus text="+1" base="+1" modified="+1"></attrbonus>
                     <situationalmodifiers text=""></situationalmodifiers>
                 </attribute>
                 <attribute name="Charisma">
@@ -1679,13 +1679,13 @@ Summon Monster Tables
                 </attribute>
             </attributes>
             <saves>
-                <save name="Fortitude Save" abbr="Fort" save="+7" base="+3" fromattr="+3" fromresist="" frommisc="+1">
+                <save name="Fortitude Save" abbr="Fort" save="+8" base="+4" fromattr="+3" fromresist="" frommisc="+1">
                     <situationalmodifiers text=""></situationalmodifiers>
                 </save>
                 <save name="Reflex Save" abbr="Ref" save="+5" base="+1" fromattr="+3" fromresist="" frommisc="+1">
                     <situationalmodifiers text=""></situationalmodifiers>
                 </save>
-                <save name="Will Save" abbr="Will" save="+2" base="+1" fromattr="" fromresist="" frommisc="+1">
+                <save name="Will Save" abbr="Will" save="+3" base="+1" fromattr="+1" fromresist="" frommisc="+1">
                     <situationalmodifiers text=""></situationalmodifiers>
                 </save>
                 <allsaves save="+1" base="" fromresist="" frommisc="+1">
@@ -1704,57 +1704,57 @@ Summon Monster Tables
             <immunities></immunities>
             <resistances></resistances>
             <weaknesses></weaknesses>
-            <armorclass ac="16" touch="12" flatfooted="15" fromarmor="+3" fromshield="+1" fromdexterity="+1" fromwisdom="" fromcharisma="" fromsize="+1" fromnatural="" fromdeflect="" fromdodge="" frommisc="">
+            <armorclass ac="19" touch="14" flatfooted="16" fromarmor="+4" fromshield="+1" fromdexterity="+3" fromwisdom="" fromcharisma="" fromsize="+1" fromnatural="" fromdeflect="" fromdodge="" frommisc="">
                 <situationalmodifiers text="Cavalier's Charge: No penalty to AC when charging while mounted.">
                     <situationalmodifier text="No penalty to AC when charging while mounted." source="Cavalier's Charge"></situationalmodifier>
                 </situationalmodifiers>
             </armorclass>
             <penalties>
-                <penalty name="Armor Check Penalty" text="-6" value="-6"></penalty>
-                <penalty name="Max Dex Bonus" text="1" value="1"></penalty>
+                <penalty name="Armor Check Penalty" text="-2" value="-2"></penalty>
+                <penalty name="Max Dex Bonus" text="4" value="4"></penalty>
             </penalties>
-            <maneuvers cmb="+6" cmd="19" cmdflatfooted="16">
+            <maneuvers cmb="+7" cmd="20" cmdflatfooted="17">
                 <situationalmodifiers text=""></situationalmodifiers>
-                <maneuvertype name="Awesome Blow" bonus="0" cmb="+6" cmd="19">
+                <maneuvertype name="Awesome Blow" bonus="0" cmb="+7" cmd="20">
                     <situationalmodifiers text=""></situationalmodifiers>
                 </maneuvertype>
-                <maneuvertype name="Bull Rush" bonus="0" cmb="+6" cmd="19">
+                <maneuvertype name="Bull Rush" bonus="0" cmb="+7" cmd="20">
                     <situationalmodifiers text=""></situationalmodifiers>
                 </maneuvertype>
-                <maneuvertype name="Dirty Trick" bonus="0" cmb="+6" cmd="19">
+                <maneuvertype name="Dirty Trick" bonus="0" cmb="+7" cmd="20">
                     <situationalmodifiers text=""></situationalmodifiers>
                 </maneuvertype>
-                <maneuvertype name="Disarm" bonus="0" cmb="+6" cmd="19">
+                <maneuvertype name="Disarm" bonus="0" cmb="+7" cmd="20">
                     <situationalmodifiers text=""></situationalmodifiers>
                 </maneuvertype>
-                <maneuvertype name="Drag" bonus="0" cmb="+6" cmd="19">
+                <maneuvertype name="Drag" bonus="0" cmb="+7" cmd="20">
                     <situationalmodifiers text=""></situationalmodifiers>
                 </maneuvertype>
-                <maneuvertype name="Feint" bonus="0" cmb="+6" cmd="19">
+                <maneuvertype name="Feint" bonus="0" cmb="+7" cmd="20">
                     <situationalmodifiers text=""></situationalmodifiers>
                 </maneuvertype>
-                <maneuvertype name="Grapple" bonus="0" cmb="+6" cmd="19">
+                <maneuvertype name="Grapple" bonus="0" cmb="+7" cmd="20">
                     <situationalmodifiers text=""></situationalmodifiers>
                 </maneuvertype>
-                <maneuvertype name="Overrun" bonus="0" cmb="+6" cmd="19">
+                <maneuvertype name="Overrun" bonus="0" cmb="+7" cmd="20">
                     <situationalmodifiers text=""></situationalmodifiers>
                 </maneuvertype>
-                <maneuvertype name="Pull" bonus="0" cmb="+6" cmd="19">
+                <maneuvertype name="Pull" bonus="0" cmb="+7" cmd="20">
                     <situationalmodifiers text=""></situationalmodifiers>
                 </maneuvertype>
-                <maneuvertype name="Push" bonus="0" cmb="+6" cmd="19">
+                <maneuvertype name="Push" bonus="0" cmb="+7" cmd="20">
                     <situationalmodifiers text=""></situationalmodifiers>
                 </maneuvertype>
-                <maneuvertype name="Reposition" bonus="0" cmb="+6" cmd="19">
+                <maneuvertype name="Reposition" bonus="0" cmb="+7" cmd="20">
                     <situationalmodifiers text=""></situationalmodifiers>
                 </maneuvertype>
-                <maneuvertype name="Steal" bonus="0" cmb="+6" cmd="19">
+                <maneuvertype name="Steal" bonus="0" cmb="+7" cmd="20">
                     <situationalmodifiers text=""></situationalmodifiers>
                 </maneuvertype>
-                <maneuvertype name="Sunder" bonus="0" cmb="+6" cmd="19">
+                <maneuvertype name="Sunder" bonus="0" cmb="+7" cmd="20">
                     <situationalmodifiers text=""></situationalmodifiers>
                 </maneuvertype>
-                <maneuvertype name="Trip" bonus="0" cmb="+6" cmd="19">
+                <maneuvertype name="Trip" bonus="0" cmb="+7" cmd="20">
                     <situationalmodifiers text=""></situationalmodifiers>
                 </maneuvertype>
             </maneuvers>
@@ -1762,12 +1762,12 @@ Summon Monster Tables
                 <situationalmodifiers text=""></situationalmodifiers>
             </initiative>
             <movement>
-                <speed text="15'" value="15"></speed>
+                <speed text="20'" value="20"></speed>
                 <basespeed text="20'" value="20"></basespeed>
             </movement>
-            <encumbrance carried="129.585" encumstr="16" light="57" medium="114.75" heavy="172.5" level="Heavy Load"></encumbrance>
+            <encumbrance carried="19.585" encumstr="16" light="57" medium="114.75" heavy="172.5" level="Light Load"></encumbrance>
             <skills>
-                <skill name="Acrobatics" ranks="0" attrbonus="3" attrname="DEX" value="-1" armorcheck="yes">
+                <skill name="Acrobatics" ranks="0" attrbonus="3" attrname="DEX" value="3" armorcheck="yes">
                     <description>You can keep your balance while traversing narrow or treacherous surfaces. You can also dive, flip, jump, and roll to avoid attacks and overcome obstacles.
 
 Check: You can use Acrobatics to move on narrow surfaces and uneven ground without falling. A successful check allows you to move at half speed across such surfaces - only one check is needed per round. Use the following table to determine the base DC, which is then modified by the Acrobatics skill modifiers noted on page 89. While you are using Acrobatics in this way, you are considered flat-footed and lose your Dexterity bonus to your AC (if any). If you take damage while using Acrobatics, you must immediately make another Acrobatics check at the same DC to avoid falling or being knocked prone.
@@ -1821,8 +1821,8 @@ Move at full speed on narrow or uneven surfaces: +5*
 * This does not apply to checks made to jump.
 
 Continued - Core Rulebook, pg. 87</description>
-                    <situationalmodifiers text="Speed greater/less than 30 ft.: -8 to jump">
-                        <situationalmodifier text="-8 to jump" source="Speed greater/less than 30 ft."></situationalmodifier>
+                    <situationalmodifiers text="Speed greater/less than 30 ft.: -4 to jump">
+                        <situationalmodifier text="-4 to jump" source="Speed greater/less than 30 ft."></situationalmodifier>
                     </situationalmodifiers>
                 </skill>
                 <skill name="Appraise" ranks="0" attrbonus="0" attrname="INT" value="0">
@@ -1872,7 +1872,7 @@ Special: A spellcaster with a viper familiar gains a +3 bonus on Bluff checks.
 If you have the Deceitful feat, you get a bonus on Bluff checks (see Chapter 5).</description>
                     <situationalmodifiers text=""></situationalmodifiers>
                 </skill>
-                <skill name="Climb" ranks="0" attrbonus="3" attrname="STR" value="-1" armorcheck="yes" classskill="yes" tools="uses">
+                <skill name="Climb" ranks="0" attrbonus="3" attrname="STR" value="3" armorcheck="yes" classskill="yes" tools="uses">
                     <description>You are skilled at scaling vertical surfaces, from smooth city walls to rocky cliffs.
 
 Check: With a successful Climb check, you can advance up, down, or across a slope, wall, or other steep incline (or even across a ceiling, provided it has handholds) at one-quarter your normal speed. A slope is considered to be any incline at an angle measuring less than 60 degrees; a wall is any incline at an angle measuring 60 degrees or more.
@@ -1950,7 +1950,7 @@ Try Again: You cannot use Diplomacy to influence a given creature's attitude mor
 Special: If you have the Persuasive feat, you gain a bonus on Diplomacy checks (see Chapter 5).</description>
                     <situationalmodifiers text=""></situationalmodifiers>
                 </skill>
-                <skill name="Disable Device" ranks="0" attrbonus="3" attrname="DEX" value="-5" armorcheck="yes" trainedonly="yes" usable="no" tools="needs">
+                <skill name="Disable Device" ranks="0" attrbonus="3" attrname="DEX" value="-1" armorcheck="yes" trainedonly="yes" usable="no" tools="needs">
                     <description>You are skilled at disarming traps and opening locks. In addition, this skill lets you sabotage simple mechanical devices, such as catapults, wagon wheels, and doors.
 
 Check: When disarming a trap or other device, the Disable Device check is made secretly, so that you don't necessarily know whether you've succeeded.
@@ -2026,7 +2026,7 @@ You must make a Disguise check when you cast a simulacrum spell to determine how
 If you have the Deceitful feat, you gain a bonus on Disguise checks (see Chapter 5).</description>
                     <situationalmodifiers text=""></situationalmodifiers>
                 </skill>
-                <skill name="Escape Artist" ranks="0" attrbonus="3" attrname="DEX" value="-3" armorcheck="yes">
+                <skill name="Escape Artist" ranks="0" attrbonus="3" attrname="DEX" value="1" armorcheck="yes">
                     <description>Your training allows you to slip out of bonds and escape from grapples.
 
 Check: The table below gives the DCs needed to escape various forms of restraints.
@@ -2051,7 +2051,7 @@ Try Again: Varies. You can make another check after a failed check if you're squ
 Special: If you have the Stealthy feat, you gain a bonus on Escape Artist checks (see Chapter 5).</description>
                     <situationalmodifiers text=""></situationalmodifiers>
                 </skill>
-                <skill name="Fly" ranks="0" attrbonus="3" attrname="DEX" value="-1" armorcheck="yes">
+                <skill name="Fly" ranks="0" attrbonus="3" attrname="DEX" value="3" armorcheck="yes">
                     <description>You are skilled at flying, through either the use of wings or magic, and can perform daring or complex maneuvers while airborne. Note that this skill does not give you the ability to fly.
 
 Check: You generally need only make a Fly check when you are attempting a complex maneuver. Without making a check, a flying creature can remain flying at the end of its turn so long as it moves a distance greater than half its speed. It can also turn up to 45 degrees by sacrificing 5 feet of movement, can rise at half speed at an angle of 45 degrees, and can descend at any angle at normal speed. Note that these restrictions only apply to movement taken during your current turn. At the beginning of the next turn, you can move in a different direction than you did the previous turn without making a check. Taking any action that violates these rules requires a Fly check. The difficulty of these maneuvers varies depending upon the maneuver you are attempting, as noted on the following chart.
@@ -2125,7 +2125,7 @@ An animal can be trained for only one general purpose, though if the creature is
 Continued - Core Rulebook, pg. 97.</description>
                     <situationalmodifiers text="Animal Companion Link: +4 circumstance bonus to checks made regarding an animal companion"></situationalmodifiers>
                 </skill>
-                <skill name="Heal" ranks="2" attrbonus="0" attrname="WIS" value="5" classskill="yes" tools="uses">
+                <skill name="Heal" ranks="2" attrbonus="1" attrname="WIS" value="6" classskill="yes" tools="uses">
                     <description>You are skilled at tending to wounds and ailments.
 
 Check: The DC and effect of a Heal check depend on the task you attempt.
@@ -2162,11 +2162,11 @@ Try Again: Varies. Generally speaking, you can't try a Heal check again without 
 Special: A character with the Self-Sufficient feat gets a bonus on Heal checks (see Chapter 5).
 
 A healer's kit gives you a +2 circumstance bonus on Heal checks.</description>
-                    <situationalmodifiers text="Shield's Skills: +1 bonus when used on someone other than yourself">
-                        <situationalmodifier text="+1 bonus when used on someone other than yourself" source="Shield's Skills"></situationalmodifier>
+                    <situationalmodifiers text="Shield's Skills: +2 bonus when used on someone other than yourself">
+                        <situationalmodifier text="+2 bonus when used on someone other than yourself" source="Shield's Skills"></situationalmodifier>
                     </situationalmodifiers>
                 </skill>
-                <skill name="Intimidate" ranks="0" attrbonus="4" attrname="CHA" value="4" classskill="yes">
+                <skill name="Intimidate" ranks="1" attrbonus="4" attrname="CHA" value="8" classskill="yes">
                     <description>You can use this skill to frighten your opponents or to get them to act in a way that benefits you. This skill includes verbal threats and displays of prowess.
 
 Check: You can use Intimidate to force an opponent to act friendly toward you for 1d6 × 10 minutes with a successful check. The DC of this check is equal to 10 + the target's Hit Dice + the target's Wisdom modifier.
@@ -2237,7 +2237,7 @@ Try Again: Yes.
 Special: You must be trained to use this skill, but you can always attempt to read archaic and strange forms of your own racial bonus languages. In addition, you can also always attempt to detect a forgery.</description>
                     <situationalmodifiers text=""></situationalmodifiers>
                 </skill>
-                <skill name="Perception" ranks="2" attrbonus="0" attrname="WIS" value="4">
+                <skill name="Perception" ranks="3" attrbonus="1" attrname="WIS" value="6">
                     <description>Your senses allow you to notice fine details and alert you to danger. Perception covers all five senses, including sight, hearing, touch, taste, and smell.
 
 Check: Perception has a number of uses, the most common of which is an opposed check versus an opponent's Stealth check to notice the opponent and avoid being surprised. If you are successful, you notice the opponent and can react accordingly. If you fail, your opponent can take a variety of actions, including sneaking past you and attacking you.
@@ -2285,7 +2285,7 @@ Special: Elves, half-elves, gnomes, and halflings receive a +2 racial bonus on P
 A spellcaster with a hawk or owl familiar gains a +3 bonus on Perception checks. If you have the Alertness feat, you get a bonus on Perception checks (see Chapter 5).</description>
                     <situationalmodifiers text=""></situationalmodifiers>
                 </skill>
-                <skill name="Ride" ranks="3" attrbonus="3" attrname="DEX" value="3" armorcheck="yes" classskill="yes">
+                <skill name="Ride" ranks="3" attrbonus="3" attrname="DEX" value="7" armorcheck="yes" classskill="yes">
                     <description>You are skilled at riding mounts, usually a horse, but possibly something more exotic, like a griffon or pegasus. If you attempt to ride a creature that is ill suited as a mount, you take a -5 penalty on your Ride checks.
 
 Check: Typical riding actions don't require checks. You can saddle, mount, ride, and dismount from a mount without a problem. The following tasks do require checks.
@@ -2330,7 +2330,7 @@ If you use a military saddle you get a +2 circumstance bonus on Ride checks rela
 Ride is a prerequisite for Mounted Archery, Mounted Combat, Ride-By Attack, Spirited Charge, and Trample.</description>
                     <situationalmodifiers text=""></situationalmodifiers>
                 </skill>
-                <skill name="Sense Motive" ranks="0" attrbonus="0" attrname="WIS" value="0" classskill="yes">
+                <skill name="Sense Motive" ranks="1" attrbonus="1" attrname="WIS" value="5" classskill="yes">
                     <description>You are skilled at detecting falsehoods and true intentions.
 
 Check: A successful check lets you avoid being bluffed (see the Bluff skill). You can also use this skill to determine when "something is up" (that is, something odd is going on) or to assess someone's trustworthiness.
@@ -2355,7 +2355,7 @@ Special: A ranger gains a bonus on Sense Motive checks when using this skill aga
 If you have the Alertness feat, you get a bonus on Sense Motive checks (see Chapter 5).</description>
                     <situationalmodifiers text=""></situationalmodifiers>
                 </skill>
-                <skill name="Sleight of Hand" ranks="0" attrbonus="3" attrname="DEX" value="-3" armorcheck="yes" trainedonly="yes" usable="no">
+                <skill name="Sleight of Hand" ranks="0" attrbonus="3" attrname="DEX" value="1" armorcheck="yes" trainedonly="yes" usable="no">
                     <description>Your training allows you to pick pockets, draw hidden weapons, and take a variety of actions without being noticed.
 
 Check: A DC 10 Sleight of Hand check lets you palm a coin-sized, unattended object. Performing a minor feat of legerdemain, such as making a coin disappear, also has a DC of 10 unless an observer is determined to note where the item went.
@@ -2399,7 +2399,7 @@ An elf gets a +2 racial bonus on Spellcraft checks to identify the properties of
 If you have the Magical Aptitude feat, you gain a bonus on Spellcraft checks (see Chapter 5).</description>
                     <situationalmodifiers text=""></situationalmodifiers>
                 </skill>
-                <skill name="Stealth" ranks="0" attrbonus="3" attrname="DEX" value="1" armorcheck="yes">
+                <skill name="Stealth" ranks="0" attrbonus="3" attrname="DEX" value="5" armorcheck="yes">
                     <description>You are skilled at avoiding detection, allowing you to slip past foes or strike from an unseen position. Creatures that fail to beat your Stealth check are not aware of you and treat you as if you had total concealment. This skill covers hiding and moving silently.
 
 Check: Your Stealth check is opposed by the Perception check of anyone who might notice you. You can move up to half your normal speed and use Stealth at no penalty. When moving at a speed greater than half but less than your normal speed, you take a -5 penalty. It's impossible to use Stealth while attacking, running, or charging.
@@ -2421,7 +2421,7 @@ Special: If you are invisible, you gain a +40 bonus on Stealth checks if you are
 If you have the Stealthy feat, you get a bonus on Stealth checks (see Chapter 5).</description>
                     <situationalmodifiers text=""></situationalmodifiers>
                 </skill>
-                <skill name="Survival" ranks="0" attrbonus="0" attrname="WIS" value="0">
+                <skill name="Survival" ranks="0" attrbonus="1" attrname="WIS" value="1">
                     <description>You are skilled at surviving in the wild and at navigating in the wilderness. You also excel at following trails and tracks left by others.
 
 Check: You can keep yourself and others safe and fed in the wild. The table below gives the DCs for various tasks that require Survival checks.
@@ -2486,7 +2486,7 @@ A ranger gains a bonus on Survival checks when using this skill to find or follo
 If you have the Self-Sufficient feat, you get a bonus on Survival checks (see Chapter 5).</description>
                     <situationalmodifiers text=""></situationalmodifiers>
                 </skill>
-                <skill name="Swim" ranks="0" attrbonus="3" attrname="STR" value="-3" armorcheck="yes" classskill="yes">
+                <skill name="Swim" ranks="1" attrbonus="3" attrname="STR" value="5" armorcheck="yes" classskill="yes">
                     <description>You know how to swim and can do so even in stormy water.
 
 Check: Make a Swim check once per round while you are in the water. Success means you may swim at up to half your speed (as a full-round action) or at a quarter of your speed (as a move action). If you fail by 4 or less, you make no progress. If you fail by 5 or more, you go underwater.
@@ -2655,12 +2655,12 @@ Benefit: Whenever you are adjacent to an ally who also has this feat, you can mo
             <flaws></flaws>
             <skilltricks></skilltricks>
             <animaltricks></animaltricks>
-            <attack attackbonus="+4" meleeattack="+7" rangedattack="+7" baseattack="+3">
+            <attack attackbonus="+5" meleeattack="+8" rangedattack="+8" baseattack="+4">
                 <special name="Cavalier's Charge (Ex)" shortname="Cavalier's Charge" type="Extraordinary Ability" sourcetext="Cavalier">
                     <description>At 3rd level, a cavalier learns to make more accurate charge attacks while mounted. The cavalier receives a +4 bonus on melee attack rolls on a charge while mounted (instead of the normal +2). In addition, the cavalier does not suffer any penalty to his AC after making a charge attack while mounted.</description>
                     <specsource>Cavalier</specsource>
                 </special>
-                <special name="Shield's Challenge +3 (1/day) (Ex)" shortname="Challenge (1/day)" type="Extraordinary Ability" sourcetext="Cavalier">
+                <special name="Shield's Challenge +4 (2/day) (Ex)" shortname="Challenge (2/day)" type="Extraordinary Ability" sourcetext="Cavalier">
                     <description>Once per day, a cavalier can challenge a foe to combat. As a swift action, the cavalier chooses one target within sight to challenge. The cavalier’s melee attacks deal extra damage whenever the attacks are made against the target of his challenge. This extra damage is equal to the cavalier’s level. The cavalier can use this ability once per day at 1st level, plus one additional time per day for every three levels beyond 1st, to a maximum of seven times per day at 19th level. Challenging a foe requires much of the cavalier’s concentration. The cavalier takes a –2 penalty to his Armor Class, except against attacks made by the target of his challenge.
 
 The challenge remains in effect until the target is dead or unconscious or until the combat ends. Each cavalier’s challenge also includes another effect which is listed in the section describing the cavalier’s order.
@@ -2668,13 +2668,21 @@ The challenge remains in effect until the target is dead or unconscious or until
 Addition from Order of the Shield: Whenever an order of the shield cavalier issues a challenge, he receives a +1 morale bonus on attack rolls made against the target of his challenge if the target makes an attack against a target other than the cavalier. This bonus lasts for 1 minute. The bonus increases by +1 for every four levels the cavalier possesses.</description>
                     <specsource>Cavalier</specsource>
                 </special>
-                <special name="Tactician (Swap Places, 4 rds, 1/day) (Ex)" shortname="Tactician (1/day)" type="Extraordinary Ability" sourcetext="Cavalier">
+                <special name="Tactician (Swap Places, 5 rds, 1/day) (Ex)" shortname="Tactician (1/day)" type="Extraordinary Ability" sourcetext="Cavalier">
                     <description>At 1st level, a cavalier receives a teamwork feat as a bonus feat. He must meet the prerequisites for this feat. As a standard action, the cavalier can grant this feat to all allies within 30 feet who can see and hear him. Allies retain the use of this bonus feat for 3 rounds plus 1 round for every two levels the cavalier possesses. The cavalier can use this ability once per day at 1st level, plus one additional time per day at 5th level and for every 5 levels thereafter.</description>
                     <specsource>Cavalier</specsource>
                 </special>
             </attack>
             <melee>
-                <weapon name="Longsword" categorytext="Melee Weapon" typetext="S" attack="+7" crit="19-20/×2" damage="1d6+3" equipped="mainhand" quantity="1">
+                <weapon name="+1 longsword" categorytext="Melee Weapon" typetext="S" attack="+9" crit="19-20/×2" damage="1d6+4" equipped="mainhand" quantity="1">
+                    <weight text="2 lbs" value="2"></weight>
+                    <cost text="2,315 gp" value="2315"></cost>
+                    <description>This sword is about 3-1/2 feet in length.</description>
+                    <wepcategory>Melee Weapon</wepcategory>
+                    <weptype>Slashing</weptype>
+                    <situationalmodifiers text=""></situationalmodifiers>
+                </weapon>
+                <weapon name="Longsword" categorytext="Melee Weapon" typetext="S" attack="+8" crit="19-20/×2" damage="1d6+3" quantity="1">
                     <weight text="2 lbs" value="2"></weight>
                     <cost text="15 gp" value="15"></cost>
                     <description>This sword is about 3-1/2 feet in length.
@@ -2694,22 +2702,40 @@ Addition from Fencer: You receive a +1 to hit on Attacks of Opportunity with thi
 
 Shield Bash Attacks: You can bash an opponent with a light shield. See "light shield" on Table 1-5: Martial Weapons for the damage dealt by a shield bash with a light shield. Used this way, a light shield is a martial bludgeoning weapon. For the purpose of penalties on attack rolls, treat a light shield as a light weapon. If you use your shield as a weapon, you lose its AC bonus until your next turn. An enhancement bonus on a shield does not improve the effectiveness of a shield bash made with it, but the shield can be made into a magic weapon in its own right.</description>
                 </armor>
+                <armor name="Masterwork chain shirt" ac="+4" equipped="yes" quantity="1">
+                    <weight text="12.5 lbs" value="12.5"></weight>
+                    <cost text="250 gp" value="250"></cost>
+                    <description>Covering the torso, this shirt is made up of thousands of interlocking metal rings.</description>
+                    <itemslot>Armor</itemslot>
+                </armor>
                 <armor name="Natural armor" ac="+0" equipped="yes" natural="yes" useradded="no" quantity="1">
                     <weight text="" value="0"></weight>
                     <cost text="" value="0"></cost>
                     <description></description>
                     <itemslot>Armor</itemslot>
                 </armor>
-                <armor name="Studded leather" ac="+3" equipped="yes" quantity="1">
+                <armor name="Studded leather" ac="+3" quantity="1">
                     <weight text="10 lbs" value="10"></weight>
                     <cost text="25 gp" value="25"></cost>
                     <description>An improved form of leather armor, studded leather armor is covered with dozens of metal protuberances. While these rounded studs offer little defense individually, in the numbers they are arrayed in upon such armor, they help catch lethal edges and channel them away from vital spots. The rigidity caused by the additional metal does, however, result in less mobility than is afforded by a suit of normal leather armor.</description>
                     <itemslot>Armor</itemslot>
                 </armor>
             </defenses>
-            <magicitems></magicitems>
+            <magicitems>
+                <item name="+1 longsword" quantity="1">
+                    <weight text="2 lbs" value="2"></weight>
+                    <cost text="2,315 gp" value="2315"></cost>
+                    <description>This sword is about 3-1/2 feet in length.</description>
+                </item>
+                <item name="Masterwork chain shirt" quantity="1">
+                    <weight text="12.5 lbs" value="12.5"></weight>
+                    <cost text="250 gp" value="250"></cost>
+                    <description>Covering the torso, this shirt is made up of thousands of interlocking metal rings.</description>
+                    <itemslot>Armor</itemslot>
+                </item>
+            </magicitems>
             <gear>
-                <item name="Backpack (9 @ 8 lbs)" quantity="1">
+                <item name="Backpack (10 @ 18 lbs)" quantity="1">
                     <weight text="0.5 lbs" value="0.5"></weight>
                     <cost text="2 gp" value="2"></cost>
                     <description>This leather knapsack has one large pocket that closes with a buckled strap and holds about 2 cubic feet of material. Some may have one or more smaller pockets on the sides.</description>
@@ -2773,7 +2799,7 @@ Addition from Fencer: You receive a +1 to hit on Attacks of Opportunity with thi
                     <cost text="1 gp" value="1"></cost>
                     <description>This 50-foot length of hemp rope has 2 hit points and can be burst with a DC 23 Strength check.</description>
                 </item>
-                <item name="Saddlebags (16 @ 70 lbs)" quantity="1">
+                <item name="Saddlebags (15 @ 60 lbs)" quantity="1">
                     <weight text="8 lbs" value="8"></weight>
                     <cost text="4 gp" value="4"></cost>
                     <description>These sturdy, weatherproof bags are draped over a saddle to add extra carrying capacity. Each side of a saddlebag can typically carry 20 pound of items that can fit in the bags. Saddlebags do not increase the amount of weight a mount can carry; they merely give riders a place to stow their equipment.</description>
@@ -2808,8 +2834,8 @@ Addition from Fencer: You receive a +1 to hit on Attacks of Opportunity with thi
             <spelllike></spelllike>
             <trackedresources>
                 <trackedresource name="Feed (per day)" text="0/5" used="0" left="5" min="0" max="5"></trackedresource>
-                <trackedresource name="Shield's Challenge +3 (1/day) (Ex)" text="0/1" used="0" left="1" min="0" max="1"></trackedresource>
-                <trackedresource name="Tactician (Swap Places, 4 rds, 1/day) (Ex)" text="0/1" used="0" left="1" min="0" max="1"></trackedresource>
+                <trackedresource name="Shield's Challenge +4 (2/day) (Ex)" text="0/2" used="0" left="2" min="0" max="2"></trackedresource>
+                <trackedresource name="Tactician (Swap Places, 5 rds, 1/day) (Ex)" text="0/1" used="0" left="1" min="0" max="1"></trackedresource>
                 <trackedresource name="Torch" text="0/10" used="0" left="10" min="0" max="10"></trackedresource>
                 <trackedresource name="Trail rations" text="0/5" used="0" left="5" min="0" max="5"></trackedresource>
             </trackedresources>
@@ -2821,11 +2847,15 @@ Addition from Fencer: You receive a +1 to hit on Attacks of Opportunity with thi
                     <description>Masters can handle their animal companion as a free action, or push it as a move action, even if they don't have any ranks in the Handle Animal skill. The link grants a +4 circumstance bonus on all wild empathy checks and Handle Animal checks made regarding an animal companion.</description>
                     <specsource>Cavalier</specsource>
                 </special>
+                <special name="Expert Trainer +2 (Ex)" shortname="Expert Trainer" type="Extraordinary Ability" sourcetext="Cavalier">
+                    <description>At 4th level, a cavalier learns to train mounts with speed and unsurpassed expertise. The cavalier receives a bonus equal to 1/2 his cavalier level whenever he uses Handle Animal on an animal that serves as a mount. In addition, he can reduce the time needed to teach a mount a new trick or train a mount for a general purpose to 1 day per 1 week required by increasing the DC by +5. He can also train more than one mount at once, although each mount after the first adds +2 to the DC.</description>
+                    <specsource>Cavalier</specsource>
+                </special>
                 <special name="Fearless" shortname="Fearless" sourcetext="Halfling">
                     <description>+2 racial bonus on all saving throws against fear. This bonus stacks with the bonus granted by halfling luck.</description>
                     <specsource>Halfling</specsource>
                 </special>
-                <special name="Shield's Skills +1 (Ex)" shortname="Shield's Skills" type="Extraordinary Ability" sourcetext="Cavalier">
+                <special name="Shield's Skills +2 (Ex)" shortname="Shield's Skills" type="Extraordinary Ability" sourcetext="Cavalier">
                     <description>An order of the shield cavalier adds Heal (Wis) and Knowledge (local) (Int) to his list of class skills. Whenever an order of the shield cavalier uses the Heal skill on a creature other than himself, he receives a bonus on the check equal to 1/2 his cavalier level (minimum +1).</description>
                     <specsource>Cavalier</specsource>
                 </special>
@@ -2853,22 +2883,21 @@ Addition from Fencer: You receive a +1 to hit on Attacks of Opportunity with thi
             </journals>
             <images></images>
             <validation>
-                <report>You have enough XP to gain a level. It's time to level up!</report>
-                <validmessage>Error: You have enough XP to gain a level. It's time to level up!</validmessage>
+                <report></report>
             </validation>
             <settings summary="Advanced Class Guide: Advanced Class Guide; Advanced Player's Guide: Advanced Player's Guide, Advanced Player's Guide Traits, Advanced Player's Guide New Combat Maneuvers; Advanced Race Guide: Advanced Race Guide; Pathfinder Unchained -&gt; Chapter 4: Magic: Scaling Items; Ultimate Campaign -&gt; Ultimate Campaign Character Backgrounds: Unrestricted Traits &amp; Drawbacks; Ultimate Combat: Ultimate Combat; Ultimate Equipment: Ultimate Equipment; Ultimate Intrigue: Ultimate Intrigue; Ultimate Magic: Ultimate Magic, Ultimate Magic Familiars; Player Companion: Sargava, the Lost Colony, Weapon Master's Handbook; Campaign Setting: Heart of the Jungle, Inner Sea Races, Inner Sea World Guide; Miscellaneous Content: Character Traits Web Enhancement, Core Rulebook Deities, GameMastery Guide; Pathfinder Adventure Paths: Serpent's Skull; Advancement Speed: Medium Advancement; Firearm Availability: Emerging Guns; Experimental Options: Show statblock summary window; Output Options: Hide Ammo (in weapons), Hide Unusable Skills, Show Activated Abilities &amp; Adjustments, Show Feat / Ability Descriptions, Show Hero Portrait, Show Sourcebook Report"></settings>
             <minions>
                 <character characterindex="2" nature="normal" role="pc" relationship="ally" type="Animal Companion" name="Horse" playername="">
                     <race racetext="pony" name="pony" ethnicity=""></race>
                     <alignment name="True Neutral"></alignment>
-                    <templates summary="Bonus HD +3"></templates>
+                    <templates summary="Bonus HD +4"></templates>
                     <size name="Medium">
                         <space text="5'" value="5"></space>
                         <reach text="5'" value="5"></reach>
                     </size>
                     <deity name="Erastil"></deity>
-                    <challengerating value="3" text="CR 3"></challengerating>
-                    <xpaward value="800" text="800 XP"></xpaward>
+                    <challengerating value="4" text="CR 4"></challengerating>
+                    <xpaward value="1200" text="1,200 XP"></xpaward>
                     <classes level="0" summary="" summaryabbr=""></classes>
                     <factions></factions>
                     <types>
@@ -2892,7 +2921,7 @@ A creature with the scent ability can follow tracks by smell, making a Wisdom (o
                     </senses>
                     <auras></auras>
                     <favoredclasses></favoredclasses>
-                    <health hitdice="3d8+3" hitpoints="23" damage="0" nonlethal="0" currenthp="23"></health>
+                    <health hitdice="4d8+8" hitpoints="31" damage="0" nonlethal="0" currenthp="31"></health>
                     <xp total="0"></xp>
                     <money total="0" pp="0" gp="0" sp="0" cp="0" cn1="0" cn2="0" cn3="0" cn4="0" valuables="0"></money>
                     <personal gender="Male" age="0" hair="" eyes="" skin="">
@@ -2903,8 +2932,8 @@ A creature with the scent ability can follow tracks by smell, making a Wisdom (o
                     <languages></languages>
                     <attributes>
                         <attribute name="Strength">
-                            <attrvalue text="14" base="14" modified="14"></attrvalue>
-                            <attrbonus text="+2" base="+2" modified="+2"></attrbonus>
+                            <attrvalue text="16" base="16" modified="16"></attrvalue>
+                            <attrbonus text="+3" base="+3" modified="+3"></attrbonus>
                             <situationalmodifiers text=""></situationalmodifiers>
                         </attribute>
                         <attribute name="Dexterity">
@@ -2913,8 +2942,8 @@ A creature with the scent ability can follow tracks by smell, making a Wisdom (o
                             <situationalmodifiers text=""></situationalmodifiers>
                         </attribute>
                         <attribute name="Constitution">
-                            <attrvalue text="12" base="12" modified="12"></attrvalue>
-                            <attrbonus text="+1" base="+1" modified="+1"></attrbonus>
+                            <attrvalue text="14" base="14" modified="14"></attrvalue>
+                            <attrbonus text="+2" base="+2" modified="+2"></attrbonus>
                             <situationalmodifiers text=""></situationalmodifiers>
                         </attribute>
                         <attribute name="Intelligence">
@@ -2923,8 +2952,8 @@ A creature with the scent ability can follow tracks by smell, making a Wisdom (o
                             <situationalmodifiers text=""></situationalmodifiers>
                         </attribute>
                         <attribute name="Wisdom">
-                            <attrvalue text="11" base="11" modified="11"></attrvalue>
-                            <attrbonus text="0" base="+0" modified="+0"></attrbonus>
+                            <attrvalue text="12" base="12" modified="12"></attrvalue>
+                            <attrbonus text="+1" base="+1" modified="+1"></attrbonus>
                             <situationalmodifiers text=""></situationalmodifiers>
                         </attribute>
                         <attribute name="Charisma">
@@ -2934,13 +2963,13 @@ A creature with the scent ability can follow tracks by smell, making a Wisdom (o
                         </attribute>
                     </attributes>
                     <saves>
-                        <save name="Fortitude Save" abbr="Fort" save="+4" base="+3" fromattr="+1" fromresist="" frommisc="">
+                        <save name="Fortitude Save" abbr="Fort" save="+6" base="+4" fromattr="+2" fromresist="" frommisc="">
                             <situationalmodifiers text=""></situationalmodifiers>
                         </save>
-                        <save name="Reflex Save" abbr="Ref" save="+5" base="+3" fromattr="+2" fromresist="" frommisc="">
+                        <save name="Reflex Save" abbr="Ref" save="+6" base="+4" fromattr="+2" fromresist="" frommisc="">
                             <situationalmodifiers text=""></situationalmodifiers>
                         </save>
-                        <save name="Will Save" abbr="Will" save="+1" base="+1" fromattr="" fromresist="" frommisc="">
+                        <save name="Will Save" abbr="Will" save="+2" base="+1" fromattr="+1" fromresist="" frommisc="">
                             <situationalmodifiers text=""></situationalmodifiers>
                         </save>
                         <allsaves save="+0" base="" fromresist="" frommisc="">
@@ -2964,48 +2993,48 @@ A creature with the scent ability can follow tracks by smell, making a Wisdom (o
                         <penalty name="Armor Check Penalty" text="0" value="0"></penalty>
                         <penalty name="Max Dex Bonus" text="99999" value="99999"></penalty>
                     </penalties>
-                    <maneuvers cmb="+4" cmd="17" cmdflatfooted="14">
+                    <maneuvers cmb="+6" cmd="19" cmdflatfooted="16">
                         <situationalmodifiers text=""></situationalmodifiers>
-                        <maneuvertype name="Awesome Blow" bonus="0" cmb="+4" cmd="17">
+                        <maneuvertype name="Awesome Blow" bonus="0" cmb="+6" cmd="19">
                             <situationalmodifiers text=""></situationalmodifiers>
                         </maneuvertype>
-                        <maneuvertype name="Bull Rush" bonus="0" cmb="+4" cmd="17">
+                        <maneuvertype name="Bull Rush" bonus="0" cmb="+6" cmd="19">
                             <situationalmodifiers text=""></situationalmodifiers>
                         </maneuvertype>
-                        <maneuvertype name="Dirty Trick" bonus="0" cmb="+4" cmd="17">
+                        <maneuvertype name="Dirty Trick" bonus="0" cmb="+6" cmd="19">
                             <situationalmodifiers text=""></situationalmodifiers>
                         </maneuvertype>
-                        <maneuvertype name="Disarm" bonus="0" cmb="+4" cmd="17">
+                        <maneuvertype name="Disarm" bonus="0" cmb="+6" cmd="19">
                             <situationalmodifiers text=""></situationalmodifiers>
                         </maneuvertype>
-                        <maneuvertype name="Drag" bonus="0" cmb="+4" cmd="17">
+                        <maneuvertype name="Drag" bonus="0" cmb="+6" cmd="19">
                             <situationalmodifiers text=""></situationalmodifiers>
                         </maneuvertype>
-                        <maneuvertype name="Feint" bonus="0" cmb="+4" cmd="17">
+                        <maneuvertype name="Feint" bonus="0" cmb="+6" cmd="19">
                             <situationalmodifiers text=""></situationalmodifiers>
                         </maneuvertype>
-                        <maneuvertype name="Grapple" bonus="0" cmb="+4" cmd="17">
+                        <maneuvertype name="Grapple" bonus="0" cmb="+6" cmd="19">
                             <situationalmodifiers text=""></situationalmodifiers>
                         </maneuvertype>
-                        <maneuvertype name="Overrun" bonus="0" cmb="+4" cmd="21">
+                        <maneuvertype name="Overrun" bonus="0" cmb="+6" cmd="23">
                             <situationalmodifiers text=""></situationalmodifiers>
                         </maneuvertype>
-                        <maneuvertype name="Pull" bonus="0" cmb="+4" cmd="17">
+                        <maneuvertype name="Pull" bonus="0" cmb="+6" cmd="19">
                             <situationalmodifiers text=""></situationalmodifiers>
                         </maneuvertype>
-                        <maneuvertype name="Push" bonus="0" cmb="+4" cmd="17">
+                        <maneuvertype name="Push" bonus="0" cmb="+6" cmd="19">
                             <situationalmodifiers text=""></situationalmodifiers>
                         </maneuvertype>
-                        <maneuvertype name="Reposition" bonus="0" cmb="+4" cmd="17">
+                        <maneuvertype name="Reposition" bonus="0" cmb="+6" cmd="19">
                             <situationalmodifiers text=""></situationalmodifiers>
                         </maneuvertype>
-                        <maneuvertype name="Steal" bonus="0" cmb="+4" cmd="17">
+                        <maneuvertype name="Steal" bonus="0" cmb="+6" cmd="19">
                             <situationalmodifiers text=""></situationalmodifiers>
                         </maneuvertype>
-                        <maneuvertype name="Sunder" bonus="0" cmb="+4" cmd="17">
+                        <maneuvertype name="Sunder" bonus="0" cmb="+6" cmd="19">
                             <situationalmodifiers text=""></situationalmodifiers>
                         </maneuvertype>
-                        <maneuvertype name="Trip" bonus="0" cmb="+4" cmd="21">
+                        <maneuvertype name="Trip" bonus="0" cmb="+6" cmd="23">
                             <situationalmodifiers text=""></situationalmodifiers>
                         </maneuvertype>
                     </maneuvers>
@@ -3016,9 +3045,9 @@ A creature with the scent ability can follow tracks by smell, making a Wisdom (o
                         <speed text="40'" value="40"></speed>
                         <basespeed text="40'" value="40"></basespeed>
                     </movement>
-                    <encumbrance carried="0" encumstr="14" light="87" medium="174" heavy="262.5" level="Light Load"></encumbrance>
+                    <encumbrance carried="0" encumstr="16" light="114" medium="229.5" heavy="345" level="Light Load"></encumbrance>
                     <skills>
-                        <skill name="Acrobatics" ranks="0" attrbonus="2" attrname="DEX" value="2" armorcheck="yes" classskill="yes">
+                        <skill name="Acrobatics" ranks="1" attrbonus="2" attrname="DEX" value="6" armorcheck="yes" classskill="yes">
                             <description>You can keep your balance while traversing narrow or treacherous surfaces. You can also dive, flip, jump, and roll to avoid attacks and overcome obstacles.
 
 Check: You can use Acrobatics to move on narrow surfaces and uneven ground without falling. A successful check allows you to move at half speed across such surfaces - only one check is needed per round. Use the following table to determine the base DC, which is then modified by the Acrobatics skill modifiers noted on page 89. While you are using Acrobatics in this way, you are considered flat-footed and lose your Dexterity bonus to your AC (if any). If you take damage while using Acrobatics, you must immediately make another Acrobatics check at the same DC to avoid falling or being knocked prone.
@@ -3123,7 +3152,7 @@ Special: A spellcaster with a viper familiar gains a +3 bonus on Bluff checks.
 If you have the Deceitful feat, you get a bonus on Bluff checks (see Chapter 5).</description>
                             <situationalmodifiers text=""></situationalmodifiers>
                         </skill>
-                        <skill name="Climb" ranks="1" attrbonus="2" attrname="STR" value="6" armorcheck="yes" classskill="yes" tools="uses">
+                        <skill name="Climb" ranks="1" attrbonus="3" attrname="STR" value="7" armorcheck="yes" classskill="yes" tools="uses">
                             <description>You are skilled at scaling vertical surfaces, from smooth city walls to rocky cliffs.
 
 Check: With a successful Climb check, you can advance up, down, or across a slope, wall, or other steep incline (or even across a ceiling, provided it has handholds) at one-quarter your normal speed. A slope is considered to be any incline at an angle measuring less than 60 degrees; a wall is any incline at an angle measuring 60 degrees or more.
@@ -3376,7 +3405,7 @@ An animal can be trained for only one general purpose, though if the creature is
 Continued - Core Rulebook, pg. 97.</description>
                             <situationalmodifiers text="Animal Companion Link: +4 circumstance bonus to checks made regarding an animal companion"></situationalmodifiers>
                         </skill>
-                        <skill name="Heal" ranks="0" attrbonus="0" attrname="WIS" value="0" tools="uses">
+                        <skill name="Heal" ranks="0" attrbonus="1" attrname="WIS" value="1" tools="uses">
                             <description>You are skilled at tending to wounds and ailments.
 
 Check: The DC and effect of a Heal check depend on the task you attempt.
@@ -3486,7 +3515,7 @@ Try Again: Yes.
 Special: You must be trained to use this skill, but you can always attempt to read archaic and strange forms of your own racial bonus languages. In addition, you can also always attempt to detect a forgery.</description>
                             <situationalmodifiers text=""></situationalmodifiers>
                         </skill>
-                        <skill name="Perception" ranks="1" attrbonus="0" attrname="WIS" value="4" classskill="yes">
+                        <skill name="Perception" ranks="1" attrbonus="1" attrname="WIS" value="5" classskill="yes">
                             <description>Your senses allow you to notice fine details and alert you to danger. Perception covers all five senses, including sight, hearing, touch, taste, and smell.
 
 Check: Perception has a number of uses, the most common of which is an opposed check versus an opponent's Stealth check to notice the opponent and avoid being surprised. If you are successful, you notice the opponent and can react accordingly. If you fail, your opponent can take a variety of actions, including sneaking past you and attacking you.
@@ -3579,7 +3608,7 @@ If you use a military saddle you get a +2 circumstance bonus on Ride checks rela
 Ride is a prerequisite for Mounted Archery, Mounted Combat, Ride-By Attack, Spirited Charge, and Trample.</description>
                             <situationalmodifiers text=""></situationalmodifiers>
                         </skill>
-                        <skill name="Sense Motive" ranks="0" attrbonus="0" attrname="WIS" value="0">
+                        <skill name="Sense Motive" ranks="0" attrbonus="1" attrname="WIS" value="1">
                             <description>You are skilled at detecting falsehoods and true intentions.
 
 Check: A successful check lets you avoid being bluffed (see the Bluff skill). You can also use this skill to determine when "something is up" (that is, something odd is going on) or to assess someone's trustworthiness.
@@ -3670,7 +3699,7 @@ Special: If you are invisible, you gain a +40 bonus on Stealth checks if you are
 If you have the Stealthy feat, you get a bonus on Stealth checks (see Chapter 5).</description>
                             <situationalmodifiers text=""></situationalmodifiers>
                         </skill>
-                        <skill name="Survival" ranks="0" attrbonus="0" attrname="WIS" value="0">
+                        <skill name="Survival" ranks="0" attrbonus="1" attrname="WIS" value="1">
                             <description>You are skilled at surviving in the wild and at navigating in the wilderness. You also excel at following trails and tracks left by others.
 
 Check: You can keep yourself and others safe and fed in the wild. The table below gives the DCs for various tasks that require Survival checks.
@@ -3735,7 +3764,7 @@ A ranger gains a bonus on Survival checks when using this skill to find or follo
 If you have the Self-Sufficient feat, you get a bonus on Survival checks (see Chapter 5).</description>
                             <situationalmodifiers text=""></situationalmodifiers>
                         </skill>
-                        <skill name="Swim" ranks="1" attrbonus="2" attrname="STR" value="6" armorcheck="yes" classskill="yes">
+                        <skill name="Swim" ranks="1" attrbonus="3" attrname="STR" value="7" armorcheck="yes" classskill="yes">
                             <description>You know how to swim and can do so even in stormy water.
 
 Check: Make a Swim check once per round while you are in the water. Success means you may swim at up to half your speed (as a full-round action) or at a quarter of your speed (as a move action). If you fail by 4 or less, you make no progress. If you fail by 5 or more, you go underwater.
@@ -3864,9 +3893,9 @@ Special: You can gain this feat multiple times. Its effects do not stack. Each t
                             <description>The animal follows you closely, even to places where it normally wouldn't go.</description>
                         </animaltrick>
                     </animaltricks>
-                    <attack attackbonus="+2" meleeattack="+4" rangedattack="+4" baseattack="+2"></attack>
+                    <attack attackbonus="+3" meleeattack="+6" rangedattack="+5" baseattack="+3"></attack>
                     <melee>
-                        <weapon name="Hooves x2 (Pony)" categorytext="Melee Weapon" typetext="B" attack="+5/+5" crit="×2" damage="1d3+2" useradded="no">
+                        <weapon name="Hooves x2 (Pony)" categorytext="Melee Weapon" typetext="B" attack="+7/+7" crit="×2" damage="1d3+3" useradded="no">
                             <description>A creature's natural Hoof attack.</description>
                             <wepcategory>Melee Weapon</wepcategory>
                             <weptype>Bludgeoning</weptype>
