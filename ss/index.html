@@ -2,7 +2,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="stylesheet" href="responsive.css">
+<link rel="stylesheet" href="responsive2.css">
 
 <script src="https://code.jquery.com/jquery-3.6.1.js"
 	integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI="
@@ -14,7 +14,7 @@
 $.ajaxSetup({ cache: false });
 
 const pages = ['2022-09-15', '2022-09-27', '2022-10-04', '2022-10-15', '2022-10-18', '2022-10-26', '2022-11-02', '2022-11-13', 
-	'2022-11-18', '2022-11-27','2022-12-06','2022-12-13', ];
+	'2022-11-18', '2022-11-27','2022-12-06','2022-12-13','2023-01-04', ];
 
 const lastPage = pages.length-1;
 
@@ -91,96 +91,6 @@ $(()=>{
 
 
 </script>
-
-<style type="text/css">
-#menucontainer {
-	font-size: 20;
-}
-
-#menutoggle {
-	font-family: sans-serif;
-}
-
-#menu {
-	position: absolute;
-	z-index: 1;
-	border: thin solid #204010;
-	left: .5em;
-	background: #F0DC90;
-	padding: .5em;
-	margin: 0;
-	display: none;
-}
-
-.menuitem {
-	cursor: pointer;
-}
-
-.menuitem:hover {
-	background: #F8E498;
-}
-
-.legal {
-	margin: 2em;
-	padding: 1em;
-	font-size: 66%;
-	font-family: serif;
-	background: #E0E0E0;
-	border: thick double #102040;
-	color: #102040;
-}
-
-.boxtext {
-	background: #F8E498;
-	border-top: thick double #886428;
-	border-bottom: thick double #886428;
-	color: #886428;
-	padding: .5em;
-	font-family: deadhand;
-}
-
-@media (min-width: 600px) {
-	.boxtext {
-		width: 12em;
-		float: left;
-		margin-right: .5em;
-		margin-bottom: .5em;
-	}
-}
-
-#characterpages {
-	font-family: serif;
-}
-
-.characterpage .situational-modifier { margin-left: 1em; font-size:80%; font-family: serif;}
-.characterpage .description {font-size:80%; font-family: serif; white-space: pre-wrap;}
-.characterpage .health { font-size: 125%; margin: .5em 0; } 
-.characterpage .health .hp { border: thin solid  #102040; padding: .25em; } 
-.characterpage table {font-family: serif;}
-.characterpage .ac .summary { font-size: 125%; margin: .5em 0; } 
-.characterpage .ac .summary span { border: thin solid  #102040; padding: .25em; } 
-.characterpage .init .summary { font-size: 125%; margin: .5em 0; } 
-.characterpage .init .summary span { border: thin solid  #102040; padding: .25em; } 
-.characterpage .spell {display: inline-block; margin-right: 1em;}
-.characterpage .spellblock {font-size:80%; font-family: serif;}
-.characterpage .spell-name {font-weight: bold;}
-
-.characterpage .skills table {display:none;}
-
-.characterpage .has-description {cursor: pointer;}
-.characterpage .has-description::after {
-  content: " ⓘ";
-}
-.characterpage .description {display: none; }
-.characterpage .description {display: none; }
-.characterpage .spell .description {display: inline-block; }
-.characterpage .spell-block-toggle {display: none; }
-
-.characterpage .item {display: inline-block; }
-.characterpage .tracked-resource {display: inline-block; }
-
-
-</style>
 
 <script type="text/javascript">
 
