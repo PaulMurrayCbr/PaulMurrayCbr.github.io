@@ -78,7 +78,7 @@ class StripService {
     constructor(http) {
         this.http = http;
         // base = "http://192.168.0.149:8080/decklighting-stub";
-        this.base = "http://192.168.0.14";
+        this.base = "http://192.168.0.15";
         this.data = new Data();
         console.log("constructing, calling get");
         http.get(this.base + "/status?room=all").subscribe((data) => {
