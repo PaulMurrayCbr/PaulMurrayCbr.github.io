@@ -1,0 +1,82 @@
+<!-- © Paul Murray 2026 https://github.com/PaulMurrayCbr/Torchbearer -->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1"
+          name="viewport">
+
+    <title>Torchbearer</title>
+
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+
+<template id="torch-template">
+    <div class="torch-container">
+        <img alt="torch" class="torch0" src="images/torch0.png">
+        <img alt="torch" class="torch1" src="images/torch1.png">
+        <img alt="torch" class="torch2" src="images/torch2.png">
+        <img alt="torch" class="torch3" src="images/torch3.png">
+    </div>
+</template>
+
+<div id="app">
+    <header id="toolbar">
+        <span id="title">Torchbearer</span>
+        <span id="buttons">
+            <button id="addTorch">🔥</button>
+
+
+<div id="time-passes-container" class="dropdown">
+            <button id="time-passes">⌛</button>
+
+    <div id="time-passes-dropdown" class="dropdown-menu">
+        <div class="title">Time passes &hellip;</div>
+        <button class="minutes-pass" data-min="60">1 hr</button>
+        <button class="minutes-pass" data-min="10">10 min</button>
+        <button class="minutes-pass" data-min="1">1 min</button>
+    </div>
+</div>
+
+
+            <button id="pause">❚❚</button>
+        </span>
+    </header>
+
+    <main id="torches">
+        <div class="visible" id="darkness">DARKNESS</div>
+        <div class="hidden" id="paused"></div>
+
+        <div id="torches-grid">
+        </div>
+    </main>
+
+    <nav id="help">
+        Tap torch to ignite/extinguish.<br>
+        Swipe torch for options.
+    </nav>
+
+    <footer id="panel-container" class="">
+        <div class="dialog" id="panel">
+            <span class="title">Torch Options</span>
+            <span id="close-panel" class="close-button dialog">×</span>
+            <div id="time-remaining"></div>
+            <button id="discard-torch">✕ Discard</button>
+            <button id="recharge-torch">↻ Recharge</button>
+            <div id="minute-button-container">
+                <button class="set-minutes" data-min="120">2 hr</button>
+                <button class="set-minutes" data-min="60">1 hr</button>
+                <button class="set-minutes" data-min="30">30 min</button>
+                <button class="set-minutes" data-min="10">10 min</button>
+                <button class="set-minutes" data-min="5">5 min</button>
+                <button class="set-minutes" data-min="1">1 min</button>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<script src="js/main.js" type="module"></script>
+</body>
+</html>

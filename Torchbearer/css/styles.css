@@ -1,0 +1,349 @@
+/* © Paul Murray 2026 https://github.com/PaulMurrayCbr/Torchbearer */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+:root {
+    --yellow: #f0a500;
+    --gray: #a0a0a0;
+    --dark: #606060;
+    /** brightness goes from 80 to 20 */
+    --brightness: 20;
+}
+
+
+html,
+body {
+    margin: 0;
+    height: 100%;
+
+
+    background: rgb(var(--brightness) var(--brightness) var(--brightness));
+    transition: background 1s ease;
+
+
+    /*   transition: background 2s linear; */
+
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0.5rem 1rem;
+
+    height: 3.5rem;
+}
+
+#toolbar #title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--yellow);
+}
+
+#toolbar #buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+#toolbar #buttons button {
+    border: thin solid var(--yellow);
+    background-color: #0f0f0f;
+    color: var(--gray);
+}
+
+#toolbar #buttons button.on {
+    background-color: var(--yellow);
+}
+
+#time-passes-dropdown {
+    width: 9rem;
+}
+
+button {
+    font-size: 1.4rem;
+
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+
+    border-radius: 1rem;
+    border: none;
+}
+
+
+#app {
+    display: grid;
+    grid-template-rows:
+        auto    /* toolbar */
+        minmax(0, 1fr) /* torch area */
+        auto
+        auto; /* control panel */
+
+    height: 100dvh;
+}
+
+#torches {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+#torches-grid {
+    width: 100%;
+    height: 100%;
+
+    min-height: 0;
+
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(17%, 1fr));
+    grid-auto-rows: 1fr;
+
+    gap: 1rem;
+    padding: 5%;
+
+    align-items: center;
+    justify-items: center;
+
+    overflow: hidden;
+
+}
+
+.torch-container {
+    max-width: 90%;
+    max-height: 90%;
+    min-height: 0;
+
+    object-fit: contain;
+
+    padding-bottom: 10px;
+    border: 2px solid transparent;
+    border-radius: 50%;
+
+    color: aquamarine;
+
+    display: grid;
+}
+
+
+.torch-container.selected {
+    border: 2px solid var(--yellow);
+}
+
+
+.torch-container > img {
+    inset: 0;
+
+    grid-area: 1 / 1;
+
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+
+    max-height: 50dvh;
+
+    opacity: .5;
+    transition: opacity 1s linear;
+
+    user-select: none;
+    pointer-events: none;
+}
+
+#paused {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    inset: 0;
+
+    z-index: 10;
+
+    background: var(--gray);
+    opacity: 0.5;
+
+    pointer-events: auto;
+}
+
+#darkness {
+    position: absolute;
+    inset: 0;
+
+    z-index: 5;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 3rem;
+    font-weight: bold;
+    letter-spacing: 0.2em;
+
+    color: rgba(255, 255, 255, 0.7);
+
+    pointer-events: none;
+
+    opacity: 0;
+    transition: opacity 2s ease;
+
+}
+
+#darkness.visible {
+    opacity: 1;
+}
+
+#help {
+    font-size: smaller;
+    color: var(--dark);
+    text-align: center;
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+
+.dialog {
+    background: #0f0f0f;
+    border: thin solid var(--yellow);
+    border-radius: .5rem;
+}
+
+#panel-container {
+    height: auto;
+    max-height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    transition: max-height 1s ease-in-out;
+}
+
+#panel-container.open {
+    max-height: 50dvh;
+}
+
+#panel {
+    display: block;
+    position: relative;
+
+    overflow: hidden;
+
+    padding: 1rem;
+    margin: 1rem;
+
+    color: var(--gray);
+}
+
+#panel .title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--yellow);
+    margin-bottom: .5rem;
+}
+
+#panel #time-remaining {
+    font-size: 1rem;
+    margin-bottom: .5rem;
+}
+
+#panel button {
+    font-size: 1rem;
+    margin-bottom: .5rem;
+    background: transparent;
+    color: var(--yellow);
+    border: thin solid var(--yellow);
+}
+
+#panel > button {
+    width: 100%;
+}
+
+#panel #minute-button-container {
+    display: flex;
+    gap: 0.5rem;
+}
+
+#panel #minute-button-container button {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.close-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 2;
+
+    background: transparent;
+    font-size: 1.5rem;
+
+    min-width: 2rem;
+    min-height: 2rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: .5rem;
+
+    cursor: pointer;
+
+    border: thin solid var(--yellow);
+}
+
+
+.hidden {
+    display: none;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown .title {
+    color: var(--yellow);
+    font-size: 1rem;
+}
+
+
+.dropdown-menu {
+    display: none;
+
+    position: absolute;
+    right: 0;
+    top: 100%;
+    width:auto;
+    background-color: #0f0f0f;
+
+    border-radius: .5rem;
+    cursor: pointer;
+    border: thin solid var(--yellow);
+    padding: 0.5rem;
+
+    z-index: 10;
+}
+
+.dropdown.open .dropdown-menu {
+    display: flex;
+    flex-direction: column;
+    z-index: 50;
+}
+
+.dropdown.open .dropdown-menu button{
+    display: flex;
+    flex-direction: column;
+    font-size: 1rem;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    padding: 0.5rem 1rem;
+
+    border: none;
+    background: transparent;
+
+    text-align: center;
+
+}
