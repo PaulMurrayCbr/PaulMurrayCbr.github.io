@@ -32,10 +32,11 @@ export class Torch {
     destroy$ = new Subject();
 
     ignited = false;
-    maxMinutes = 1;
-    minutesRemaining = 1;
+    maxMinutes = 60;
+    minutesRemaining = this.maxMinutes;
 
-    state$ = new BehaviorSubject(new TorchState(this.ignited, this.maxMinutes, this.minutesRemaining));
+    state = new TorchState(this.ignited, this.maxMinutes, this.minutesRemaining);
+    state$ = new BehaviorSubject(this.state);
 
     /**
      * @param {App} app
@@ -52,7 +53,8 @@ export class Torch {
     }
 
     emitState() {
-        this.state$.next(new TorchState(this.ignited, this.maxMinutes, this.minutesRemaining));
+        this.state = new TorchState(this.ignited, this.maxMinutes, this.minutesRemaining);
+        this.state$.next(this.state);
     }
 
     start() {
@@ -71,6 +73,9 @@ export class Torch {
                     if (clicks.length === 1) {
                         this.ignited = !this.ignited;
                         this.update();
+                        if (this.ignited) {
+                            this.app.toaster.show(this.state.getTimeDisplay());
+                        }
                     } else {
                         if (this.app.selectedTorch$.getValue() !== this) {
                             this.app.selectTorch(this);

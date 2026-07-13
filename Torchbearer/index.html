@@ -22,6 +22,10 @@
     </div>
 </template>
 
+<template id="toast-template">
+    <div class="toast"></div>
+</template>
+
 <div id="app">
     <header id="toolbar">
         <span id="title">Torchbearer</span>
@@ -47,8 +51,9 @@
 
     <main id="torches">
         <div class="visible" id="darkness">DARKNESS</div>
+        <div id="toaster">
+        </div>
         <div class="hidden" id="paused"></div>
-
         <div id="torches-grid">
         </div>
     </main>

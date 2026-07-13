@@ -2,6 +2,7 @@
 
 import {BehaviorSubject, fromEvent, of, Subject, switchAll} from "https://esm.sh/rxjs";
 import {Torch} from "./torch.js";
+import {Toaster} from "./toaster.js";
 
 export class AppState {
 
@@ -71,6 +72,7 @@ export class App {
 
     constructor(element) {
         this.element = element;
+        this.toaster = new Toaster(this, document.getElementById("toaster"));
     }
 
     start() {
@@ -83,9 +85,11 @@ export class App {
                     this.element.querySelector("#pause").classList.add("on");
                     this.element.querySelector("#paused").classList.remove("hidden");
                     this.selectedTorch$.next(null);
+                    this.toaster.show("The passage of time has halted!");
                 } else {
                     this.element.querySelector("#pause").classList.remove("on");
                     this.element.querySelector("#paused").classList.add("hidden");
+                    this.toaster.show("The passage of time is resumed …");
                 }
 
                 this.appState$.next(this.appState);
@@ -114,7 +118,7 @@ export class App {
         fromEvent(this.element.querySelector("#time-passes"), "click")
             .subscribe(() => {
                 this.timeMenuOpen = !this.timeMenuOpen;
-                if(this.timeMenuOpen) {
+                if (this.timeMenuOpen) {
                     this.element.querySelector("#time-passes").classList.add("on");
                     this.element.querySelector("#time-passes-container").classList.add("open");
                 } else {
@@ -128,6 +132,7 @@ export class App {
                 if (this.selectedTorch$.getValue()) {
                     const min = Number(button.dataset.min);
                     this.selectedTorch$.getValue().setMaxMinutes(min);
+                    this.toaster.show("Torch set to " + min + " minute" + (min > 1 ? "s" : "") + "");
                 }
             });
         });
@@ -138,6 +143,7 @@ export class App {
                 const min = Number(button.dataset.min);
                 this.markTime();
                 this.timePasses$.next(min);
+                this.toaster.show(min + " minute" + (min > 1 ? "s" : "") + " pass" + (min > 1 ? "" : "es") + "…");
             });
         });
 
@@ -152,7 +158,7 @@ export class App {
 
             document.documentElement.style.setProperty(
                 "--brightness",
-                Math.trunc(20 + illumination.percent * .9).toString()
+                Math.trunc(20 + illumination.percent * .6).toString()
             );
 
         });
@@ -172,8 +178,6 @@ export class App {
                 switchAll()
             )
             .subscribe(illumination => {
-                console.log("Selected illumination", illumination);
-
                 if (illumination) {
                     this.element.querySelector("#time-remaining").textContent = illumination.getTimeDisplay();
                 } else {
@@ -182,9 +186,12 @@ export class App {
                 }
             })
 
+        this.toaster.start();
+
         const timer = setInterval(() => {
             this.markTime();
         }, 10000);
+
 
     }
 
