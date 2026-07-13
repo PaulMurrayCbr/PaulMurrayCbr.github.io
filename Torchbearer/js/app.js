@@ -132,7 +132,6 @@ export class App {
                 if (this.selectedTorch$.getValue()) {
                     const min = Number(button.dataset.min);
                     this.selectedTorch$.getValue().setMaxMinutes(min);
-                    this.toaster.show("Torch set to " + min + " minute" + (min > 1 ? "s" : "") + "");
                 }
             });
         });
@@ -215,7 +214,7 @@ export class App {
      * @param {Torch} torch
      */
     removeTorch(torch) {
-        if (this.selectedTorch$.getValue() == torch) {
+        if (this.selectedTorch$.getValue() === torch) {
             this.selectedTorch$.next(null);
         }
         torch.appSubscription.unsubscribe();

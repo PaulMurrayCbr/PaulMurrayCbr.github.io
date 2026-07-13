@@ -12,18 +12,28 @@ export class TorchState {
         this.remainingPercent = this.minutesRemaining / this.maxMinutes * 100;
     }
 
+    static blockMinutes = 5;
+
     getTimeDisplay() {
         if (this.minutesRemaining <= 0) {
-            return `Torch consumed. Recharge for ${this.maxMinutes} minute${this.maxMinutes > 1 ? 's' : ''}`;
+            return `Torch spent. Recharge for ${this.maxMinutes} minute${this.maxMinutes > 1 ? 's' : ''}`;
         }
 
-        const blocks = Math.floor((this.minutesRemaining + 2.5) / 5);
+        if (this.minutesRemaining > this.maxMinutes) {
+            return `Torch overcharged. Recharge to reset to ${this.maxMinutes} minute${this.maxMinutes > 1 ? 's' : ''}.`;
+        }
+
+        const blocks = this.getRemainingBlocks();
 
         if (blocks <= 0) {
             return `${this.maxMinutes} minute${this.maxMinutes > 1 ? 's' : ''} almost done`;
         }
 
-        return `About ${blocks * 5} minutes remaining of ${this.maxMinutes}`;
+        return `About ${blocks * TorchState.blockMinutes} minutes remaining of ${this.maxMinutes}`;
+    }
+
+    getRemainingBlocks() {
+        return Math.floor(this.minutesRemaining / TorchState.blockMinutes + .5);
     }
 }
 
@@ -71,6 +81,10 @@ export class Torch {
                 /** @param {MouseEvent[]} clicks */
                 (clicks) => {
                     if (clicks.length === 1) {
+                        if(this.minutesRemaining <= 0 && !this.ignited) {
+                            this.app.toaster.show("This torch is spent and cannot be re-lit.");
+                        }
+
                         this.ignited = !this.ignited;
                         this.update();
                         if (this.ignited) {
@@ -120,6 +134,10 @@ export class Torch {
     }
 
     recharge() {
+        this.app.toaster.show("Torch recharged.");
+        if(this.minutesRemaining <= this.maxMinutes &&  this.state.getRemainingBlocks() > 0) {
+            this.app.toaster.show("You have wasted about " + (this.state.getRemainingBlocks()*TorchState.blockMinutes) + " minutes worth of oil.");
+        }
         this.minutesRemaining = this.maxMinutes;
         this.update();
     }
@@ -127,6 +145,7 @@ export class Torch {
     setMaxMinutes(minutes) {
         this.maxMinutes = minutes;
         this.update();
+        this.app.toaster.show("Torch set to " + minutes + " minute" + (minutes > 1 ? "s" : "") + "");
     }
 
     update() {
