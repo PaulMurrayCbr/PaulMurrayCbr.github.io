@@ -1,6 +1,6 @@
 /* © Paul Murray 2026 https://github.com/PaulMurrayCbr/Torchbearer */
 
-import {BehaviorSubject, Subject, takeUntil} from "https://esm.sh/rxjs";
+import {BehaviorSubject, bufferWhen, fromEvent, Subject, switchAll, takeUntil, tap, timer} from "https://esm.sh/rxjs";
 
 import {App} from "./app.js";
 
@@ -14,16 +14,16 @@ export class TorchState {
 
     getTimeDisplay() {
         if (this.minutesRemaining <= 0) {
-            return `Torch consumed. Recharge for ${this.maxMinutes} minute${this.maxMinutes>1?'s':''}`;
+            return `Torch consumed. Recharge for ${this.maxMinutes} minute${this.maxMinutes > 1 ? 's' : ''}`;
         }
 
-        const blocks = Math.floor((this.minutesRemaining + 7.25) / 15);
+        const blocks = Math.floor((this.minutesRemaining + 2.5) / 5);
 
         if (blocks <= 0) {
-            return `${this.maxMinutes} minute${this.maxMinutes>1?'s':''} almost done`;
+            return `${this.maxMinutes} minute${this.maxMinutes > 1 ? 's' : ''} almost done`;
         }
 
-        return `About ${blocks * 15} minutes remaining of ${this.maxMinutes}`;
+        return `About ${blocks * 5} minutes remaining of ${this.maxMinutes}`;
     }
 }
 
@@ -56,20 +56,29 @@ export class Torch {
     }
 
     start() {
-        this.element.addEventListener("pointerup", e => {
-            if (this.app.selectedTorch$.getValue() != this) {
-                this.app.selectTorch(this);
-            } else {
-                this.ignited = !this.ignited;
-                this.update();
-            }
-        });
 
-        this.element.addEventListener("pointermove", e => {
-            if (this.app.selectedTorch$.getValue() != this) {
-                this.app.selectTorch(this);
-            }
-        });
+        const multiclick$ = new Subject();
+
+        fromEvent(this.element, "click")
+            .pipe(
+                takeUntil(this.destroy$),
+                tap(() => multiclick$.next(timer(300))),
+                bufferWhen(() => multiclick$.pipe(switchAll())),
+            )
+            .subscribe(
+                /** @param {MouseEvent[]} clicks */
+                (clicks) => {
+                    if (clicks.length === 1) {
+                        this.ignited = !this.ignited;
+                        this.update();
+                    } else {
+                        if (this.app.selectedTorch$.getValue() !== this) {
+                            this.app.selectTorch(this);
+                        } else {
+                            this.app.selectTorch(null);
+                        }
+                    }
+                })
 
         this.app.selectedTorch$
             .pipe(
@@ -87,7 +96,7 @@ export class Torch {
             if (this.ignited) {
                 this.minutesRemaining -= minutes;
 
-                if(this.minutesRemaining <= 0) {
+                if (this.minutesRemaining <= 0) {
                     this.ignited = false;
                     this.minutesRemaining = 0;
                 }

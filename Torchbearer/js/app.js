@@ -152,7 +152,7 @@ export class App {
 
             document.documentElement.style.setProperty(
                 "--brightness",
-                Math.trunc(20 + illumination.percent * .6).toString()
+                Math.trunc(20 + illumination.percent * .9).toString()
             );
 
         });
