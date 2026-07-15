@@ -1,0 +1,538 @@
+<!-- © Paul Murray 2026 https://github.com/PaulMurrayCbr/Tier0 -->
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1"
+          name="viewport">
+
+    <title>Tier 0</title>
+
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            height: 100%;
+
+
+            background: #f8f8f8;
+            color: #333;
+            transition: background 1s ease;
+
+
+            /*   transition: background 2s linear; */
+
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: normal;
+        }
+
+        xdiv {
+            border: thin solid blue;
+        }
+
+        label {
+            color: darkblue;
+        }
+
+        .instructions {
+            margin-top: -0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: smaller;
+            color: #666;
+            text-align: center;
+            font-style: italic;
+        }
+
+        aside {
+            font-size: smaller;
+            color: #666;
+            font-style: italic;
+        }
+
+        .box {
+            margin: .5rem;
+            min-height: 1rem;
+        }
+
+        body > .box {
+            width: 100%;
+        }
+
+        .box > div {
+            width: 100%;
+            min-height: 1.2rem;
+        }
+
+        .box > label {
+            width: 100%;
+        }
+
+        #stats {
+            display: table;
+            margin: 0 auto; /* centre horizontally */
+            border-spacing: 10px; /* optional gaps */
+        }
+
+        #stats > .row {
+            display: table-row;
+        }
+
+        #stats > .row > .box {
+            display: table-cell;
+        }
+
+        #stats > .row > .box > .stat {
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        #stats > .row > .box > .stat > .span {
+            min-width: 2rem;
+        }
+
+        #gear {
+            columns: 2;
+            column-gap: 2rem;
+        }
+
+        .twobox div {
+            display: inline-block;
+        }
+
+        .bignum {
+            font-size: 2rem;
+            text-align: center;
+        }
+
+    </style>
+
+    <script>
+        let ancestry = '';
+        let stats = [0, 0, 0, 0, 0, 0];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            rerollall()
+        });
+
+        function rerollall() {
+            rerollAncestry();
+            rerollBackground();
+            rerollStats();
+            rerollGear();
+        }
+
+        const ancestries = [
+            'DWARF', 'ELF', 'GOBLIN', 'HALFORC', 'HALFLING', 'HUMAN'
+        ]
+
+        function rerollAncestry() {
+            const list = document.querySelector("#ancestry");
+
+            while (list.firstChild) {
+                list.removeChild(list.firstChild);
+            }
+
+            ancestry = ancestries[Math.floor(Math.random() * ancestries.length)];
+
+            const template = document.querySelector("#" + ancestry);
+            const container = document.querySelector("#ancestry");
+
+            const clone = template.content.cloneNode(true);
+            container.appendChild(clone);
+
+            calc();
+        }
+
+
+        const backgrounds = [
+            'Urchin. You grew up in the merciless streets of a large city.',
+            'Wanted. There\'s a price on your head, but you have allies.',
+            'Cult Initiate. You know blasphemous secrets and rituals.',
+            'Thieves\ Guild. You have connections, contacts, and debts.',
+            'Banished. Your people cast you out for supposed crimes.',
+            'Orphaned. An unusual guardian rescued and raised you.',
+            'Wizard\'s Apprentice. You have a knack and eye for magic.',
+            'Jeweler. You can easily appraise value and authenticity.',
+            'Herbalist. You know plants, medicines, and poisons.',
+            'Barbarian. You left the horde, but it never quite left you.',
+            'Mercenary. You fought friend and foe alike for your coin.',
+            'Sailor. Pirate, privateer, or merchant — the seas are yours.',
+            'Acolyte. You\'re well trained in religious rites and doctrines.',
+            'Soldier. You served as a fighter in an organized army.',
+            'Ranger. The woods and wilds are your true home.',
+            'Scout. You survived on stealth, observation, and speed.',
+            'Minstrel. You\'ve traveled far with your charm and talent.',
+            'Scholar. You know much about ancient history and lore.',
+            'Noble. A famous name has opened many doors for you.',
+            'Chirurgeon. You know anatomy, surgery, and first aid.',
+        ];
+
+        function rerollBackground() {
+            const background = document.querySelector("#background");
+            background.textContent = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+        }
+
+        function bnus(n) {
+            return Math.floor(n / 2) - 5;
+        }
+
+        function rerollStats() {
+            console.log("rerollStats");
+
+
+            let isOk = false;
+            while (!isOk) {
+                for (let i = 0; i < stats.length; i++) {
+                    stats[i] = Math.floor(Math.random() * 6) + Math.floor(Math.random() * 6) + Math.floor(Math.random() * 6) + 3;
+                    if (stats[i] >= 14) {
+                        isOk = true;
+                    }
+                }
+            }
+            document.querySelector("#str").textContent = stats[0];
+            document.querySelector("#dex").textContent = stats[1];
+            document.querySelector("#con").textContent = stats[2];
+            document.querySelector("#int").textContent = stats[3];
+            document.querySelector("#wis").textContent = stats[4];
+            document.querySelector("#cha").textContent = stats[5];
+
+            document.querySelector("#strb").textContent = bnus(stats[0]);
+            document.querySelector("#dexb").textContent = bnus(stats[1]);
+            document.querySelector("#conb").textContent = bnus(stats[2]);
+            document.querySelector("#intb").textContent = bnus(stats[3]);
+            document.querySelector("#wisb").textContent = bnus(stats[4]);
+            document.querySelector("#chab").textContent = bnus(stats[5]);
+
+            calc();
+
+        }
+
+        const gearItems = [
+            "Torch",
+            "Dagger",
+            "Pole",
+            "Shortbow and 5 arrows",
+            "Rope, 60'",
+            "Oil, flask",
+            "Crowbar",
+            "Iron Spikes (10)",
+            "Flint and Steel",
+            "Grappling hook",
+            "Club",
+            "Caltrops (one bag)"
+        ];
+
+        let hastorch = false;
+        let hasbow = false;
+        let hasweapon = false;
+        let hasdagger = false;
+
+        function rerollGear() {
+
+            hastorch = false;
+            hasbow = false;
+            hasweapon = false;
+            hasdagger = false;
+
+            const list = document.querySelector("#gear");
+
+            while (list.firstChild) {
+                list.removeChild(list.firstChild);
+            }
+
+            const n = Math.floor(Math.random() * 4 + 1);
+            for (let i = 0; i < n; i++) {
+                const li = document.createElement("li");
+
+                const item = gearItems[Math.floor(Math.random() * gearItems.length)];
+                if (item.includes("Torch")) hastorch = true;
+                if (item.includes("Shortbow and 5 arrows")) hasbow = true;
+                if (item.includes("Club")) hasweapon = true;
+                if (item.includes("Dagger")) {
+                    hasdagger = true;
+                    hasweapon = true;
+                }
+                li.textContent = item;
+                list.appendChild(li);
+            }
+
+            if (!hastorch) {
+                const li = document.createElement("li");
+                const item = "Improvised Torch. 10 minutes only.";
+                li.textContent = item;
+                list.appendChild(li);
+            }
+            if (!hasbow) {
+                const li = document.createElement("li");
+                const item = "Improvised Sling.";
+                li.textContent = item;
+                list.appendChild(li);
+            }
+            if (!hasweapon) {
+                const li = document.createElement("li");
+                const item = "Improvised Club.";
+                li.textContent = item;
+                list.appendChild(li);
+            }
+
+            calc();
+        }
+
+        function calc() {
+            //hit points
+            const hp = document.querySelector("#hp");
+
+            while (hp.firstChild) {
+                hp.removeChild(hp.firstChild);
+            }
+
+            let hpp = Math.max(1, bnus(stats[2]));
+
+            if (ancestry === 'DWARF') {
+                const dwarf = document.createElement("aside");
+                dwarf.textContent = "Dwarf. +2 hp.";
+                hp.appendChild(dwarf);
+                hpp += 2;
+            }
+
+            let e = document.createElement("span");
+            e.classList.add("bignum");
+            e.textContent = hpp;
+            hp.appendChild(e);
+
+
+            // AC
+            const ac = document.querySelector("#ac");
+
+            while (ac.firstChild) {
+                ac.removeChild(ac.firstChild);
+            }
+
+            let acc = bnus(stats[1]) + 10;
+
+            e = document.createElement("span");
+            e.classList.add("bignum");
+            e.textContent = acc;
+            ac.appendChild(e);
+
+
+            const ranged = document.querySelector("#ranged");
+            while (ranged.firstChild) {
+                ranged.removeChild(ranged.firstChild);
+            }
+
+
+            let tohit = bnus(stats[1]);
+
+            if (hasbow) {
+                const bow = document.createElement("div");
+                bow.textContent = "Shortbow";
+                ranged.appendChild(bow);
+            } else {
+                const bow = document.createElement("div");
+                bow.textContent = "Improvised sling";
+                ranged.appendChild(bow);
+
+                const disad = document.createElement("aside");
+                disad.textContent = "Disadvantage.";
+                ranged.appendChild(disad);
+                tohit += 1;
+            }
+
+            if (ancestry === 'ELF') {
+                const elf = document.createElement("aside");
+                elf.textContent = "Elf. +1 to hit.";
+                ranged.appendChild(elf);
+                tohit += 1;
+            }
+            e = document.createElement("div");
+            e.classList.add("bignum");
+            e.textContent = (tohit >= 0 ? '+' : '') + tohit + " / 1d4";
+            ranged.appendChild(e);
+
+            const melee = document.querySelector("#melee");
+            while (melee.firstChild) {
+                melee.removeChild(melee.firstChild);
+            }
+
+
+            tohit = bnus(stats[0]);
+            if (hasdagger && stats[1] > stats[0]) {
+                const z = document.createElement("aside");
+                z.textContent = "Finesse weapon. Using Dex to hit.";
+                melee.appendChild(z);
+                tohit += 1;
+            }
+
+            if (ancestry === 'HALFORC') {
+                const elf = document.createElement("aside");
+                elf.textContent = "Half Orc. +1 to hit and damage.";
+                melee.appendChild(elf);
+                tohit += 1;
+            }
+
+            if (hasweapon) {
+                const bow = document.createElement("div");
+                bow.textContent = "Simple weapon";
+                melee.appendChild(bow);
+            } else {
+                const bow = document.createElement("div");
+                bow.textContent = "Improvised club";
+                melee.appendChild(bow);
+
+                const disad = document.createElement("aside");
+                disad.textContent = "Disadvantage.";
+                melee.appendChild(disad);
+            }
+
+            e = document.createElement("div");
+            e.classList.add("bignum");
+            e.textContent = (tohit >= 0 ? '+' : '') + tohit + " / 1d4" + (ancestry === "HALFORC" ? " +1" : "");
+            melee.appendChild(e);
+
+        }
+
+    </script>
+
+    <template id="DWARF">
+        <p><strong>DWARF</strong> Brave, stalwart folk as sturdy as the stone kingdoms they carve inside mountains.</p>
+        <p>You know the Common and Dwarvish languages.</p>
+        <p><strong>Stout.</strong> Start with +2 HP. Roll hit points per level with advantage.
+    </template>
+    <template id="ELF">
+        <p><strong>ELF</strong> Ethereal, graceful people who revere knowledge and beauty. Elves see far and live long.
+        </p>
+        <p>You know the Common, Elvish, and Sylvan languages.</p>
+        <p><strong>Farsight.</strong> You get a +1 bonus to attack rolls with ranged weapons or a +1 bonus to
+            spellcasting checks.</p>
+    </template>
+    <template id="GOBLIN">
+        <p><strong>GOBLIN</strong> Green, clever beings who thrive in dark, cramped places. As fierce as they are tiny.
+        </p>
+        <p>You know the Common and Goblin languages.</p>
+        <p><strong>Keen Senses.</strong> You can't be surprised.</p>
+    </template>
+    <template id="HALFORC">
+        <p><strong>HALF-ORC</strong> Towering, tusked warriors who are as daring as humans and as relentless as orcs.
+        </p>
+        <p>You know the Common and Orcish languages.</p>
+        <p><strong>Mighty.</strong> You have a +1 bonus to attack and damage rolls with melee weapons.</p>
+    </template>
+    <template id="HALFLING">
+        <p><strong>HALFLING</strong> Small, cheerful country folk with mischievous streaks. They enjoy life’s simple
+            pleasures.</p>
+        <p>You know the Common language.</p>
+        <p><strong>Stealthy.</strong> Once per day, you can become invisible for 3 rounds.</p>
+    </template>
+    <template id="HUMAN">
+        <p><strong>HUMAN</strong> Bold, adaptable, and diverse people who learn quickly and accomplish mighty deeds.</p>
+        <p>You know the Common language and one additional common language (pg. 32).</p>
+        <p><strong>Ambitious.</strong> You gain one additional talent roll at 1st level.</p>
+    </template>
+
+</head>
+<body>
+<div id="toptitle" onclick="rerollall()">
+    <h1>Tier 0: Shadowdark</h1>
+    <aside class="instructions">
+        Click any result to reroll it, or this title to reroll everything.
+    </aside>
+</div>
+<div class="box">
+    <label for="ancestry">NAME</label>
+    <div id="name"></div>
+</div>
+<div class="box" onclick="rerollAncestry()">
+    <label for="ancestry">ANCESTRY</label>
+    <div id="ancestry"></div>
+</div>
+
+<div class="box" onclick="rerollBackground()">
+    <label for="name">BACKGROUND</label>
+    <div id="background"></div>
+</div>
+
+<div id="stats" onclick="rerollStats()">
+    <div class="row">
+        <div class="box">
+            <label for="str">Str</label>
+            <div class="stat"><span id="str">&nbsp;</span>/<span id="strb">&nbsp;</span></div>
+        </div>
+        <div class="box">
+            <label for="int">Int</label>
+            <div class="stat"><span id="int">&nbsp;</span>/<span id="intb">&nbsp;</span></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="box">
+            <label for="dex">Dex</label>
+            <div class="stat"><span id="dex">&nbsp;</span>/<span id="dexb">&nbsp;</span></div>
+        </div>
+        <div class="box">
+            <label for="wis">Wis</label>
+            <div class="stat"><span id="wis">&nbsp;</span>/<span id="wisb">&nbsp;</span></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="box">
+            <label for="con">Con</label>
+            <div class="stat"><span id="con">&nbsp;</span>/<span id="conb">&nbsp;</span></div>
+        </div>
+        <div class="box">
+            <label for="cha">Cha</label>
+            <div class="stat">
+                <span id="cha">&nbsp;</span>/<span id="chab">&nbsp;</span></div>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="box" onclick="rerollGear()">
+    <label>GEAR</label>
+    <ol id="gear">
+    </ol>
+</div>
+
+<div class="twobox">
+    <div class="box">
+        <label>HP</label>
+        <div id="hp">
+            &nbsp;
+        </div>
+    </div>
+    <div class="box">
+        <label>AC</label>
+        <div id="ac">
+            &nbsp;
+        </div>
+    </div>
+</div>
+<div class="box">
+    <label>ATTACKS</label>
+    <div class="twobox" id="attacks">
+        <div style="display: inline-block;">
+            <label>Ranged</label>
+            <div id="ranged"></div>
+        </div>
+        <div style="display: inline-block;">
+            <label>Melee</label>
+            <div id="melee"></div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

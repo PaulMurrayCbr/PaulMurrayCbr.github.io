@@ -13,6 +13,7 @@
 
 <h1>Shadowdark</h1>
 <p ><span ><a href="Torchbearer/index.html">Torchbearer</a></span></p>
+<p ><span ><a href="Tier0.html">Tier 0</a></span></p>
 
 <h1>Serpent's Skull</h1>
 <p><a href="ss/index.html">New game</a>, peeps.</p>
@@ -52,4 +53,14 @@ I get these printed at OfficeWorks and ask for the "architectural drawing" rate,
 </body>
 </html>
 
+cat << FOO >> ~/.bashrc
+export CLICOLOR=1
+export LSCOLORS=ExFxBxDxCxegedabagacad
+export PS1='\[\033[01;32m\]\u@\h \[\033[01;34m\]\w\[\033[00m\]\$ '
+FOO
 
+cat << FOO >> ~/.bash_profile
+if [ -f ~/.bashrc ]; then
+    source ~/.bashrc
+fi
+FOO
