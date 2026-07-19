@@ -37,7 +37,7 @@
             justify-content: normal;
         }
 
-        xdiv {
+        zzdiv {
             border: thin solid blue;
         }
 
@@ -81,7 +81,7 @@
         #stats {
             display: table;
             margin: 0 auto; /* centre horizontally */
-            border-spacing: 10px; /* optional gaps */
+            border-spacing: .5rem; /* optional gaps */
         }
 
         #stats > .row {
@@ -104,15 +104,25 @@
         #gear {
             columns: 2;
             column-gap: 2rem;
+            margin: 0 .5rem;
         }
 
-        .twobox div {
+        #attacks label {
+            vertical-align: top;
+        }
+
+        .twobox > div {
+            vertical-align: top;
+        }
+
+        .twobox > .box {
             display: inline-block;
         }
 
         .bignum {
             font-size: 2rem;
             text-align: center;
+            display: block;
         }
 
     </style>
@@ -143,7 +153,10 @@
                 list.removeChild(list.firstChild);
             }
 
-            ancestry = ancestries[Math.floor(Math.random() * ancestries.length)];
+            const current = ancestry;
+            while(current === ancestry) {
+                ancestry = ancestries[Math.floor(Math.random() * ancestries.length)];
+            }
 
             const template = document.querySelector("#" + ancestry);
             const container = document.querySelector("#ancestry");
@@ -347,7 +360,6 @@
                 const disad = document.createElement("aside");
                 disad.textContent = "Disadvantage.";
                 ranged.appendChild(disad);
-                tohit += 1;
             }
 
             if (ancestry === 'ELF') {
@@ -370,7 +382,7 @@
             tohit = bnus(stats[0]);
             if (hasdagger && stats[1] > stats[0]) {
                 const z = document.createElement("aside");
-                z.textContent = "Finesse weapon. Using Dex to hit.";
+                z.textContent = "Finesse weapon.";
                 melee.appendChild(z);
                 tohit += 1;
             }
@@ -449,17 +461,13 @@
         Click any result to reroll it, or this title to reroll everything.
     </aside>
 </div>
-<div class="box">
-    <label for="ancestry">NAME</label>
-    <div id="name"></div>
-</div>
 <div class="box" onclick="rerollAncestry()">
     <label for="ancestry">ANCESTRY</label>
     <div id="ancestry"></div>
 </div>
 
 <div class="box" onclick="rerollBackground()">
-    <label for="name">BACKGROUND</label>
+    <label for="background">BACKGROUND</label>
     <div id="background"></div>
 </div>
 
@@ -500,34 +508,34 @@
 
 
 <div class="box" onclick="rerollGear()">
-    <label>GEAR</label>
+    <label for="gear">GEAR</label>
     <ol id="gear">
     </ol>
 </div>
 
 <div class="twobox">
     <div class="box">
-        <label>HP</label>
+        <label for="hp">HP</label>
         <div id="hp">
             &nbsp;
         </div>
     </div>
     <div class="box">
-        <label>AC</label>
+        <label for="ac">AC</label>
         <div id="ac">
             &nbsp;
         </div>
     </div>
 </div>
 <div class="box">
-    <label>ATTACKS</label>
+    <label for="attacks">ATTACKS</label>
     <div class="twobox" id="attacks">
         <div style="display: inline-block;">
-            <label>Ranged</label>
+            <label for="ranged">Ranged</label>
             <div id="ranged"></div>
         </div>
         <div style="display: inline-block;">
-            <label>Melee</label>
+            <label for="melee">Melee</label>
             <div id="melee"></div>
         </div>
     </div>
