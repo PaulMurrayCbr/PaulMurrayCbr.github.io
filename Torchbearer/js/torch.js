@@ -1,8 +1,9 @@
 /* © Paul Murray 2026 https://github.com/PaulMurrayCbr/Torchbearer */
 
-import {BehaviorSubject, bufferWhen, fromEvent, Subject, switchAll, takeUntil, tap, timer} from "https://esm.sh/rxjs";
+import {BehaviorSubject, Subject, takeUntil} from "https://esm.sh/rxjs";
 
 import {App} from "./app.js";
+import {clickListener$, LONG} from "./clicklistener.js";
 
 export class TorchState {
     constructor(ignited, maxMinutes, minutesRemaining) {
@@ -68,27 +69,20 @@ export class Torch {
     }
 
     start() {
-
-        const multiclick$ = new Subject();
-
-        fromEvent(this.element, "click")
+        clickListener$(this.element)
             .pipe(
                 takeUntil(this.destroy$),
-                tap(() => multiclick$.next(timer(300))),
-                bufferWhen(() => multiclick$.pipe(switchAll())),
             )
-            .subscribe(
-                /** @param {MouseEvent[]} clicks */
-                (clicks) => {
-                    if (clicks.length === 1) {
-                        if(this.minutesRemaining <= 0 && !this.ignited) {
-                            this.app.toaster.show("This torch is spent and cannot be re-lit.");
-                        }
-
-                        this.ignited = !this.ignited;
-                        this.update();
+            .subscribe(clicks => {
+                    if (clicks.length > 1 || clicks[0] === LONG) {
                         if (this.ignited) {
-                            this.app.toaster.show(this.state.getTimeDisplay());
+                            this.extinguish();
+                        } else {
+                            if (this.minutesRemaining <= 0) {
+                                this.app.toaster.show("This torch is spent and cannot be re-lit.");
+                            } else {
+                                this.ignite();
+                            }
                         }
                     } else {
                         if (this.app.selectedTorch$.getValue() !== this) {
@@ -97,7 +91,8 @@ export class Torch {
                             this.app.selectTorch(null);
                         }
                     }
-                })
+                }
+            )
 
         this.app.selectedTorch$
             .pipe(
@@ -133,10 +128,22 @@ export class Torch {
         this.destroy$.complete();
     }
 
+    ignite() {
+        this.ignited = true;
+        this.update();
+        this.app.toaster.show(this.state.getTimeDisplay());
+
+    }
+
+    extinguish() {
+        this.ignited = false;
+        this.update();
+    }
+
     recharge() {
         this.app.toaster.show("Torch recharged.");
-        if(this.minutesRemaining <= this.maxMinutes &&  this.state.getRemainingBlocks() > 0) {
-            this.app.toaster.show("You have wasted about " + (this.state.getRemainingBlocks()*TorchState.blockMinutes) + " minutes worth of oil.");
+        if (this.minutesRemaining <= this.maxMinutes && this.state.getRemainingBlocks() > 0) {
+            this.app.toaster.show("You have wasted about " + (this.state.getRemainingBlocks() * TorchState.blockMinutes) + " minutes worth of oil.");
         }
         this.minutesRemaining = this.maxMinutes;
         this.update();
@@ -180,5 +187,6 @@ export class Torch {
         }
 
     }
+
 
 }

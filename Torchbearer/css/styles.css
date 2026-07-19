@@ -71,8 +71,14 @@ button {
 
     border-radius: 1rem;
     border: none;
+
+    transition: background .5s ease, opacity .5s ease;
 }
 
+button.disabled {
+    background: var(--gray);
+    opacity: 0.5;
+}
 
 #app {
     display: grid;
@@ -222,30 +228,29 @@ button {
     margin: 0 2rem 0 2rem;
 
     opacity: 0;
-/*    transform: translateY(1rem); */
+    /*    transform: translateY(1rem); */
     max-height: 0;
 
-    transition:
-            opacity 2s ease,
-            max-height 2s ease,
-            transform 2s ease;
+    transition: opacity 2s ease,
+    max-height 2s ease,
+    transform 2s ease;
 }
 
 .toast.fadein {
     opacity: 1;
     max-height: 50dvh;
-/*    transform: translateY(0); */
+    /*    transform: translateY(0); */
 }
 
 .toast.fadeout {
     opacity: 0;
     max-height: 0;
-/*    transform: translateY(-1rem); */
+    /*    transform: translateY(-1rem); */
 }
 
-#help {
+.help {
     font-size: smaller;
-    color: var(--dark);
+    color: var(--gray);
     text-align: center;
     padding-left: 2rem;
     padding-right: 2rem;
@@ -307,12 +312,12 @@ button {
     width: 100%;
 }
 
-#panel #minute-button-container {
+.button-row {
     display: flex;
     gap: 0.5rem;
 }
 
-#panel #minute-button-container button {
+.button-row button {
     flex: 1 1 0;
     min-width: 0;
 }
@@ -361,7 +366,7 @@ button {
     position: absolute;
     right: 0;
     top: 100%;
-    width:auto;
+    width: auto;
     background-color: #0f0f0f;
 
     border-radius: .5rem;
@@ -378,7 +383,7 @@ button {
     z-index: 50;
 }
 
-.dropdown.open .dropdown-menu button{
+.dropdown.open .dropdown-menu button {
     display: flex;
     flex-direction: column;
     font-size: 1rem;
@@ -394,4 +399,15 @@ button {
 
     text-align: center;
 
+}
+
+.fader {
+    opacity: 1;
+    transition: opacity 1s ease;
+
+}
+
+.fader.hidden {
+    display: block;
+    opacity: 0;
 }

@@ -50,6 +50,7 @@
     </header>
 
     <main id="torches">
+        <div class="help fader" id="start-hint">Tap the flame to add a torch.</div>
         <div class="visible" id="darkness">DARKNESS</div>
         <div id="toaster">
         </div>
@@ -58,9 +59,9 @@
         </div>
     </main>
 
-    <nav id="help">
-        Tap torch to ignite/extinguish.<br>
-        Double-click for options.
+    <nav id="help" class="help fader hidden">
+        Tap torch to select.<br>
+        Double or long tap to ignite/extinguish.
     </nav>
 
     <footer id="panel-container" class="">
@@ -68,9 +69,13 @@
             <span class="title">Torch Options</span>
             <span id="close-panel" class="close-button dialog">×</span>
             <div id="time-remaining"></div>
-            <button id="discard-torch">✕ Discard</button>
-            <button id="recharge-torch">↻ Recharge</button>
-            <div id="minute-button-container">
+            <div id="action-button-container" class="button-row">
+                <button id="ignite-torch">🔥 Ignite</button>
+                <button id="extinguish-torch" class="disabled">💨 Extinguish</button>
+                <button id="recharge-torch">↻ Recharge</button>
+                <button id="discard-torch">✕ Discard</button>
+            </div>
+            <div id="minute-button-container" class="button-row">
                 <button class="set-minutes" data-min="120">2 hr</button>
                 <button class="set-minutes" data-min="60">1 hr</button>
                 <button class="set-minutes" data-min="30">30 min</button>

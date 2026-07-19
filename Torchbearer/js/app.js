@@ -1,6 +1,6 @@
 /* © Paul Murray 2026 https://github.com/PaulMurrayCbr/Torchbearer */
 
-import {BehaviorSubject, fromEvent, of, Subject, switchAll} from "https://esm.sh/rxjs";
+import {BehaviorSubject, fromEvent, of, Subject, switchAll, map, delay, filter} from "https://esm.sh/rxjs";
 import {Torch} from "./torch.js";
 import {Toaster} from "./toaster.js";
 
@@ -64,6 +64,8 @@ export class App {
     timePasses$ = new Subject();
     timeMark = new Date();
 
+    timePassesTimeout$ = new Subject();
+
     timeMenuOpen = false
 
     /**
@@ -94,6 +96,7 @@ export class App {
 
                 this.appState$.next(this.appState);
             });
+
         fromEvent(this.element.querySelector("#addTorch"), "click")
             .subscribe(() => {
                 this.addTorch();
@@ -104,16 +107,41 @@ export class App {
             });
         fromEvent(this.element.querySelector("#discard-torch"), "click")
             .subscribe(() => {
-                if (this.selectedTorch$.getValue()) {
-                    this.removeTorch(this.selectedTorch$.getValue());
+                /** @type {Torch} */
+                const torch = this.selectedTorch$.getValue();
+                if (torch) {
+                    this.removeTorch(torch);
                 }
             });
         fromEvent(this.element.querySelector("#recharge-torch"), "click")
             .subscribe(() => {
-                if (this.selectedTorch$.getValue()) {
-                    this.selectedTorch$.getValue().recharge();
+                /** @type {Torch} */
+                const torch = this.selectedTorch$.getValue();
+                if (torch) {
+                    torch.recharge();
                 }
             });
+
+        fromEvent(this.element.querySelector("#ignite-torch"), "click")
+            .subscribe(() => {
+                /** @type {Torch} */
+                const torch = this.selectedTorch$.getValue();
+                if (torch && !torch.ignited && torch.minutesRemaining > 0) {
+                    torch.ignite();
+                    this.toaster.show("You may also double or long tap a torch to ignite or extinguish it.");
+                }
+            });
+
+        fromEvent(this.element.querySelector("#extinguish-torch"), "click")
+            .subscribe(() => {
+                /** @type {Torch} */
+                const torch = this.selectedTorch$.getValue();
+                if (torch && torch.ignited) {
+                    torch.extinguish();
+                    this.toaster.show("You may also double or long tap a torch to ignite or extinguish it.");
+                }
+            });
+
 
         fromEvent(this.element.querySelector("#time-passes"), "click")
             .subscribe(() => {
@@ -125,6 +153,7 @@ export class App {
                     this.element.querySelector("#time-passes").classList.remove("on");
                     this.element.querySelector("#time-passes-container").classList.remove("open");
                 }
+                this.timePassesTimeout$.next('MENU');
             });
 
         this.element.querySelectorAll(".set-minutes").forEach(button => {
@@ -136,6 +165,20 @@ export class App {
             });
         });
 
+    this.timePassesTimeout$.pipe(
+        map(z=> z==='BUTTON' ? of(z).pipe(delay(3000)): of(z)),
+        switchAll(),
+        filter(z=>z==='BUTTON'),
+    ).subscribe(
+        () => {
+            if (this.timeMenuOpen) {
+                this.timeMenuOpen = false;
+                this.element.querySelector("#time-passes").classList.remove("on");
+                this.element.querySelector("#time-passes-container").classList.remove("open");
+            }
+        }
+    )
+
 
         this.element.querySelectorAll(".minutes-pass").forEach(button => {
             fromEvent(button, "click").subscribe(() => {
@@ -143,6 +186,7 @@ export class App {
                 this.markTime();
                 this.timePasses$.next(min);
                 this.toaster.show(min + " minute" + (min > 1 ? "s" : "") + " pass" + (min > 1 ? "" : "es") + "…");
+                this.timePassesTimeout$.next('BUTTON');
             });
         });
 
@@ -176,12 +220,37 @@ export class App {
             .pipe(
                 switchAll()
             )
-            .subscribe(illumination => {
+            .subscribe(
+                /** @param {TorchState} illumination */
+                illumination => {
                 if (illumination) {
                     this.element.querySelector("#time-remaining").textContent = illumination.getTimeDisplay();
+
+                    if(illumination.ignited) {
+                        this.element.querySelector("#ignite-torch").classList.add("disabled");
+                        this.element.querySelector("#extinguish-torch").classList.remove("disabled");
+                    } else if(illumination.minutesRemaining <= 0) {
+                        this.element.querySelector("#ignite-torch").classList.add("disabled");
+                        this.element.querySelector("#extinguish-torch").classList.add("disabled");
+                    }
+                    else {
+                        this.element.querySelector("#ignite-torch").classList.remove("disabled");
+                        this.element.querySelector("#extinguish-torch").classList.add("disabled");
+                    }
+
+                    this.element.querySelector("#recharge-torch").classList.remove("disabled");
+                    this.element.querySelector("#discard-torch").classList.remove("disabled");
+
+
                 } else {
                     // this almost never happens
                     this.element.querySelector("#time-remaining").textContent = "No selection";
+
+                    this.element.querySelector("#ignite-torch").classList.add("disabled");
+                    this.element.querySelector("#extinguish-torch").classList.add("disabled");
+                    this.element.querySelector("#recharge-torch").classList.add("disabled");
+                    this.element.querySelector("#discard-torch").classList.add("disabled");
+
                 }
             })
 
@@ -203,6 +272,8 @@ export class App {
         this.torches.push(torch);
         this.markTime();
         torch.start();
+        document.getElementById("start-hint").classList.add("hidden");
+        document.getElementById("help").classList.remove("hidden");
 
         // I'll just jam this subscription into the torch object
         torch.appSubscription = torch.state$.subscribe(state => {
@@ -221,6 +292,12 @@ export class App {
         torch.stop();
         torch.element.remove();
         this.torches = this.torches.filter(t => t !== torch);
+
+        if(this.torches.length === 0) {
+            document.getElementById("start-hint").classList.remove("hidden");
+            document.getElementById("help").classList.add("hidden");
+        }
+
         this.checkTorchState();
     }
 
