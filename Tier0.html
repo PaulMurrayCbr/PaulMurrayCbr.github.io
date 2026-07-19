@@ -154,7 +154,7 @@
             }
 
             const current = ancestry;
-            while(current === ancestry) {
+            while (current === ancestry) {
                 ancestry = ancestries[Math.floor(Math.random() * ancestries.length)];
             }
 
@@ -384,7 +384,7 @@
                 const z = document.createElement("aside");
                 z.textContent = "Finesse weapon.";
                 melee.appendChild(z);
-                tohit += 1;
+                tohit = bnus(stats[1]);
             }
 
             if (ancestry === 'HALFORC') {
