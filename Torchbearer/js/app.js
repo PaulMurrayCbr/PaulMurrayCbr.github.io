@@ -1,6 +1,6 @@
 /* © Paul Murray 2026 https://github.com/PaulMurrayCbr/Torchbearer */
 
-import {BehaviorSubject, fromEvent, of, Subject, switchAll, map, delay, filter} from "https://esm.sh/rxjs";
+import {BehaviorSubject, delay, filter, fromEvent, map, of, Subject, switchAll, timer} from "https://esm.sh/rxjs";
 import {Torch} from "./torch.js";
 import {Toaster} from "./toaster.js";
 
@@ -165,19 +165,19 @@ export class App {
             });
         });
 
-    this.timePassesTimeout$.pipe(
-        map(z=> z==='BUTTON' ? of(z).pipe(delay(3000)): of(z)),
-        switchAll(),
-        filter(z=>z==='BUTTON'),
-    ).subscribe(
-        () => {
-            if (this.timeMenuOpen) {
-                this.timeMenuOpen = false;
-                this.element.querySelector("#time-passes").classList.remove("on");
-                this.element.querySelector("#time-passes-container").classList.remove("open");
+        this.timePassesTimeout$.pipe(
+            map(z => z === 'BUTTON' ? of(z).pipe(delay(3000)) : of(z)),
+            switchAll(),
+            filter(z => z === 'BUTTON'),
+        ).subscribe(
+            () => {
+                if (this.timeMenuOpen) {
+                    this.timeMenuOpen = false;
+                    this.element.querySelector("#time-passes").classList.remove("on");
+                    this.element.querySelector("#time-passes-container").classList.remove("open");
+                }
             }
-        }
-    )
+        )
 
 
         this.element.querySelectorAll(".minutes-pass").forEach(button => {
@@ -223,36 +223,35 @@ export class App {
             .subscribe(
                 /** @param {TorchState} illumination */
                 illumination => {
-                if (illumination) {
-                    this.element.querySelector("#time-remaining").textContent = illumination.getTimeDisplay();
+                    if (illumination) {
+                        this.element.querySelector("#time-remaining").textContent = illumination.getTimeDisplay();
 
-                    if(illumination.ignited) {
-                        this.element.querySelector("#ignite-torch").classList.add("disabled");
-                        this.element.querySelector("#extinguish-torch").classList.remove("disabled");
-                    } else if(illumination.minutesRemaining <= 0) {
+                        if (illumination.ignited) {
+                            this.element.querySelector("#ignite-torch").classList.add("disabled");
+                            this.element.querySelector("#extinguish-torch").classList.remove("disabled");
+                        } else if (illumination.minutesRemaining <= 0) {
+                            this.element.querySelector("#ignite-torch").classList.add("disabled");
+                            this.element.querySelector("#extinguish-torch").classList.add("disabled");
+                        } else {
+                            this.element.querySelector("#ignite-torch").classList.remove("disabled");
+                            this.element.querySelector("#extinguish-torch").classList.add("disabled");
+                        }
+
+                        this.element.querySelector("#recharge-torch").classList.remove("disabled");
+                        this.element.querySelector("#discard-torch").classList.remove("disabled");
+
+
+                    } else {
+                        // this almost never happens
+                        this.element.querySelector("#time-remaining").textContent = "No selection";
+
                         this.element.querySelector("#ignite-torch").classList.add("disabled");
                         this.element.querySelector("#extinguish-torch").classList.add("disabled");
+                        this.element.querySelector("#recharge-torch").classList.add("disabled");
+                        this.element.querySelector("#discard-torch").classList.add("disabled");
+
                     }
-                    else {
-                        this.element.querySelector("#ignite-torch").classList.remove("disabled");
-                        this.element.querySelector("#extinguish-torch").classList.add("disabled");
-                    }
-
-                    this.element.querySelector("#recharge-torch").classList.remove("disabled");
-                    this.element.querySelector("#discard-torch").classList.remove("disabled");
-
-
-                } else {
-                    // this almost never happens
-                    this.element.querySelector("#time-remaining").textContent = "No selection";
-
-                    this.element.querySelector("#ignite-torch").classList.add("disabled");
-                    this.element.querySelector("#extinguish-torch").classList.add("disabled");
-                    this.element.querySelector("#recharge-torch").classList.add("disabled");
-                    this.element.querySelector("#discard-torch").classList.add("disabled");
-
-                }
-            })
+                })
 
         this.toaster.start();
 
@@ -260,6 +259,7 @@ export class App {
             this.markTime();
         }, 10000);
 
+        this.handleSplash();
 
     }
 
@@ -293,7 +293,7 @@ export class App {
         torch.element.remove();
         this.torches = this.torches.filter(t => t !== torch);
 
-        if(this.torches.length === 0) {
+        if (this.torches.length === 0) {
             document.getElementById("start-hint").classList.remove("hidden");
             document.getElementById("help").classList.add("hidden");
         }
@@ -331,5 +331,21 @@ export class App {
             this.timePasses$.next(diff / 1000 / 60); // minutes
         }
         this.timeMark = now;
+    }
+
+    handleSplash() {
+        timer(2000).subscribe(() => {
+            document.getElementById("splash").style.setProperty("opacity", "0");
+            const sub = fromEvent(document.getElementById("splash"), "transitionend").subscribe(event => {
+                sub.unsubscribe();
+                document.getElementById("splash").remove();
+
+                document.getElementById("splash-fade").style.setProperty("opacity", "0");
+                const sub2 = fromEvent(document.getElementById("splash-fade"), "transitionend").subscribe(event => {
+                    sub2.unsubscribe();
+                    document.getElementById("splash-fade").remove();
+                });
+            });
+        });
     }
 }
