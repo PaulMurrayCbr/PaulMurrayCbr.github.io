@@ -27,22 +27,21 @@
 </template>
 
 <div id="app">
-
     <div id="splash-container">
-    <img id="splash"  src="images/splash.png" alt="splash">
+        <img alt="splash" id="splash" src="images/splash.png">
     </div>
     <div id="splash-fade"></div>
 
     <header id="toolbar">
-        <img id="title" src="images/LOGO-with-text.png" alt="Torchbearer" style="max-height: 2rem;">
+        <img alt="Torchbearer" id="title" src="images/LOGO-with-text.png" style="max-height: 2rem;">
         <span id="buttons">
             <button id="addTorch">🔥</button>
 
 
-<div id="time-passes-container" class="dropdown">
+<div class="dropdown" id="time-passes-container">
             <button id="time-passes">⌛</button>
 
-    <div id="time-passes-dropdown" class="dropdown-menu">
+    <div class="dropdown-menu" id="time-passes-dropdown">
         <div class="title">Time passes &hellip;</div>
         <button class="minutes-pass" data-min="60">1 hr</button>
         <button class="minutes-pass" data-min="10">10 min</button>
@@ -65,23 +64,23 @@
         </div>
     </main>
 
-    <nav id="help" class="help fader hidden">
+    <nav class="help fader hidden" id="help">
         Tap torch to select.<br>
         Double or long tap to ignite/extinguish.
     </nav>
 
-    <footer id="panel-container" class="">
+    <footer class="" id="panel-container">
         <div class="dialog" id="panel">
             <span class="title">Torch Options</span>
-            <span id="close-panel" class="close-button dialog">×</span>
+            <span class="close-button dialog" id="close-panel">×</span>
             <div id="time-remaining"></div>
-            <div id="action-button-container" class="button-row">
+            <div class="button-row" id="action-button-container">
                 <button id="ignite-torch">🔥 Ignite</button>
-                <button id="extinguish-torch" class="disabled">💨 Extinguish</button>
+                <button class="disabled" id="extinguish-torch">💨 Extinguish</button>
                 <button id="recharge-torch">↻ Recharge</button>
                 <button id="discard-torch">✕ Discard</button>
             </div>
-            <div id="minute-button-container" class="button-row">
+            <div class="button-row" id="minute-button-container">
                 <button class="set-minutes" data-min="120">2 hr</button>
                 <button class="set-minutes" data-min="60">1 hr</button>
                 <button class="set-minutes" data-min="30">30 min</button>

@@ -431,7 +431,7 @@ button.disabled {
 #splash {
     max-width: 100%;
     max-height: 100%;
-    transition: opacity 3s ease;
+    transition: opacity 5s ease;
 }
 
 #splash-fade {
@@ -443,5 +443,5 @@ button.disabled {
     background-color: #e0e0e0;
     z-index: 999;
 
-    transition: opacity 5s ease;
+    transition: opacity 4s ease;
 }

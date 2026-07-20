@@ -334,17 +334,27 @@ export class App {
     }
 
     handleSplash() {
-        timer(2000).subscribe(() => {
-            document.getElementById("splash").style.setProperty("opacity", "0");
-            const sub = fromEvent(document.getElementById("splash"), "transitionend").subscribe(event => {
-                sub.unsubscribe();
-                document.getElementById("splash").remove();
 
-                document.getElementById("splash-fade").style.setProperty("opacity", "0");
-                const sub2 = fromEvent(document.getElementById("splash-fade"), "transitionend").subscribe(event => {
-                    sub2.unsubscribe();
-                    document.getElementById("splash-fade").remove();
-                });
+        const splash = document.getElementById("splash");
+        const splashFade = document.getElementById("splash-fade");
+        const splashContainer = document.getElementById("splash-container");
+
+        timer(1000).subscribe(() => {
+            splash.style.setProperty("opacity", "0");
+            const sub = fromEvent(splash, "transitionend").subscribe(event => {
+                sub.unsubscribe();
+                splashContainer.style.setProperty("display", "none");
+                splashContainer.remove();
+
+            });
+        });
+
+        timer(2000).subscribe(() => {
+            splashFade.style.setProperty("opacity", "0");
+            const sub2 = fromEvent(splashFade, "transitionend").subscribe(event => {
+                sub2.unsubscribe();
+                splashFade.style.setProperty("display", "none");
+                splashFade.remove();
             });
         });
     }
