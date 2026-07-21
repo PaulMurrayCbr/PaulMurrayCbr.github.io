@@ -37,37 +37,40 @@
         <span id="buttons">
             <button id="addTorch">🔥</button>
 
-
-<div class="dropdown" id="time-passes-container">
-            <button id="time-passes">⌛</button>
-
-    <div class="dropdown-menu" id="time-passes-dropdown">
-        <div class="title">Time passes &hellip;</div>
-        <button class="minutes-pass" data-min="60">1 hr</button>
-        <button class="minutes-pass" data-min="10">10 min</button>
-        <button class="minutes-pass" data-min="1">1 min</button>
-    </div>
-</div>
-
+            <div class="dropdown" id="time-passes-container">
+                <button id="time-passes">⌛</button>
+                <div class="dropdown-menu" id="time-passes-dropdown">
+                    <div class="title">Time passes &hellip;</div>
+                    <button class="minutes-pass" data-min="60">1 hr</button>
+                    <button class="minutes-pass" data-min="10">10 min</button>
+                    <button class="minutes-pass" data-min="1">1 min</button>
+                </div>
+            </div>
 
             <button id="pause">❚❚</button>
         </span>
     </header>
 
     <main id="torches">
-        <div class="help fader" id="start-hint">Tap the flame to add a torch.</div>
+        <div id="hint-container">
+            <aside class="help fader" id="start-hint">Tap the flame to add a torch.</aside>
+            <aside class="help fader hidden" id="help">
+                Tap torch to select.<br>
+                Double or long tap to ignite/extinguish.
+            </aside>
+        </div>
+
         <div class="visible" id="darkness">DARKNESS</div>
         <div id="toaster">
         </div>
         <div class="hidden" id="paused"></div>
-        <div id="torches-grid">
+        <div id="torch-grid-container">
+            <div class="tgrid" id="torches-grid">
+            </div>
+            <div class="tgrid" id="torches-sizing-grid">
+            </div>
         </div>
     </main>
-
-    <nav class="help fader hidden" id="help">
-        Tap torch to select.<br>
-        Double or long tap to ignite/extinguish.
-    </nav>
 
     <footer class="" id="panel-container">
         <div class="dialog" id="panel">
@@ -75,10 +78,10 @@
             <span class="close-button dialog" id="close-panel">×</span>
             <div id="time-remaining"></div>
             <div class="button-row" id="action-button-container">
-                <button id="ignite-torch">🔥 Ignite</button>
-                <button class="disabled" id="extinguish-torch">💨 Extinguish</button>
-                <button id="recharge-torch">↻ Recharge</button>
-                <button id="discard-torch">✕ Discard</button>
+                <button id="ignite-torch">🔥 Ig&shy;nite</button>
+                <button class="disabled" id="extinguish-torch">💨 Ext&shy;in&shy;guish</button>
+                <button id="recharge-torch">↻ Re&shy;charge</button>
+                <button id="discard-torch">✕ Dis&shy;card</button>
             </div>
             <div class="button-row" id="minute-button-container">
                 <button class="set-minutes" data-min="120">2 hr</button>
