@@ -1,10 +1,7 @@
 /* © Paul Murray 2026 https://github.com/PaulMurrayCbr/Torchbearer */
 
-// TODO duration mechanic - make it pro-rata
 // TODO info panel
 // TODO remove all spent and unlit torches?
-// TODO leave panel open to stop sizing bouncing around. disable all buttons.
-// TODO dont add torch until after resize is done. Pss the lambda into the resize methods as an 'oncomplete' parm.
 // TODO package app.
 
 import {

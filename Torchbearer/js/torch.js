@@ -150,9 +150,10 @@ export class Torch {
     }
 
     setMaxMinutes(minutes) {
+        this.minutesRemaining *= minutes / this.maxMinutes;
         this.maxMinutes = minutes;
         this.update();
-        this.app.toaster.show("Torch set to " + minutes + " minute" + (minutes > 1 ? "s" : "") + "");
+//        this.app.toaster.show("Torch set to " + minutes + " minute" + (minutes > 1 ? "s" : "") + "");
     }
 
     update() {
