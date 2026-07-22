@@ -1,1 +1,1 @@
-export const gitinfo = {"commit":"613dedb","hash":"613dedb158a1bc7fc250db3c99ecb870dc3c1169","timestamp":"2026-07-21T19:51:26+10:00","message":"torch resizing fixed","tag":"v0.1.0","ref":"HEAD -> main, tag: v0.1.0, resizing-issue"};
+export const gitinfo = {"commit":"99ee1fb","hash":"99ee1fbe976010ae5044cd539091e4ff1dbaffca","timestamp":"2026-07-22T14:26:59+10:00","message":"Splash again, resize torch before adding the element on torch add.","tag":"v0.1.1","ref":"HEAD -> main, tag: v0.1.1"};

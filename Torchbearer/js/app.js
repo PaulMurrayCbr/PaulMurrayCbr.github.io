@@ -7,14 +7,15 @@
 // TODO dont add torch until after resize is done. Pss the lambda into the resize methods as an 'oncomplete' parm.
 // TODO package app.
 
-
 import {
     BehaviorSubject,
     debounceTime,
     delay,
     filter,
+    first,
     fromEvent,
     map,
+    merge,
     Observable,
     of,
     Subject,
@@ -294,8 +295,7 @@ export class App {
 
         resizePipe$.pipe(
             debounceTime(100)
-        ).subscribe(this.doTorchResizing.bind(this));
-
+        ).subscribe(() => this.doTorchResizing());
     }
 
     addTorch() {
@@ -308,12 +308,14 @@ export class App {
         const sizingElement = sizingClone.firstElementChild;
         document.getElementById("torches-sizing-grid").appendChild(sizingElement);
 
+        element.style.setProperty("display", 'none');
+
         const torch = new Torch(this, element);
 
         torch.sizingElement = sizingElement; // this is my own business
 
         this.torches.push(torch);
-        this.doTorchResizing();
+        this.doTorchResizing(() => element.style.setProperty("display", 'inline-block'));
 
         this.markTime();
         torch.start();
@@ -394,32 +396,65 @@ export class App {
 
     handleSplash() {
 
+        /** @type {HTMLImageElement} */
         const splash = document.getElementById("splash");
+        /** @type {HTMLDivElement} */
         const splashFade = document.getElementById("splash-fade");
+        /** @type {HTMLDivElement} */
         const splashContainer = document.getElementById("splash-container");
 
-        timer(500).subscribe(() => {
-            splash.style.setProperty("opacity", "0");
-            const sub = fromEvent(splash, "transitionend").subscribe(event => {
-                sub.unsubscribe();
-                splashContainer.style.setProperty("display", "none");
-                splashContainer.remove();
-            });
-        });
+        const container = splashContainer.getBoundingClientRect();
 
-        timer(1500).subscribe(() => {
-            splashFade.style.setProperty("opacity", "0");
-            const sub2 = fromEvent(splashFade, "transitionend").subscribe(event => {
-                sub2.unsubscribe();
-                splashFade.style.setProperty("display", "none");
-                splashFade.remove();
-            });
-        });
+        const subscription = merge(
+            fromEvent(splash, "load"),
+            fromEvent(splash, "error")
+        )
+            .pipe(
+                first()
+            )
+            .subscribe(event => {
+                if (event.type === "load" && splash.naturalWidth > 0 && splash.naturalHeight > 0) {
+
+                    const fitx = container.width / splash.naturalWidth;
+                    const fity = container.height / splash.naturalHeight;
+
+                    const imageAspect = Math.min(fitx, fity);
+
+                    splash.width = splash.naturalWidth * imageAspect;
+                    splash.height = splash.naturalHeight * imageAspect;
+                }
+
+                subscription.unsubscribe();
+
+                timer(500).subscribe(() => {
+                    splash.style.setProperty("opacity", "0");
+                    const sub = fromEvent(splash, "transitionend").subscribe(event => {
+                        sub.unsubscribe();
+                        splashContainer.style.setProperty("display", "none");
+                        splashContainer.remove();
+                    });
+                });
+
+                timer(1500).subscribe(() => {
+                    splashFade.style.setProperty("opacity", "0");
+                    const sub2 = fromEvent(splashFade, "transitionend").subscribe(event => {
+                        sub2.unsubscribe();
+                        splashFade.style.setProperty("display", "none");
+                        splashFade.remove();
+                    });
+                });
+            })
+
+        splash.src = "images/splash.png";
+
+
     }
 
-    doTorchResizing() {
-        console.log("DO TORCH RESIZING!")
-        if (this.torches.length === 0) return;
+    doTorchResizing(onComplete) {
+        if (this.torches.length === 0) {
+            onComplete && onComplete();
+            return;
+        }
 
         document.documentElement.style.setProperty(
             "--torch-sizing-height", '1rem'
@@ -429,92 +464,72 @@ export class App {
         );
 
         requestAnimationFrame(() => {
-            this.resizedUpTo(1, 1, 0)
+            this.resizedUpTo(1, 1, 0, onComplete)
         });
     }
 
-    resizedUpTo(lastGoodHeight, newHeight, steps) {
-        if(steps > 100) {
-            document.documentElement.style.setProperty(
-                "--torch-sizing-height", lastGoodHeight + 'rem'
-            );
-            document.documentElement.style.setProperty(
-                "--torch-sizing-width", (lastGoodHeight * App.aspect) + 'rem'
-            );
-            document.documentElement.style.setProperty(
-                "--torch-height", lastGoodHeight + 'rem'
-            );
-            document.documentElement.style.setProperty(
-                "--torch-width", (lastGoodHeight * App.aspect) + 'rem'
-            );
+    resizedUpTo(lastGoodHeight, newHeight, steps, onComplete) {
+        // kill this method if it loops too long
+        if (steps > 100) {
+            this.setTorchSizing(lastGoodHeight, true);
+            onComplete && onComplete();
+            return;
         }
 
         const overflowing = this.isOverflowing();
 
         if (overflowing) {
-            this.resizedInTo(lastGoodHeight, newHeight, newHeight, steps);
+            this.resizedInTo(lastGoodHeight, newHeight, newHeight, steps, onComplete);
         } else {
             const nextHeight = newHeight * 1.616;
-
-            document.documentElement.style.setProperty(
-                "--torch-sizing-height", nextHeight + 'rem'
-            );
-            document.documentElement.style.setProperty(
-                "--torch-sizing-width", (nextHeight * App.aspect) + 'rem'
-            );
+            this.setTorchSizing(nextHeight);
 
             requestAnimationFrame(() => {
-                this.resizedUpTo(newHeight, nextHeight, steps+1);
+                this.resizedUpTo(newHeight, nextHeight, steps + 1, onComplete);
             });
         }
     }
 
-    resizedInTo(lastGoodHeight, lastTooBig, newHeight, steps) {
-        if(steps > 100 || (lastTooBig-lastGoodHeight) < .25) {
-            document.documentElement.style.setProperty(
-                "--torch-sizing-height", lastGoodHeight + 'rem'
-            );
-            document.documentElement.style.setProperty(
-                "--torch-sizing-width", (lastGoodHeight * App.aspect) + 'rem'
-            );
-            document.documentElement.style.setProperty(
-                "--torch-height", lastGoodHeight + 'rem'
-            );
-            document.documentElement.style.setProperty(
-                "--torch-width", (lastGoodHeight * App.aspect) + 'rem'
-            );
+    resizedInTo(lastGoodHeight, lastTooBig, newHeight, steps, onComplete) {
+        // kill this method if it loops too long
+        if (steps > 100 || (lastTooBig - lastGoodHeight) < .25) {
+            this.setTorchSizing(lastGoodHeight, true);
 
+            onComplete && onComplete();
             return;
         }
 
         let nextHeight;
-        if(this.isOverflowing()) {
+        if (this.isOverflowing()) {
             nextHeight = (lastGoodHeight + newHeight) / 2;
-
-            document.documentElement.style.setProperty(
-                "--torch-sizing-height", nextHeight + 'rem'
-            );
-            document.documentElement.style.setProperty(
-                "--torch-sizing-width", (nextHeight * App.aspect) + 'rem'
-            );
+            this.setTorchSizing(nextHeight);
 
             requestAnimationFrame(() => {
-                this.resizedInTo(lastGoodHeight, newHeight, nextHeight, steps+1);
+                this.resizedInTo(lastGoodHeight, newHeight, nextHeight, steps + 1, onComplete);
+            });
+        } else {
+            nextHeight = (newHeight + lastTooBig) / 2;
+            this.setTorchSizing(nextHeight);
+
+            requestAnimationFrame(() => {
+                this.resizedInTo(newHeight, lastTooBig, nextHeight, steps + 1, onComplete);
             });
         }
-        else {
-            nextHeight = (newHeight + lastTooBig) / 2;
 
-            document.documentElement.style.setProperty(
-                "--torch-sizing-height", nextHeight + 'rem'
-            );
-            document.documentElement.style.setProperty(
-                "--torch-sizing-width", (nextHeight * App.aspect) + 'rem'
-            );
+    }
 
-            requestAnimationFrame(() => {
-                this.resizedInTo(newHeight,lastTooBig, nextHeight, steps+1);
-            });
+    /**
+     *
+     * @param nextHeight {number} height in rem. Width is calculated from aspect ratio.
+     * @param finalSize {boolean} if true, set the final size of the torch in the "real" window.
+     */
+    setTorchSizing(nextHeight, finalSize = false) {
+        const style = document.documentElement.style;
+        style.setProperty("--torch-sizing-height", nextHeight + 'rem');
+        style.setProperty("--torch-sizing-width", (nextHeight * App.aspect) + 'rem');
+        if (finalSize) {
+            style.setProperty("--torch-height", nextHeight + 'rem');
+            style.setProperty("--torch-width", (nextHeight * App.aspect) + 'rem');
         }
 
     }
@@ -522,17 +537,16 @@ export class App {
     isOverflowing() {
         const grid = document.getElementById("torches-sizing-grid");
 
-        let right  = 0;
+        let right = 0;
         let bottom = 0;
 
-        for ( const torch of grid.children) {
+        for (const torch of grid.children) {
             const r = torch.getBoundingClientRect();
             right = Math.max(r.right, right);
             bottom = Math.max(r.bottom, bottom);
         }
 
-       return            right >= grid.getBoundingClientRect().right ||
+        return right >= grid.getBoundingClientRect().right ||
             bottom >= grid.getBoundingClientRect().bottom;
-
     }
 }

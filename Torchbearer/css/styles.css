@@ -1,24 +1,7 @@
 /* © Paul Murray 2026 https://github.com/PaulMurrayCbr/Torchbearer */
 
 *, *::before, *::after {
-}
-
-:root {
     box-sizing: border-box;
-
-    --yellow: #f0a500;
-    --disabled-yellow: #8a5f00;
-    --gray: #a0a0a0;
-    --dark: #606060;
-    /** brightness goes from 80 to 20 */
-    --brightness: 20;
-
-    --torch-width: 1rem;
-    --torch-height: 3rem;
-    --torch-sizing-width: 2rem;
-    --torch-sizing-height: 6rem;
-
-
 
     /* getting rid of annoying artifacts when clicking */
     -webkit-user-select: none;
@@ -32,12 +15,26 @@
 
 }
 
+:root {
+    --yellow: #f0a500;
+    --disabled-yellow: #8a5f00;
+    --gray: #a0a0a0;
+    --dark: #606060;
+    /** brightness goes from 80 to 20 */
+    --brightness: 20;
+
+    --torch-width: 1rem;
+    --torch-height: 3rem;
+    --torch-sizing-width: 2rem;
+    --torch-sizing-height: 6rem;
+}
+
 
 html,
 body {
     margin: 0;
+    padding: 0;
     height: 100%;
-
 
     background: rgb(var(--brightness) var(--brightness) var(--brightness));
     transition: background 1s ease;
@@ -203,7 +200,7 @@ button.disabled:active {
     width: var(--torch-width);
     height: var(--torch-height);
 
-    transition: width .25s ease-out, height .25s ease-out;
+    transition: width .125s ease-out, height .125s ease-out;
 }
 
 #torches-sizing-grid > .torch-container {
@@ -474,29 +471,21 @@ button.disabled:active {
 
 #splash-container {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: transparent;
+    inset:0;
     z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #splash {
-    max-width: 100%;
-    max-height: 100%;
     transition: opacity 3s linear;
 }
 
 #splash-fade {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
+
     background-color: #e0e0e0;
     z-index: 999;
 
