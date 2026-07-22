@@ -1,6 +1,6 @@
 /* © Paul Murray 2026 https://github.com/PaulMurrayCbr/Torchbearer */
 
-import {
+const {
     buffer,
     debounceTime,
     delay,
@@ -14,7 +14,7 @@ import {
     Subscription,
     switchAll,
     takeUntil
-} from "https://esm.sh/rxjs";
+} = rxjs;
 
 export const SHORT = 'SHORT', LONG = 'LONG';
 const START = 'START', CANCEL = 'CANCEL';

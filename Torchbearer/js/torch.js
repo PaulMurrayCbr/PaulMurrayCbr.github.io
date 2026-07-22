@@ -1,6 +1,6 @@
 /* © Paul Murray 2026 https://github.com/PaulMurrayCbr/Torchbearer */
 
-import {BehaviorSubject, Subject, takeUntil} from "https://esm.sh/rxjs";
+const {BehaviorSubject, Subject, takeUntil} = rxjs;
 
 import {App} from "./app.js";
 import {clickListener$, LONG} from "./clicklistener.js";

@@ -1,6 +1,6 @@
 /* © Paul Murray 2026 https://github.com/PaulMurrayCbr/Torchbearer */
 
-import {concat, delay, of, Subject, takeUntil} from "https://esm.sh/rxjs";
+const {concat, delay, of, Subject, takeUntil} = rxjs;
 import {App} from "./app.js";
 
 export class Toaster {

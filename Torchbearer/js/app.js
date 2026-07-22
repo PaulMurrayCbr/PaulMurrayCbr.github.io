@@ -1,6 +1,6 @@
 /* © Paul Murray 2026 https://github.com/PaulMurrayCbr/Torchbearer */
 
-import {
+const {
     BehaviorSubject,
     debounceTime,
     delay,
@@ -14,7 +14,8 @@ import {
     Subject,
     switchAll,
     timer
-} from "https://esm.sh/rxjs";
+} = rxjs;
+
 import {Torch} from "./torch.js";
 import {Toaster} from "./toaster.js";
 
