@@ -1,9 +1,5 @@
 /* © Paul Murray 2026 https://github.com/PaulMurrayCbr/Torchbearer */
 
-// TODO info panel
-// TODO remove all spent and unlit torches?
-// TODO package app.
-
 import {
     BehaviorSubject,
     debounceTime,
@@ -98,6 +94,24 @@ export class App {
     }
 
     start() {
+        fromEvent(this.element.querySelector("#title"), "click")
+            .subscribe(() => {
+                this.element.querySelector("#info-container").classList.add("open");
+                requestAnimationFrame(() => {
+                    this.element.querySelector("#info").classList.add("open");
+                })
+            })
+
+        fromEvent(this.element.querySelector("#info-container"), "click")
+            .subscribe(() => {
+                fromEvent(this.element.querySelector("#info"), "transitionend")
+                    .pipe(first())
+                    .subscribe(() => {
+                        this.element.querySelector("#info-container").classList.remove("open");
+                    });
+                this.element.querySelector("#info").classList.remove("open");
+            })
+
         fromEvent(this.element.querySelector("#pause"), "click")
             .subscribe(() => {
                 this.markTime();

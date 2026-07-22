@@ -19,6 +19,9 @@
     --yellow: #f0a500;
     --disabled-yellow: #8a5f00;
     --gray: #a0a0a0;
+    --brighter: #e0e0e0;
+    --linkblue: #4040f0;
+    --linkvisitedblue: #8040f0;
     --dark: #606060;
     /** brightness goes from 80 to 20 */
     --brightness: 20;
@@ -56,10 +59,33 @@ body {
 }
 
 #toolbar #title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--yellow);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
+
+#toolbar #title #infobutton {
+    color: var(--yellow);
+    font-family: monospace;
+    font-size: .8rem;
+
+    border-radius: 50%;
+    border: thin solid var(--yellow);
+
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 1.2rem;
+    height: 1.2rem;
+    min-width: 1.2rem;
+    min-height: 1.2rem;
+
+    font-weight: bold;
+    line-height: 1;
+}
+
 
 #toolbar #buttons {
     display: flex;
@@ -490,4 +516,52 @@ button.disabled:active {
     z-index: 999;
 
     transition: opacity 2s linear;
+}
+
+
+#info-container {
+    position: fixed;
+    inset:0;
+    z-index: 1000;
+    z-index: 998;
+    display: none;
+}
+
+#info-container.open {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#info {
+    border: thin solid var(--yellow);
+    border-radius: .5rem;
+    padding: 1rem;
+    background-color: #0f0f0f;
+    color: var(--gray);
+    max-width: 90%;
+    max-height: 0;
+    overflow: auto;
+    transition: max-height .5s ease;
+}
+
+#info.open {
+    max-height: 90%;
+}
+
+
+#info strong {color: var(--yellow);}
+
+#info a, #info a {
+    color: var(--linkblue);
+    text-decoration: underline;
+}
+
+#info a, #info a:visited {
+    color: var(--linkvisitedblue);
+}
+
+#info a:hover {
+    color: white;
+    text-decoration: underline;
 }

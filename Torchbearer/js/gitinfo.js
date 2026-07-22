@@ -1,1 +1,1 @@
-export const gitinfo = {"commit":"53981bc","hash":"53981bc93e309b8e7d704e89974522475a0acd25","timestamp":"2026-07-22T14:38:15+10:00","message":"duration mechanic makes more sense.","tag":"v0.2.0","ref":"HEAD -> main, tag: v0.2.0"};
+export const gitinfo = {"commit":"a6f29c7","hash":"a6f29c73a48d442c1cc63e1674d1b2afe8e21b3f","timestamp":"2026-07-22T19:53:09+10:00","message":"Info panel","tag":"v0.2.0-2-ga6f29c7","ref":"HEAD -> info"};

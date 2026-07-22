@@ -27,14 +27,58 @@
 </template>
 
 <div id="splash-container">
-    <img id="splash" width="0" height="0">
+    <img height="0" id="splash" width="0">
 </div>
 
 <div id="splash-fade"></div>
 
 <div id="app">
+
+    <div id="info-container">
+        <div id="info">
+            <div id="info-text">
+                <p>
+                    <strong>Torchbearer</strong> is a simple app for your <strong>ShadowDark</strong> torching needs.
+                </p>
+                <ul style="font-size: 80%;">
+                    <li>Click the flame to add a torch.</li>
+                    <li>Torches can be ignited and extinguished by double or long-clicking.</li>
+                    <li>Torches burn down in real time, which can be paused with the pause button.</li>
+                    <li>A single click opens the menu for the torch.
+                        <ul>
+                            <li>Torches can be discarded.</li>
+                            <li>Torches can be recharged with oil.</li>
+                            <li>Torches can have their overall duration adjusted, eg: make a torch a 10-minute torch.
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <p>Torchbearer does not provide detail on when the torch will burn out. Keep an eye on your torches, and
+                    beware of the Grue.</p>
+                <p>Torchbearer can be run from its <a href="https://PaulMurrayCbr.github.io/Torchbearer"
+                                                      target="_blank">github.io page</a>.
+                    Torchbearer is open source. Source is available <a
+                            href="https://github.com/PaulMurrayCbr/Torchbearer" target="_blank">on GitHub</a>.</p>
+                <p>© Paul Murray 2026, License meh. Use at your own risk.</p>
+                <p style="color: var(--brighter);">Tap anywhere to dismiss this panel.</p>
+                <p style="font-size: 75%; border-top: 1px solid #ccc; padding-top: 1rem;">
+                    This project uses RxJS.<br>
+                    <br>
+                    RxJS is Copyright (c) Google, Inc.
+                    Licensed under the Apache License, Version 2.0.<br>
+                    <br>
+                    A copy of the Apache License 2.0 is available at:
+                    <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">https://www.apache.org/licenses/LICENSE-2.0</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
     <header id="toolbar">
-        <img alt="Torchbearer" id="title" src="images/LOGO-with-text.png" style="max-height: 2rem;">
+        <span id="title">
+        <img alt="Torchbearer" src="images/LOGO-with-text.png" style="max-height: 2rem;">
+        <span id="infobutton">i</span>
+        </span>
         <span id="buttons">
             <button id="addTorch">🔥</button>
 
