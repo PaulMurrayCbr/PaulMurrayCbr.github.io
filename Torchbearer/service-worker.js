@@ -1,4 +1,4 @@
-const CACHE_NAME = "torchbearer-v1";
+const CACHE_NAME = "torchbearer-v0.3.0";
 
 const APP_FILES = [
     "./css/styles.css",
