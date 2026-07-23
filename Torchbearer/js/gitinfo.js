@@ -1,1 +1,0 @@
-export const gitinfo = {"commit":"a920fe9","hash":"a920fe9b2e736ac7d38f76873512f34147a5c737","timestamp":"2026-07-22T21:27:31+10:00","message":"Packaged Web App","tag":"v0.3.0-3-ga920fe9","ref":"HEAD -> main"};
