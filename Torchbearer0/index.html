@@ -21,6 +21,7 @@
         <img alt="torch" class="torch1" src="images/torch1.png">
         <img alt="torch" class="torch2" src="images/torch2.png">
         <img alt="torch" class="torch3" src="images/torch3.png">
+        <span class="label"></span>
     </div>
 </template>
 
@@ -122,6 +123,10 @@
             <span class="title">Torch Options</span>
             <span class="close-button dialog" id="close-panel">×</span>
             <div id="time-remaining"></div>
+            <div class="button-row" id="label-container">
+                <label for="label-text" id="label-title">Name:</label>
+                <span contenteditable="plaintext-only" id="label-text"></span>
+            </div>
             <div class="button-row" id="action-button-container">
                 <button id="ignite-torch">🔥 Ig&shy;nite</button>
                 <button class="disabled" id="extinguish-torch">💨 Ext&shy;in&shy;guish</button>

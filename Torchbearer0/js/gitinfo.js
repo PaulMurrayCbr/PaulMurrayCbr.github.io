@@ -1,1 +1,1 @@
-export const gitinfo = {"commit":"4eb567f","hash":"4eb567f649806ada89a175d640654ce5cb43ba0f","timestamp":"2026-07-23T16:44:47+10:00","message":"Removing service worker gear.","tag":"v0.3.5-1-g4eb567f","ref":"HEAD -> main"};
+export const gitinfo = {"commit":"bdb3f0d","hash":"bdb3f0db5fe5f6bc8d07d47811b9acd0d2a43593","timestamp":"2026-07-24T17:08:56+10:00","message":"Adding torch labels.","tag":"v0.4.0","ref":"HEAD -> main, tag: v0.4.0, label"};

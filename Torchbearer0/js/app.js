@@ -241,15 +241,23 @@ export class App {
 
         });
 
-        this.selectedTorch$.subscribe(torch => {
-            if (torch) {
-                this.element.querySelector("#panel-container").classList.add("open");
-                this.selectedIllumination$.next(torch.state$);
-            } else {
-                this.element.querySelector("#panel-container").classList.remove("open");
-                this.selectedIllumination$.next(of(null));
-            }
-        })
+        const labelText = document.getElementById("label-text");
+
+        this.selectedTorch$.subscribe(
+            /** @param {Torch} torch */
+            torch => {
+                if (torch) {
+                    this.element.querySelector("#panel-container").classList.add("open");
+                    this.selectedIllumination$.next(torch.state$);
+                    labelText.textContent = torch.label;
+                    labelText.contentEditable = "plaintext-only";
+                } else {
+                    this.element.querySelector("#panel-container").classList.remove("open");
+                    labelText.textContent = "";
+                    labelText.contentEditable = "false";
+                    this.selectedIllumination$.next(of(null));
+                }
+            });
 
         this.selectedIllumination$
             .pipe(
@@ -308,6 +316,15 @@ export class App {
         resizePipe$.pipe(
             debounceTime(100)
         ).subscribe(() => this.doTorchResizing());
+
+        fromEvent(labelText, "input")
+            .subscribe(() => {
+                /** @type {Torch} */
+                const selectedTorch = this.selectedTorch$.getValue();
+                if (selectedTorch) {
+                    selectedTorch.setLabel(labelText.textContent);
+                }
+            });
     }
 
     addTorch() {

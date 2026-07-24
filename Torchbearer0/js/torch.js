@@ -45,6 +45,7 @@ export class Torch {
     ignited = false;
     maxMinutes = 60;
     minutesRemaining = this.maxMinutes;
+    label = "";
 
     state = new TorchState(this.ignited, this.maxMinutes, this.minutesRemaining);
     state$ = new BehaviorSubject(this.state);
@@ -189,5 +190,9 @@ export class Torch {
 
     }
 
+    setLabel(label) {
+        this.label = label;
+        this.element.querySelector(".label").textContent = label;
+    }
 
 }

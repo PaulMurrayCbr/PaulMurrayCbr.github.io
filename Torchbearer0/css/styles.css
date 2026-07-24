@@ -156,7 +156,7 @@ button.disabled {
 }
 
 button.disabled:active {
-/*    transform: none; */
+    /*    transform: none; */
 }
 
 #app {
@@ -198,12 +198,12 @@ button.disabled:active {
 
 }
 
-#torches-grid  {
+#torches-grid {
     position: absolute;
     inset: 0;
 }
 
-#torches-sizing-grid  {
+#torches-sizing-grid {
     position: absolute;
     inset: 0;
     z-index: -1;
@@ -235,9 +235,11 @@ button.disabled:active {
 }
 
 
-.torch-container.selected {border: 2px solid var(--yellow);}
+.torch-container.selected {
+    border: 2px solid var(--yellow);
+}
 
-.torch-container > img {
+.torch-container img {
     position: absolute;
 
     left: 0;
@@ -250,6 +252,22 @@ button.disabled:active {
     transition: opacity 1s linear;
 
     user-select: none;
+    pointer-events: none;
+}
+
+.torch-container .label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    padding: 0.5rem;
+    color: var(--gray);
+    text-align: center;
+    max-width: 100%;
+    max-height: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
     pointer-events: none;
 }
 
@@ -497,7 +515,7 @@ button.disabled:active {
 
 #splash-container {
     position: fixed;
-    inset:0;
+    inset: 0;
     z-index: 1000;
     display: flex;
     align-items: center;
@@ -521,7 +539,7 @@ button.disabled:active {
 
 #info-container {
     position: fixed;
-    inset:0;
+    inset: 0;
     z-index: 1000;
     z-index: 998;
     display: none;
@@ -550,7 +568,9 @@ button.disabled:active {
 }
 
 
-#info strong {color: var(--yellow);}
+#info strong {
+    color: var(--yellow);
+}
 
 #info a, #info a {
     color: var(--linkblue);
@@ -565,3 +585,34 @@ button.disabled:active {
     color: white;
     text-decoration: underline;
 }
+
+#label-container {
+    width: 100%;
+    display: flex;
+    gap: 0;
+    border: thin solid var(--yellow);
+    border-radius: .5rem;
+    margin-bottom: .5rem;
+
+}
+
+#label-title {
+    flex: 0 0 auto;
+    padding: 0.5rem;
+    background-color: transparent;
+    color: var(--yellow);
+    border-right: thin solid var(--yellow);
+}
+
+#label-text {
+    flex: 1 1 auto;
+    padding: 0.5rem;
+    background-color: transparent;
+    color: var(--gray);
+
+    cursor: text;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
