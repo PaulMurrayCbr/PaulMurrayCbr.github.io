@@ -1,1 +1,1 @@
-export const gitinfo = {"commit":"bdb3f0d","hash":"bdb3f0db5fe5f6bc8d07d47811b9acd0d2a43593","timestamp":"2026-07-24T17:08:56+10:00","message":"Adding torch labels.","tag":"v0.4.0","ref":"HEAD -> main, tag: v0.4.0, label"};
+export const gitinfo = {"commit":"d99dc51","hash":"d99dc513cfadf06fb0a1caafd1f650406088a8c8","timestamp":"2026-08-01T20:47:41+10:00","message":"Panel close need to close panel immediately.","tag":"v0.5.0","ref":"HEAD -> main, tag: v0.5.0"};
