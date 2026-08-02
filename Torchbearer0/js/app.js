@@ -4,6 +4,8 @@
 // TODO: Fssst when you extinguish a torch
 // TODO: Ding ding! When it goes dark but only as a result of a torch burning out.
 
+// TODO: save state.
+
 const {
     BehaviorSubject,
     debounceTime,
@@ -22,6 +24,7 @@ const {
 
 import {Torch} from "./torch.js";
 import {Toaster} from "./toaster.js";
+import {Sound} from "./sound.js";
 
 export class AppState {
 
@@ -56,10 +59,12 @@ export class AppState {
 export class Illumination {
     /**
      * @param {boolean} dark
+     * @param {boolean} newlydark
      * @param {number} percent
      */
-    constructor(dark, percent) {
+    constructor(dark, newlydark, percent) {
         this.dark = dark;
+        this.newlydark = newlydark;
         if (percent < 0) percent = 0;
         if (percent > 100) percent = 100;
         this.percent = percent;
@@ -93,7 +98,7 @@ export class App {
      * the individual torch states.
      * @type {BehaviorSubject<Illumination>}
      */
-    illumination$ = new BehaviorSubject(new Illumination(true, 0));
+    illumination$ = new BehaviorSubject(new Illumination(true, false, 0));
 
     timePasses$ = new Subject();
     timeMark = new Date();
@@ -114,6 +119,8 @@ export class App {
     }
 
     start() {
+        Sound.loadSounds();
+
         this.setupInfoScreen();
         this.setupPause();
         this.setupAddTorch();
@@ -426,7 +433,7 @@ export class App {
                     document.getElementById("help").classList.add("hidden");
                 }
 
-                this.checkTorchState();
+                this.checkTorchState(true);
             })
 
     }
@@ -464,20 +471,39 @@ export class App {
         this.selectedIllumination$.next(torch?.state$ ?? of(null));
     }
 
-    checkTorchState() {
+    /**
+     *
+     * @param {boolean} triggeredByTorchState if true, then the torch state is being checked as a result of a torch state change
+     */
+    checkTorchState(triggeredByTorchState) {
         /** @type {TorchState[]} */
         const state = this.torches.map(torch => torch.state$.getValue());
 
         let dark = true;
         let remainingPercent = 0;
+        let torchBurndown = false;
+
         for (const i of state) {
             if (i.ignited && i.remainingPercent > 0) {
                 dark = false;
                 remainingPercent = Math.max(remainingPercent, i.remainingPercent);
             }
+            torchBurndown ||= i.torchBurndown;
         }
 
-        this.illumination$.next(new Illumination(dark, remainingPercent));
+        if (!this.illumination$.getValue().dark
+            && dark
+            && triggeredByTorchState
+            && torchBurndown
+        ) {
+            Sound.alarm();
+        }
+
+
+        this.illumination$.next(new Illumination(
+            dark,
+            torchBurndown && dark && triggeredByTorchState,
+            remainingPercent));
     }
 
     markTime() {

@@ -4,13 +4,15 @@ const {BehaviorSubject, Subject, takeUntil} = rxjs;
 
 import {App} from "./app.js";
 import {clickListener$, LONG} from "./clicklistener.js";
+import {Sound} from "./sound.js";
 
 export class TorchState {
-    constructor(ignited, maxMinutes, minutesRemaining) {
+    constructor(ignited, maxMinutes, minutesRemaining, torchBurndown) {
         this.maxMinutes = maxMinutes;
         this.minutesRemaining = minutesRemaining;
         this.ignited = ignited;
         this.remainingPercent = this.minutesRemaining / this.maxMinutes * 100;
+        this.torchBurndown = torchBurndown;
     }
 
     static blockMinutes = 5;
@@ -47,7 +49,11 @@ export class Torch {
     minutesRemaining = this.maxMinutes;
     label = "";
 
-    state = new TorchState(this.ignited, this.maxMinutes, this.minutesRemaining);
+    state = new TorchState(this.ignited, this.maxMinutes, this.minutesRemaining, false);
+
+    /**
+     * @type {BehaviorSubject<TorchState>}
+     */
     state$ = new BehaviorSubject(this.state);
 
     /**
@@ -64,8 +70,8 @@ export class Torch {
         this.torch3 = element.querySelector(".torch3");
     }
 
-    emitState() {
-        this.state = new TorchState(this.ignited, this.maxMinutes, this.minutesRemaining);
+    emitState(torchBurndown = false) {
+        this.state = new TorchState(this.ignited, this.maxMinutes, this.minutesRemaining, torchBurndown);
         this.state$.next(this.state);
     }
 
@@ -114,9 +120,15 @@ export class Torch {
                 if (this.minutesRemaining <= 0) {
                     this.ignited = false;
                     this.minutesRemaining = 0;
+                    this.update(true);
+                    // we retrigger this so that 'newly burned out' is not left as the current state.
+                    // otherwise, after a burnout every darkness incident will trigger a bong
+                    // because the 'check global darkness' will think a torch newly burned out.
+                    this.update(false);
+                } else {
+                    this.update();
                 }
 
-                this.update();
             }
         });
 
@@ -133,12 +145,13 @@ export class Torch {
         this.ignited = true;
         this.update();
         this.app.toaster.show(this.state.getTimeDisplay());
-
+        Sound.ignite();
     }
 
     extinguish() {
         this.ignited = false;
         this.update();
+        Sound.extinguish();
     }
 
     recharge() {
@@ -154,12 +167,11 @@ export class Torch {
         this.minutesRemaining *= minutes / this.maxMinutes;
         this.maxMinutes = minutes;
         this.update();
-//        this.app.toaster.show("Torch set to " + minutes + " minute" + (minutes > 1 ? "s" : "") + "");
     }
 
-    update() {
+    update(torchBurndown = false) {
         this.recheckOpacity();
-        this.emitState()
+        this.emitState(torchBurndown);
     }
 
     recheckOpacity() {
@@ -179,7 +191,12 @@ export class Torch {
                 this.torch2.style.opacity = (remainingPercent - 25) / 25;
             } else {
                 this.torch0.style.opacity = 1;
-                this.torch1.style.opacity = remainingPercent / 25;
+
+                // I don't want the final opacity to entirely do a gradual fade out,
+                // I want the change from definitely lit to definitely unlit to be noticeable.
+
+                const sectionPercent = remainingPercent / 25;
+                this.torch1.style.opacity = (sectionPercent * 5 + 1) / 6;
             }
         } else {
             this.torch0.style.opacity = 1;

@@ -554,7 +554,7 @@ button.disabled:active {
 #info {
     border: thin solid var(--yellow);
     border-radius: .5rem;
-    padding: 1rem;
+    padding: 0 1rem;
     background-color: #0f0f0f;
     color: var(--gray);
     max-width: 90%;
@@ -584,6 +584,12 @@ button.disabled:active {
 #info a:hover {
     color: white;
     text-decoration: underline;
+}
+
+#info .additional {
+    border-top: 1px solid #ccc;
+    margin: .5rem 0;
+    font-size: 75%;
 }
 
 #label-container {
