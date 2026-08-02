@@ -1,1 +1,1 @@
-export const gitinfo = {"commit":"eb5306d","hash":"eb5306d1b9b8a282fd3032dd7cffe618b7242ddc","timestamp":"2026-08-02T20:16:40+10:00","message":"Modal dialog. App is now complete and saves state.","tag":"v0.7.0","ref":"HEAD -> main, tag: v0.7.0, origin/save-state, save-state"};
+export const gitinfo = {"commit":"2b433da","hash":"2b433daf96fc45b8cad32b7343dd57ebfa1863d0","timestamp":"2026-08-03T00:20:18+10:00","message":"text bug","tag":"v0.7.1-1-g2b433da","ref":"HEAD -> main"};

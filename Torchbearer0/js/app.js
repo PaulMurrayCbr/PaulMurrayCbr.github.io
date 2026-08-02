@@ -767,7 +767,7 @@ export class App {
         } else if (elapseddMinutes > 0) {
             timeElement.textContent = `about ${elapseddMinutes} minutes`;
         } else {
-            timeElement.textContent = `a few seconds ${elapsedMs / (1000)}`;
+            timeElement.textContent = `a few seconds`;
         }
 
         await nextFrame();
