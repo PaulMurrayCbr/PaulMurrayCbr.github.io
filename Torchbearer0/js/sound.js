@@ -12,21 +12,21 @@ export class Sound {
 
     static loadSounds() {
         try {
-            Sound.torchOnSound = new Audio("../media/ignite.ogg");
+            Sound.torchOnSound = new Audio("media/ignite.ogg");
             Sound.torchOnSound.preload = "auto";
         } catch (e) {
             console.error(e);
         }
 
         try {
-            Sound.torchOffSound = new Audio("../media/extinguish.ogg");
+            Sound.torchOffSound = new Audio("media/extinguish.ogg");
             Sound.torchOffSound.preload = "auto";
         } catch (e) {
             console.error(e);
         }
 
         try {
-            Sound.bellSound = new Audio("../media/darkness.ogg");
+            Sound.bellSound = new Audio("media/darkness.ogg");
             Sound.bellSound.preload = "auto";
         } catch (e) {
             console.error(e);

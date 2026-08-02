@@ -1,1 +1,1 @@
-export const gitinfo = {"commit":"10fcec0","hash":"10fcec07cb441e7fc5edd9c36c15398f8ef48a59","timestamp":"2026-08-02T12:21:24+10:00","message":"sounds","tag":"v0.6.0-1-g10fcec0","ref":"HEAD -> main"};
+export const gitinfo = {"commit":"d86409a","hash":"d86409aba122bc328296f3a7e8a6ecdb07a6f70b","timestamp":"2026-08-02T13:48:10+10:00","message":"Urls are relative to the index.html, not to the location of the js .","tag":"v0.6.1","ref":"HEAD -> main, tag: v0.6.1"};
