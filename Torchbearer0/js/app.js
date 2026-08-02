@@ -357,6 +357,8 @@ export class App {
                     if (illumination) {
                         this.element.querySelector("#time-remaining").textContent = illumination.getTimeDisplay();
 
+                        this.element.querySelector("#label-container").classList.remove("disabled");
+
                         if (illumination.ignited) {
                             this.element.querySelector("#ignite-torch").classList.add("disabled");
                             this.element.querySelector("#extinguish-torch").classList.remove("disabled");
@@ -370,14 +372,17 @@ export class App {
 
                         this.element.querySelector("#recharge-torch").classList.remove("disabled");
                         this.element.querySelector("#discard-torch").classList.remove("disabled");
+                        this.element.querySelectorAll(".set-minutes").forEach(button =>  button.classList.remove("disabled"));
                     } else {
                         // this almost never happens
                         this.element.querySelector("#time-remaining").textContent = "No selection";
 
+                        this.element.querySelector("#label-container").classList.add("disabled");
                         this.element.querySelector("#ignite-torch").classList.add("disabled");
                         this.element.querySelector("#extinguish-torch").classList.add("disabled");
                         this.element.querySelector("#recharge-torch").classList.add("disabled");
                         this.element.querySelector("#discard-torch").classList.add("disabled");
+                        this.element.querySelectorAll(".set-minutes").forEach(button =>  button.classList.add("disabled"));
                     }
                 });
 
