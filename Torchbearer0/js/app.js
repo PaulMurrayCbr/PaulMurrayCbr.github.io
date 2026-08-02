@@ -754,6 +754,10 @@ export class App {
             return;
         }
 
+        if(this.appState.isPaused()) {
+            return;
+        }
+
         if (!this.torches.reduce((ignited, torch) => ignited || torch.ignited, false)) {
             return;
         }
