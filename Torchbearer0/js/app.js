@@ -21,8 +21,32 @@ const {
 import {Torch} from "./torch.js";
 import {Toaster} from "./toaster.js";
 import {Sound} from "./sound.js";
+import {Save} from "./save.js";
+
+/**
+ * @param {number} ms
+ * @returns {Promise<void>}
+ */
+export function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+export function nextFrame() {
+    return new Promise(resolve => {
+        requestAnimationFrame(resolve);
+    });
+}
+
 
 export class AppState {
+
+    /**
+     * @type {Object<string,AppState>}
+     */
+    static byName = {};
 
     static PAUSED = new AppState("PAUSED");
     static RUNNING = new AppState("RUNNING");
@@ -32,6 +56,7 @@ export class AppState {
      */
     constructor(name) {
         this.name = name;
+        AppState.byName[name] = this;
     }
 
     isPaused() {
@@ -49,7 +74,6 @@ export class AppState {
     toString() {
         return this.name;
     }
-
 }
 
 export class Illumination {
@@ -117,6 +141,8 @@ export class App {
     start() {
         Sound.loadSounds();
 
+        const save = Save.readSave();
+
         this.setupInfoScreen();
         this.setupPause();
         this.setupAddTorch();
@@ -143,12 +169,11 @@ export class App {
 
         this.toaster.start();
 
-        this.handleSplash();
         this.setupResizeHandlers();
+        this.fromJson(Save.readSave());
 
-        const timer = setInterval(() => {
-            this.markTime();
-        }, 10000);
+        // this is a sequence of things
+        this.handleSplash(save);
     }
 
     setupResizeHandlers() {
@@ -360,29 +385,36 @@ export class App {
             .subscribe(() => {
                 this.markTime();
                 this.appState = this.appState.toggle();
-
+                this.markTime();
+                this.pauseStateGui();
                 if (this.appState.isPaused()) {
-                    this.element.querySelector("#pause").classList.add("on");
-                    this.element.querySelector("#paused").classList.remove("hidden");
-                    this.selectedTorch$.next(null);
                     this.toaster.show("The passage of time has halted!");
+                    this.selectedTorch$.next(null);
                 } else {
-                    this.element.querySelector("#pause").classList.remove("on");
-                    this.element.querySelector("#paused").classList.add("hidden");
                     this.toaster.show("The passage of time is resumed …");
                 }
-
                 this.appState$.next(this.appState);
             });
+    }
+
+    pauseStateGui() {
+        if (this.appState.isPaused()) {
+            this.element.querySelector("#pause").classList.add("on");
+            this.element.querySelector("#paused").classList.remove("hidden");
+        } else {
+            this.element.querySelector("#pause").classList.remove("on");
+            this.element.querySelector("#paused").classList.add("hidden");
+        }
+
     }
 
     setupInfoScreen() {
         fromEvent(this.element.querySelector("#title"), "click")
             .subscribe(() => {
                 this.element.querySelector("#info-container").classList.add("open");
-                requestAnimationFrame(() => {
+                nextFrame().then(() => {
                     this.element.querySelector("#info").classList.add("open");
-                })
+                });
             })
 
         fromEvent(this.element.querySelector("#info-container"), "click")
@@ -396,7 +428,10 @@ export class App {
             })
     }
 
-    addTorch() {
+    /**
+     * @returns {Torch} the newly created torch object
+     */
+    addTorch(doResizing = true) {
         const template = document.getElementById("torch-template");
         const clone = template.content.cloneNode(true);
         const element = clone.firstElementChild;
@@ -413,7 +448,6 @@ export class App {
         torch.sizingElement = sizingElement; // this is my own business
 
         this.torches.push(torch);
-        this.doTorchResizing(() => element.style.setProperty("display", 'inline-block'));
 
         this.markTime();
         torch.start();
@@ -432,12 +466,17 @@ export class App {
                 this.checkTorchState(true);
             })
 
+        if (doResizing) {
+            this.doTorchResizing().then(() => element.style.setProperty("display", 'inline-block'));
+        }
+
+        return torch;
     }
 
     /**
      * @param {Torch} torch
      */
-    removeTorch(torch) {
+    removeTorch(torch, doResizing = true) {
         if (this.selectedTorch$.getValue() === torch) {
             this.selectedTorch$.next(null);
         }
@@ -447,7 +486,6 @@ export class App {
         torch.sizingElement.remove();
 
         this.torches = this.torches.filter(t => t !== torch);
-        this.doTorchResizing();
 
         if (this.torches.length === 0) {
             document.getElementById("start-hint").classList.remove("hidden");
@@ -455,6 +493,10 @@ export class App {
         }
 
         this.checkTorchState();
+
+        if (doResizing) {
+            this.doTorchResizing();
+        }
     }
 
     /**
@@ -509,9 +551,11 @@ export class App {
             this.timePasses$.next(diff / 1000 / 60); // minutes
         }
         this.timeMark = now;
+
+        Save.saveApp(this);
     }
 
-    handleSplash() {
+    handleSplash(save) {
 
         /** @type {HTMLImageElement} */
         const splash = document.getElementById("splash");
@@ -549,6 +593,12 @@ export class App {
                         sub.unsubscribe();
                         splashContainer.style.setProperty("display", "none");
                         splashContainer.remove();
+
+                        this.maybeAdvanceTimeFromSave(save).then(
+                            () => setInterval(() => {
+                                this.markTime();
+                            }, 10000)
+                        );
                     });
                 });
 
@@ -567,72 +617,59 @@ export class App {
 
     }
 
-    doTorchResizing(onComplete) {
+    torchResizingToken = undefined;
+
+    async doTorchResizing() {
+        const myToken = Symbol();
+        this.torchResizingToken = myToken;
+
         if (this.torches.length === 0) {
-            onComplete && onComplete();
             return;
         }
 
-        document.documentElement.style.setProperty(
-            "--torch-sizing-height", '1rem'
-        );
-        document.documentElement.style.setProperty(
-            "--torch-sizing-width", App.aspect + 'rem'
-        );
+        let lastGoodHeight = 1;
+        let newHeight = 1;
+        let steps = 0;
+        let overflowing = false;
 
-        requestAnimationFrame(() => {
-            this.resizedUpTo(1, 1, 0, onComplete)
-        });
-    }
+        while (steps++ < 100 && !overflowing) {
+            lastGoodHeight = newHeight;
+            newHeight *= 1.616;
 
-    resizedUpTo(lastGoodHeight, newHeight, steps, onComplete) {
-        // kill this method if it loops too long
-        if (steps > 100) {
+            this.setTorchSizing(newHeight);
+            await nextFrame();
+            if (this.torchResizingToken !== myToken) {
+                return;
+            }
+            overflowing = this.isOverflowing();
+        }
+
+        if (steps >= 100) {
             this.setTorchSizing(lastGoodHeight, true);
-            onComplete && onComplete();
+            await nextFrame();
             return;
         }
 
-        const overflowing = this.isOverflowing();
+        let lastTooBig = newHeight;
 
-        if (overflowing) {
-            this.resizedInTo(lastGoodHeight, newHeight, newHeight, steps, onComplete);
-        } else {
-            const nextHeight = newHeight * 1.616;
-            this.setTorchSizing(nextHeight);
+        while (steps++ < 100 && (lastTooBig - lastGoodHeight) > .25) {
+            if (overflowing) {
+                lastTooBig = newHeight;
+            } else {
+                lastGoodHeight = newHeight;
+            }
 
-            requestAnimationFrame(() => {
-                this.resizedUpTo(newHeight, nextHeight, steps + 1, onComplete);
-            });
-        }
-    }
-
-    resizedInTo(lastGoodHeight, lastTooBig, newHeight, steps, onComplete) {
-        // kill this method if it loops too long
-        if (steps > 100 || (lastTooBig - lastGoodHeight) < .25) {
-            this.setTorchSizing(lastGoodHeight, true);
-
-            onComplete && onComplete();
-            return;
+            newHeight = (lastGoodHeight + lastTooBig) / 2;
+            this.setTorchSizing(newHeight);
+            await nextFrame();
+            if (this.torchResizingToken !== myToken) {
+                return;
+            }
+            overflowing = this.isOverflowing();
         }
 
-        let nextHeight;
-        if (this.isOverflowing()) {
-            nextHeight = (lastGoodHeight + newHeight) / 2;
-            this.setTorchSizing(nextHeight);
-
-            requestAnimationFrame(() => {
-                this.resizedInTo(lastGoodHeight, newHeight, nextHeight, steps + 1, onComplete);
-            });
-        } else {
-            nextHeight = (newHeight + lastTooBig) / 2;
-            this.setTorchSizing(nextHeight);
-
-            requestAnimationFrame(() => {
-                this.resizedInTo(newHeight, lastTooBig, nextHeight, steps + 1, onComplete);
-            });
-        }
-
+        this.setTorchSizing(lastGoodHeight, true);
+        await nextFrame();
     }
 
     /**
@@ -648,7 +685,6 @@ export class App {
             style.setProperty("--torch-height", nextHeight + 'rem');
             style.setProperty("--torch-width", (nextHeight * App.aspect) + 'rem');
         }
-
     }
 
     isOverflowing() {
@@ -666,4 +702,110 @@ export class App {
         return right >= grid.getBoundingClientRect().right ||
             bottom >= grid.getBoundingClientRect().bottom;
     }
+
+    toJson() {
+        return {
+            version: 1,
+            appState: this.appState.name,
+            timeMark: this.timeMark.toISOString(),
+            torches: this.torches.map(torch => torch.toJson())
+        };
+    }
+
+    fromJson(json) {
+        if (!json || json.version !== 1) {
+            return;
+        }
+
+        this.appState = AppState.byName[json.appState] ?? this.appState;
+        this.pauseStateGui();
+
+        while (this.torches.length > 0) {
+            this.removeTorch(this.torches[0], false);
+        }
+
+        for (const tjson of json.torches) {
+            this.addTorch(false).fromJson(tjson);
+        }
+
+        this.doTorchResizing().then(() => {
+            for (const t of this.torches) {
+                t.element.style.setProperty("display", 'inline-block');
+            }
+        });
+    }
+
+    /**
+     *
+     * @param {{}|undefined} json
+     * @returns {Promise<void>}
+     */
+    async maybeAdvanceTimeFromSave(json) {
+        if (!json || json.version !== 1) {
+            return;
+        }
+
+        if (!this.torches.reduce((ignited, torch) => ignited || torch.ignited, false)) {
+            return;
+        }
+
+        const oldTime = new Date(json.timeMark);
+        const newTime = new Date();
+
+        const elapsedMs = newTime.getTime() - oldTime.getTime();
+
+        const elapseddDays = Math.round(elapsedMs / (1000 * 60 * 60 * 24));
+        const elapseddHours = Math.round(elapsedMs / (1000 * 60 * 60));
+        const elapseddMinutes = Math.round(elapsedMs / (1000 * 60) / 5) * 5;
+
+        const timeElement = document.getElementById("onload-time-burned");
+
+        if (elapseddDays > 0) {
+            timeElement.textContent = `about ${elapseddDays} days`;
+        } else if (elapseddHours > 0) {
+            timeElement.textContent = `about ${elapseddHours} hours`;
+        } else if (elapseddMinutes > 0) {
+            timeElement.textContent = `about ${elapseddMinutes} minutes`;
+        } else {
+            timeElement.textContent = `a few seconds ${elapsedMs / (1000)}`;
+        }
+
+        await nextFrame();
+        this.element.querySelector("#onload-container").classList.add("open");
+        await nextFrame();
+        this.element.querySelector("#onload").classList.add("open");
+
+        const yesOrNo = new Promise(resolve => {
+            const yes = document.getElementById("onload-time-burned-yes");
+            const no = document.getElementById("onload-time-burned-no");
+
+            const finish = (answer) => {
+                yes.removeEventListener("click", yesHandler);
+                no.removeEventListener("click", noHandler);
+                resolve(answer);
+            };
+
+            const yesHandler = () => finish(true);
+            const noHandler = () => finish(false);
+
+            yes.addEventListener("click", yesHandler);
+            no.addEventListener("click", noHandler);
+        })
+
+        const elapse = await yesOrNo;
+
+        fromEvent(this.element.querySelector("#onload"), "transitionend")
+            .pipe(first())
+            .subscribe(() => {
+                this.element.querySelector("#onload-container").remove();
+            });
+        this.element.querySelector("#onload").classList.remove("open");
+
+        if(elapse) {
+            this.timePasses$.next(
+               (new Date().getTime() - oldTime.getTime()) / 1000 / 60
+            );
+        }
+    }
+
 }

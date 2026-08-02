@@ -536,22 +536,24 @@ button.disabled:active {
     transition: opacity 2s linear;
 }
 
-
-#info-container {
+.app-modal {
     position: fixed;
     inset: 0;
     z-index: 1000;
-    z-index: 998;
     display: none;
+
 }
 
-#info-container.open {
+#info-container {
+}
+
+.app-modal.open {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-#info {
+.app-modal > div {
     border: thin solid var(--yellow);
     border-radius: .5rem;
     padding: 0 1rem;
@@ -563,7 +565,7 @@ button.disabled:active {
     transition: max-height .5s ease;
 }
 
-#info.open {
+.app-modal > div.open {
     max-height: 90%;
 }
 

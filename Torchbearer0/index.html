@@ -37,7 +37,20 @@
 
 <div id="app">
 
-    <div id="info-container">
+    <div id="onload-container" class="app-modal">
+        <div id="onload">
+            <div id="loading-text">
+                <p>Your torches have been burning for <span id="onload-time-burned"></span>.</p>
+                <p>Has this time elapsed in-game?</p>
+            </div>
+            <div class="button-row">
+                <button id="onload-time-burned-yes">Yes</button>
+                <button id="onload-time-burned-no">No</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="info-container" class="app-modal">
         <div id="info">
             <div id="info-text">
                 <p>

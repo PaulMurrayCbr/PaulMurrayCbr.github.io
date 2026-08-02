@@ -1,7 +1,7 @@
 /* © Paul Murray 2026 https://github.com/PaulMurrayCbr/Torchbearer */
 
 const {concat, delay, of, Subject, takeUntil} = rxjs;
-import {App} from "./app.js";
+import {App, nextFrame} from "./app.js";
 
 export class Toaster {
     destroy$ = new Subject();
@@ -48,7 +48,7 @@ export class Toaster {
                     toastElement.textContent = message;
                     this.element.appendChild(toastElement);
                     // allow CSS transition to see the initial opacity
-                    requestAnimationFrame(() => {
+                    nextFrame().then(() => {
                         toastElement.classList.add("fadein");
                     });
                     break;
