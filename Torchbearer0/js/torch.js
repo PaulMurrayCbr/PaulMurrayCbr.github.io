@@ -176,6 +176,7 @@ export class Torch {
     }
 
     update(torchBurndown = false) {
+        this.element.querySelector(".label").textContent = this.label;
         this.recheckOpacity();
         this.emitState(torchBurndown);
     }
@@ -216,6 +217,7 @@ export class Torch {
     setLabel(label) {
         this.label = label;
         this.element.querySelector(".label").textContent = label;
+        Save.saveApp(this.app);
     }
 
     toJson() {
@@ -239,5 +241,4 @@ export class Torch {
         this.label = json.label;
         this.update();
     }
-
 }

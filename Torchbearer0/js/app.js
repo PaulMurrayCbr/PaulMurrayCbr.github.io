@@ -248,6 +248,9 @@ export class App {
         const labelText = document.getElementById("label-text");
 
         fromEvent(labelText, "input")
+            .pipe(
+                debounceTime(500)
+            )
             .subscribe(() => {
                 /** @type {Torch} */
                 const selectedTorch = this.selectedTorch$.getValue();
