@@ -487,6 +487,7 @@ export class App {
     removeTorch(torch, doResizing = true) {
         if (this.selectedTorch$.getValue() === torch) {
             this.selectedTorch$.next(null);
+            this.selectedIllumination$.next(of(null));
         }
         torch.appSubscription.unsubscribe();
         torch.stop();
