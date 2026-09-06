@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta content="width=device-width, initial-scale=1"
+          name="viewport">
+
+    <meta content="#212529" name="theme-color">
+
+    <title>My App</title>
+
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" rel="stylesheet">
+    <script crossorigin="anonymous"
+            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+
+        body {
+            min-height: 100dvh;
+        }
+
+        /*
+        A dice-dropzone has a number of "die" spans in it, each with an image.
+        */
+
+        .dice-dropzone {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+
+            border: 2px dashed #6c757d;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+
+            min-width: 4rem;
+            min-height: 4rem;
+
+            touch-action: none;
+
+        }
+
+        #dice-selection-area {
+            border: 2px solid #495057;
+            border-radius: 0.75rem;
+            padding: .5rem;
+        }
+
+        #dice-box, #assigned-dice {
+        }
+
+        #assigned-dice {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+
+        }
+
+
+        #assigned-dice .die-slot {
+            display: grid;
+            min-height: 4.5rem;
+        }
+
+        #assigned-dice .die-slot * {
+            display: inline-block;
+            grid-area: 1 / 1;
+        }
+
+
+        #assigned-dice .die-slot .dice-dropzone .die {
+            margin-top: .75rem;
+        }
+
+        #assigned-dice .die-slot .slot-name {
+            place-self: start center;
+
+            font-weight: bold;
+            text-align: center;
+            z-index: 1;
+            pointer-events: none;
+            user-select: none;
+            touch-action: none;
+        }
+
+
+        /* the dice image */
+        .die {
+            display: inline-block;
+            background: #F0F0F0;
+            padding: 0.25rem;
+            opacity: 1;
+
+            border-radius: 0.5rem;
+
+            touch-action: none;
+            user-select: none;
+
+            --hue: 0;
+            --sat: 80%;
+            --lite: 80%;
+
+
+        }
+
+
+        .die.d6 {
+            background: hsl(calc(var(--hue) + 0) var(--sat) var(--lite));
+        }
+
+        .die.d8 {
+            background: hsl(calc(var(--hue) + 72) var(--sat) var(--lite));
+        }
+
+        .die.d10 {
+            background: hsl(calc(var(--hue) + 144) var(--sat) var(--lite));
+        }
+
+        .die.d12 {
+            background: hsl(calc(var(--hue) + 216) var(--sat) var(--lite));
+        }
+
+        .die.d20 {
+            background: hsl(calc(var(--hue) + 288) var(--sat) var(--lite));
+        }
+
+        .die img {
+            width: 2rem;
+            height: 2rem;
+            object-fit: contain;
+            touch-action: none;
+        }
+
+        .dragging {
+            position: fixed;
+            z-index: 1000;
+
+            pointer-events: none;
+
+            transform: scale(1.1);
+            opacity: 0.85;
+        }
+
+        .dice-dropzone.candrop {
+            border-color: var(--bs-primary) !important;
+            background-color: var(--bs-primary-bg-subtle);
+            box-shadow: 0 0 0 0.2rem var(--bs-primary-border-subtle);
+        }
+
+        .die-rolls {
+            font-size: small;
+            margin-right: 0.25rem;
+        }
+
+        .die-roll {
+
+        }
+
+        .die-roll.not-used {
+            text-decoration: line-through;
+        }
+
+        .dmg, .amt {
+            font-weight: bold;
+        }
+
+        .bullet-P, .bullet-2, .bullet-B {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            width: 1.4rem;
+            height: 1.4rem;
+            border-radius: 50%;
+
+            font-weight: bold;
+            font-size: 0.8rem;
+            line-height: 1;
+
+            margin-left: .25rem;
+
+            border: thin solid black;
+        }
+
+        .bullet-P, .bullet-B {
+            background: black;
+            color: white;
+        }
+
+        .bullet-P::before {
+            content: "P";
+        }
+
+        .bullet-2::before {
+            content: "2";
+        }
+
+        .bullet-B::before {
+            content: "B";
+        }
+
+    </style>
+
+    <script>
+        const state = {
+            level: 1,
+            bursarRelationship: "neutral",
+            diceAt: {},
+            slotContains: {} // not including the 'box' slot
+        };
+
+        const diceslot = {
+            box: Symbol("box"),
+            melee: Symbol("melee"),
+            missile: Symbol("missile"),
+            armour: Symbol("armour"),
+            misc: Symbol("misc"),
+            snacks: Symbol("snacks")
+        }
+
+        const dice = {
+            d6: Symbol("d6"),
+            d8: Symbol("d8"),
+            d10: Symbol("d10"),
+            d12: Symbol("d12"),
+            d20: Symbol("d20")
+        }
+
+
+        /**
+         * @type {Record<Symbol, HTMLElement>}
+         */
+        diceDropzones = {};
+
+        /**
+         * @type {Record<Symbol, HTMLElement>}
+         */
+        diceElements = {};
+
+        document.addEventListener("DOMContentLoaded", init);
+
+        function init() {
+            initLevelListener();
+            initDragNDrop();
+
+            console.info("init ok at ", new Date());
+        }
+
+        function initLevelListener() {
+            const level = document.querySelector("#level");
+
+            level.addEventListener("change", () => {
+                let value = Math.trunc(Number(level.value));
+
+                if (value < 1) value = 1;
+                if (value > 10) value = 10;
+
+                level.value = value;
+                state.level = value;
+                document.getElementById('senority-rank-potions').innerText = value <= 5 ? '6' : '8';
+            });
+
+        }
+
+        function initDragNDrop() {
+            for (const dropzoneE of document.querySelectorAll(".dice-dropzone")) {
+                const slot = diceslot[dropzoneE.dataset.slot];
+                dropzoneE['slot-symbol'] = slot;
+
+                if (!slot) {
+                    throw new Error("Unknown slot: " + dropzone.dataset.slot);
+                }
+
+                diceDropzones[slot] = dropzoneE;
+
+            }
+
+            const box = diceslot.box;
+            const boxE = diceDropzones[box];
+
+            // need these in order
+            for (const die of [dice.d6, dice.d8, dice.d10, dice.d12, dice.d20]) {
+                const name = die.description;
+                const dieE = document.createElement("span");
+                dieE.className = "die " + name;
+                dieE['die-symbol'] = die;
+
+                const imgE = document.createElement("img");
+                imgE.alt = name;
+                imgE.src = name + ".png";
+                imgE.draggable = false;
+
+                dieE.appendChild(imgE);
+                boxE.appendChild(dieE);
+
+                state.diceAt[die] = box;
+                diceElements[die] = dieE;
+
+                dieE.addEventListener('pointerdown', e => dragStart(e, die, dieE));
+            }
+
+            document.addEventListener("pointermove", e => dragMove(e));
+            document.addEventListener("pointerup", e => dragEnd(e));
+
+            document.addEventListener("visibilitychange", e => {
+                if (document.hidden) {
+                    dragCancel(e);
+                }
+            });
+
+            window.addEventListener("blur", e => {
+                dragCancel(e);
+            });
+
+
+        }
+
+        /** @type {Symbol | undefined} */
+        var currentlyDragging = undefined;
+        /** @type {HTMLSpanElement | undefined} */
+        var hilightedDropzone = undefined;
+
+        /**
+         * @type {{dragging: boolean, die: Symbol|undefined, dieE: HTMLElement|undefined, originalParent: HTMLElement|undefined, originalNextSibling: HTMLElement|undefined, slot: Symbol|undefined, slotE: HTMLElement|undefined, xofset: number, yoffset: number}}
+         */
+        const dragState = {
+            dragging: false,
+            die: undefined,
+            dieE: undefined,
+            originalParent: undefined,
+            originalNextSibling: undefined,
+            slot: undefined,
+            slotE: undefined,
+            xoffset: 0,
+            yoffset: 0,
+        }
+
+
+        /**
+         * @param e {PointerEvent}
+         * @param die {Symbol}
+         * @param dieE {HTMLElement}
+         */
+        function dragStart(e, die, dieE) {
+            if (dragState.dragging) dragCancel(e);
+
+            clearDrag(); // unconditionally clear. Should already be clear, but meh.
+
+            dragState.dragging = true;
+            dragState.die = die;
+            dragState.dieE = dieE;
+
+            const rect = dieE.getBoundingClientRect();
+            dragState.xoffset = e.clientX - rect.left;
+            dragState.yoffset = e.clientY - rect.top;
+
+            dieE.classList.add("dragging");
+
+            dieE.style.left = `${e.clientX - dragState.xoffset}px`;
+            dieE.style.top = `${e.clientY - dragState.yoffset}px`;
+
+            dragState.originalParent = dieE.parentElement;
+            dragState.originalNextSibling = dieE.nextSibling;
+            document.getElementById("body").append(dieE);
+
+            checkDropZone(e);
+
+        }
+
+        /**
+         * @param e {PointerEvent}
+         */
+        function dragMove(e) {
+            if (!dragState.dragging) return;
+            e.cancelable && e.preventDefault();
+            dragState.dieE.style.left = `${e.clientX - dragState.xoffset}px`;
+            dragState.dieE.style.top = `${e.clientY - dragState.yoffset}px`;
+            checkDropZone(e);
+        }
+
+        function checkDropZone(e) {
+            if (!dragState.dragging) return;
+
+            const element = document.elementFromPoint(e.x, e.y);
+            const slot = element?.closest(".dice-dropzone")?.['slot-symbol'];
+
+            if (slot !== dragState.slot) {
+                if (dragState.slot) {
+                    dragState.slotE.classList.remove("candrop");
+                    dragState.slot = undefined;
+                    dragState.slotE = undefined;
+                }
+
+                if (slot) {
+                    dragState.slot = slot;
+                    dragState.slotE = diceDropzones[dragState.slot];
+                    dragState.slotE.classList.add("candrop");
+                }
+            }
+        }
+
+        /**
+         * @param e {PointerEvent}
+         */
+        function dragEnd() {
+            if (!dragState.dragging) return;
+
+            try {
+                if (!dragState.slot) {
+                    moveDieToSlot(dragState.die, state.diceAt[dragState.die], dragState.originalNextSibling);
+                } else {
+                    if (dragState.slot !== diceslot.box && state.slotContains[dragState.slot] && state.slotContains[dragState.slot] !== dragState.die) {
+                        moveDieToSlot(state.slotContains[dragState.slot], diceslot.box);
+                    }
+
+                    moveDieToSlot(dragState.die, dragState.slot);
+                }
+            } finally {
+                clearDrag();
+            }
+        }
+
+        function dragCancel() {
+            if (!dragState.dragging) return;
+
+            try {
+                moveDieToSlot(dragState.die, state.diceAt[dragState.die], dragState.originalNextSibling);
+            } finally {
+                clearDrag();
+            }
+        }
+
+        function clearDrag() {
+            try {
+                if (dragState.dieE) {
+                    dragState.dieE.classList.remove("dragging")
+                    dragState.dieE.classList.remove("candrop")
+                    dragState.dieE.x = undefined;
+                    dragState.dieE.y = undefined;
+                }
+
+
+                if (dragState.slotE) {
+                    dragState.slotE.classList.remove("candrop")
+                    dragState.slotE = undefined;
+                }
+            } finally {
+                dragState.dragging = false;
+                dragState.die = undefined;
+                dragState.dieE = undefined;
+                dragState.originalParent = undefined
+                dragState.originalNextSibling = undefined;
+                dragState.slot = undefined;
+                dragState.slotE = undefined;
+            }
+        }
+
+        function moveDieToSlot(die, slot, originalNextSibling = undefined) {
+
+            if (!die || !slot) {
+                throw new Error(`moveDieToSlot(${die?.description}, ${slot?.description}, ${originalNextSibling})`);
+            }
+
+            const dieE = diceElements[die];
+            const slotE = diceDropzones[slot];
+
+            if (slot !== diceslot.box && state.slotContains[slot] && state.slotContains[slot] !== die) {
+                throw Error(`Can't move ${die} to ${slot} because slot contains ${state.slotContains[slot]}`)
+            }
+
+            state.slotContains[state.diceAt[die]] = undefined;
+            state.slotContains[slot] = die;
+            state.diceAt[die] = slot;
+            if (originalNextSibling) {
+                slotE.insertBefore(dieE, originalNextSibling);
+            } else {
+                slotE.appendChild(dieE);
+            }
+        }
+
+        function rollDice() {
+
+            const kitbag = document.getElementById("kitbag");
+
+            kitbag.replaceChildren();
+
+            const list = document.createElement("ul");
+            kitbag.appendChild(list);
+
+            for (const slot of [diceslot.melee, diceslot.missile, diceslot.armour, diceslot.misc, diceslot.snacks]) {
+                if (!state.slotContains[slot]) continue;
+                console.info("Rolling", slot, "with", state.slotContains[slot]);
+                const die = Number(state.slotContains[slot].description.slice(1));
+                const roll1 = Math.floor(Math.random() * die) + 1;
+                const roll2 = Math.floor(Math.random() * die) + 1;
+                let roll = 0;
+                switch (state.bursarRelationship) {
+                    case  'positive':
+                        roll = Math.max(roll1, roll2);
+                        break;
+                    case 'negative':
+                        roll = Math.min(roll1, roll2);
+                        break;
+                    default:
+                        roll = roll1;
+                        break;
+                }
+
+                console.info(`Rolled ${roll1}, ${roll2} , using ${roll}`);
+
+                const rollE = document.createElement("span");
+                rollE.classList.add('die-rolls');
+                const roll1E = document.createElement("span");
+                roll1E.classList.add('die-roll');
+                const roll2E = document.createElement("span");
+                roll2E.classList.add('die-roll');
+                roll1E.innerText = roll1;
+                roll2E.innerText = roll2;
+                if (roll1 !== roll) roll1E.classList.add('not-used');
+                if (roll2 !== roll) roll2E.classList.add('not-used');
+
+                rollE.appendChild(document.createTextNode('('));
+                rollE.appendChild(roll1E);
+                if (state.bursarRelationship !== 'neutral') {
+                    rollE.appendChild(document.createTextNode('/'));
+                    rollE.appendChild(roll2E);
+                }
+                rollE.appendChild(document.createTextNode(')'));
+
+
+                const template = document.getElementById('generated-' + slot.description);
+                const spans = template.content.querySelectorAll("span.item");
+                const span = spans[roll + Number(state.level)];
+
+                console.log('rollE', rollE);
+                console.log(template, span);
+
+                const li = document.createElement("li");
+
+                li.appendChild(rollE);
+                li.appendChild(span.cloneNode(true));
+                list.appendChild(li);
+            }
+
+
+        }
+
+        function updateBursarRelationship() {
+            const selected = document.querySelector(
+                'input[name="bursarRelationship"]:checked'
+            );
+
+            state.bursarRelationship = selected.value;
+        }
+
+    </script>
+
+</head>
+
+<body id="body">
+
+<main class="container-fluid" id="app">
+    <header class="py-3">
+        <h1 class="text-center">Supplies</h1>
+    </header>
+
+    <section id="content">
+        <div class="container-fluid">
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="mb-4">
+                        <label class="form-label" for="level">Seniority Rank</label>
+
+                        <input
+                                class="form-control"
+                                id="level"
+                                max="10"
+                                min="1"
+                                type="number"
+                                value="1"
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+
+                    <div class="mb-4">
+                        <label class="form-label">Relationship with the Bursar</label>
+
+                        <div class="btn-group w-100" role="group">
+                            <input
+                                    class="btn-check"
+                                    id="bursarPositive"
+                                    name="bursarRelationship"
+                                    onchange="updateBursarRelationship()"
+                                    type="radio"
+                                    value="positive"
+                            >
+                            <label class="btn btn-outline-success" for="bursarPositive">
+                                Positive
+                            </label>
+
+                            <input
+                                    checked
+                                    class="btn-check"
+                                    id="bursarNeutral"
+                                    name="bursarRelationship"
+                                    onchange="updateBursarRelationship()"
+                                    type="radio"
+                                    value="neutral"
+                            >
+                            <label class="btn btn-outline-secondary" for="bursarNeutral">
+                                Neutral
+                            </label>
+
+                            <input
+                                    class="btn-check"
+                                    id="bursarNegative"
+                                    name="bursarRelationship"
+                                    onchange="updateBursarRelationship()"
+                                    type="radio"
+                                    value="negative"
+                            >
+                            <label class="btn btn-outline-danger" for="bursarNegative">
+                                Negative
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section class="mb-4" id="dice-selection-area">
+
+                <section class="dice-box mb-2" id="dice-box">
+                    <div class="dice-dropzone" data-slot="box">
+                    </div>
+                </section>
+
+                <section class="" id="assigned-dice">
+                    <div class="die-slot">
+                        <span class="slot-name">Melee</span>
+                        <span class="dice-dropzone" data-slot="melee"></span>
+                    </div>
+                    <div class="die-slot" data-slot="missile">
+                        <span class="slot-name">Missile</span>
+                        <span class="dice-dropzone" data-slot="missile"></span>
+                    </div>
+                    <div class="die-slot">
+                        <span class="slot-name">Armour</span>
+                        <span class="dice-dropzone" data-slot="armour"></span>
+                    </div>
+                    <div class="die-slot">
+                        <span class="slot-name">Misc</span>
+                        <span class="dice-dropzone" data-slot="misc"></span>
+                    </div>
+                    <div class="die-slot">
+                        <span class="slot-name" data-slot="melee">Snacks</span>
+                        <span class="dice-dropzone" data-slot="snacks"></span>
+                    </div>
+                </section>
+            </section>
+
+            <div class="row g-2">
+                <div class="col-12">
+                    <button class="btn btn-primary w-100" id="roll-em" onclick="rollDice()">
+                        ROLL 'EM!
+                    </button>
+                </div>
+            </div>
+
+            <section class="card mt-2">
+                <div class="card-header">
+                    <div>Kitbag</div>
+                    <small class="text-body-secondary">
+                        Each kitbag also contains Δ4 torches and a Δ<span id="senority-rank-potions">6</span> healing potion
+                    </small>
+                </div>
+                <div class="card-body" id="kitbag">
+                </div>
+                <div class="card-footer">
+                    <small class="text-body-secondary">
+                        Loaned equipment remains property of Dungeons Inc®. Equipment must be returned in good condtion.
+                    </small>
+                </div>
+            </section>
+
+
+        </div>
+    </section>
+
+
+    <template id="generated-melee">
+        <span class="item">0 should never happen</span>
+        <span class="item">1 should never happen</span>
+        <span class="item">Gnomish blackjack <span class="dmg">d4</span></span>
+        <span class="item">Partisan <span class="dmg">d6</span><span class="bullet-2"></span><span
+                class="bullet-P"></span></span>
+        <span class="item">Kobold bone shiv <span class="dmg">d4</span></span>
+        <span class="item">Pirate cutlass <span class="dmg">d4</span></span>
+        <span class="item">Short sword <span class="dmg">d6</span></span>
+        <span class="item">Bugbear-style spiked club <span class="dmg">d6</span></span>
+        <span class="item">Deep elf scourge <span class="dmg">d4</span></span>
+        <span class="item">Awl pike <span class="dmg">d6/d6</span><span class="bullet-2"></span></span>
+        <span class="item">Pretentious rapier <span class="dmg">d6</span></span>
+        <span class="item">Cheap dagger <span class="dmg">d4</span></span>
+        <span class="item">Wood elf hatchet <span class="dmg">d6</span></span>
+        <span class="item">Gisarme <span class="dmg">d8</span><span class="bullet-2"></span><span
+                class="bullet-P"></span></span>
+        <span class="item">Theatrical scythe <span class="dmg">d6</span></span>
+        <span class="item">Repurposed machete <span class="dmg">d6</span></span>
+        <span class="item">Chaos warrior flail <span class="dmg">d8/d8</span><span class="bullet-2"></span></span>
+        <span class="item">Bardiche <span class="dmg">d6</span><span class="bullet-2"></span><span
+                class="bullet-P"></span></span>
+        <span class="item">Classic gladius <span class="dmg">d6</span></span>
+        <span class="item">Underworld scimitar <span class="dmg">d8</span></span>
+        <span class="item">Shortened pike <span class="dmg">d8</span><span class="bullet-2"></span></span>
+        <span class="item">Wakizashi <span class="dmg">d6</span></span>
+        <span class="item">Sword and main-gauche <span class="dmg">d8</span></span>
+        <span class="item">Classy katana <span class="dmg">d8</span></span>
+        <span class="item">Blackened morgenstern <span class="dmg">d6</span></span>
+        <span class="item">Orcish battle-axe <span class="dmg">d8</span><span class="bullet-2"></span></span>
+        <span class="item">Unweildy warhammer <span class="dmg">d10</span><span class="bullet-2"></span></span>
+        <span class="item">Paladin's sword <span class="dmg">d8/d8</span><span class="bullet-2"></span></span>
+        <span class="item">Two-handed maul <span class="dmg">d8</span><span class="bullet-2"></span></span>
+        <span class="item">Halbered <span class="dmg">d10</span><span class="bullet-2"></span></span>
+        <span class="item">War mace <span class="dmg">d10</span></span>
+    </template>
+    <template id="generated-missile">
+        <span class="item">0 should never happen</span>
+        <span class="item">1 should never happen</span>
+        <span class="item">Polished pebbles <span class="dmg">d4</span> (sack <span class="amt">Δ10</span>) </span>
+        <span class="item">Throwing knives <span class="dmg">d4</span> (belt <span class="amt">Δ6</span>) </span>
+        <span class="item">Sling <span class="dmg">d4</span> (sack of bearings <span class="amt">Δ10</span>) </span>
+        <span class="item">Darts <span class="dmg">d4</span> (pouch <span class="amt">Δ6</span>) </span>
+        <span class="item">Goblin bow <span class="dmg">d6</span> (quiver <span class="amt">Δ8</span>)</span>
+        <span class="item">Bola <span class="dmg">d4</span></span>
+        <span class="item">Dueling pistol <span class="dmg">d6</span> (powder and shot <span class="amt">Δ6</span>)<span
+                class="bullet-B"></span></span>
+        <span class="item">Javelins <span class="dmg">d6</span> (quiver <span class="amt">Δ6</span>)</span>
+        <span class="item">Kunai <span class="dmg">d4</span> (case <span class="amt">Δ6</span>)</span>
+        <span class="item">Assassin's hand crossbow <span class="dmg">d6</span> (bolts <span
+                class="amt">Δ6</span>)</span>
+        <span class="item">Bamboo bow <span class="dmg">d6</span> (quiver <span class="amt">Δ8</span>)</span>
+        <span class="item">Throwing axes <span class="dmg">d6</span> (belt <span class="amt">Δ6</span>)</span>
+        <span class="item">Culverin <span class="dmg">d8</span> (powder and shot <span class="amt">Δ6</span>)<span
+                class="bullet-B"></span></span>
+        <span class="item">Oversized shuriken <span class="dmg">d6</span> (case <span class="amt">Δ4</span>) </span>
+        <span class="item">Blunderbuss <span class="amt">Δ6</span> (powder and shot <span class="amt">Δ6</span>)<span
+                class="bullet-B"></span></span>
+        <span class="item">Bladed boomerang <span class="dmg">d8</span></span>
+        <span class="item">Hunting bow <span class="dmg">d6</span> (quiver <span class="amt">Δ8</span>)</span>
+        <span class="item">Two-shot crossbow <span class="dmg">d8</span> (bolts <span class="amt">Δ8</span>) </span>
+        <span class="item">Slingshot <span class="dmg">d6</span> (sack of bearings <span class="amt">Δ8</span>) </span>
+        <span class="item">Barbarian francisca <span class="dmg">d8</span></span>
+        <span class="item">Pilum <span class="dmg">d8</span></span>
+        <span class="item">Sling <span class="dmg">d6</span> (sack of steel balls <span class="amt">Δ6</span>)</span>
+        <span class="item">Angon <span class="dmg">d6</span></span>
+        <span class="item">Heavy spear <span class="dmg">d8</span></span>
+        <span class="item">Javelin propeller <span class="dmg">d8</span> (javelins <span class="amt">Δ6</span>) </span>
+        <span class="item">Gnomish grenades <span class="dmg">d10</span> (belt <span class="amt">Δ4</span>)<span
+                class="bullet-B"></span></span>
+        <span class="item">Repeating crossbow <span class="dmg">d8</span> (bolts <span class="amt">Δ8</span>) </span>
+        <span class="item">Arquebus <span class="dmg">d8</span> (powder and shot <span class="amt">Δ6</span>)<span
+                class="bullet-B"></span></span>
+        <span class="item">Musket <span class="dmg">d10</span> (powder and shot <span class="amt">Δ6</span>)<span
+                class="bullet-B"></span></span>
+    </template>
+    <template id="generated-armour">
+        <span class="item">0 should never happen</span>
+        <span class="item">1 should never happen</span>
+        <span class="item">Greasy leather tunic <span class="amt">Δ4</span><span class="bullet-plus"></span></span>
+        <span class="item">Horned helmet <span class="amt">Δ4</span><span class="bullet-plus"></span></span>
+        <span class="item">Padded leather doublet <span class="amt">Δ6</span></span>
+        <span class="item">Hide coat <span class="amt">Δ4</span> and buckler </span>
+        <span class="item">Wooden shield</span>
+        <span class="item">Boiled leather breastplate <span class="amt">Δ6</span> </span>
+        <span class="item">Ancient breastplate <span class="amt">Δ6</span></span>
+        <span class="item">Leather tunic and spiky steel cap<span class="bullet-plus"></span></span>
+        <span class="item">Ill-maintained ring mail <span class="amt">Δ6</span> </span>
+        <span class="item">Studded leather <span class="amt">Δ6</span></span>
+        <span class="item">Bronze breastplate <span class="amt">Δ6</span></span>
+        <span class="item">Spiked leather <span class="amt">Δ4</span> and buckler</span>
+        <span class="item">Poorly fitting lorica <span class="amt">Δ6</span> </span>
+        <span class="item">Splint mail <span class="amt">Δ8</span></span>
+        <span class="item">Sleeveless mail shirt <span class="amt">Δ8</span></span>
+        <span class="item">Rusty dwarven hauberk <span class="amt">Δ6</span></span>
+        <span class="item">Brand new breastplate <span class="amt">Δ8</span></span>
+        <span class="item">Damp leather and rusty mail <span class="amt">Δ6</span></span>
+        <span class="item">Squeaky platemail <span class="amt">Δ8</span></span>
+        <span class="item">Gambeson and mail <span class="amt">Δ6</span> with round shield</span>
+        <span class="item">Oily ring mail <span class="amt">Δ6</span></span>
+        <span class="item">Obscure lorica <span class="amt">Δ6</span></span>
+        <span class="item">Damascus breastplate <span class="amt">Δ8</span></span>
+        <span class="item">Brigandine <span class="amt">Δ8</span></span>
+        <span class="item">Elven mail <span class="amt">Δ8</span></span>
+        <span class="item">Harness <span class="amt">Δ8</span> and kite shield</span>
+        <span class="item">Breastplate, mail, and metal skullcap <span class="amt">Δ10</span> </span>
+        <span class="item">Adorned plate <span class="amt">Δ10</span></span>
+        <span class="item">Full knightly plate <span class="amt">Δ10</span> and tower shield</span>
+    </template>
+    <template id="generated-misc">
+        <span class="item">0 should never happen</span>
+        <span class="item">1 should never happen</span>
+        <span class="item">Kobold bolt-cutters </span>
+        <span class="item">Human shepherd's cap </span>
+        <span class="item">Chisel, hammer</span>
+        <span class="item">Knitting needles, skein of yarn </span>
+        <span class="item">Mortar and pestle</span>
+        <span class="item">Fungi tea and teapot</span>
+        <span class="item">Hammer, iron pitons <span class="amt">Δ6</span></span>
+        <span class="item">Wolf pelt, backpack, large tarp</span>
+        <span class="item">Sleeping bag, cooking utensils, vampire themed tarot cards</span>
+        <span class="item">Net, handcuffs</span>
+        <span class="item">Canvas, oil paints, paintbrushes</span>
+        <span class="item">Compass, mariner's cap</span>
+        <span class="item">Boar mask, decoys</span>
+        <span class="item">Parchment, charcoal</span>
+        <span class="item">Backpack, blanket, rope <span class="amt">Δ10</span>, pilgrim hat </span>
+        <span class="item">Holy water <span class="amt">Δ6</span>, alchemical tools <span class="amt">Δ8</span>, candles <span
+                class="amt">Δ4</span> </span>
+        <span class="item">Hunting snares, burlap bag, dice</span>
+        <span class="item">Bag of plaster, trowel </span>
+        <span class="item">Nose flute, pitch pipe, sheet music</span>
+        <span class="item">Pot, sauce starter, spices, wooden spoon </span>
+        <span class="item">Old tasseled rug, two sacks, crowbar </span>
+        <span class="item">Sleeping bag, two bear traps</span>
+        <span class="item">Sack of charcoal, fishing rod, playing cards </span>
+        <span class="item">Oil lamp <span class="amt">Δ4</span>, shovel, rope ladder</span>
+        <span class="item">Courtesan's kit <span class="amt">Δ8</span>, fancy elven cloak, mechanical bird</span>
+        <span class="item">Crochet hooks, backpack, lantern and oil <span class="amt">Δ8</span> </span>
+        <span class="item">Quality traveling cloak, pouch, candles <span class="amt">Δ8</span></span>
+        <span class="item">Tanning tools <span class="amt">Δ6</span>, wizard's pointy hat, spyglass </span>
+        <span class="item">Mapmaking tools <span class="amt">Δ8</span></span>
+    </template>
+    <template id="generated-snacks">
+        <span class="item">0 should never happen</span>
+        <span class="item">1 should never happen</span>
+        <span class="item">Boiled turnips <span class="amt">Δ4</span></span>
+        <span class="item">Dried shrieker mushrooms and biscuits <span class="amt">Δ4</span></span>
+        <span class="item">Green slime fricassee <span class="amt">Δ4</span></span>
+        <span class="item">Tripe in gelatin <span class="amt">Δ4</span></span>
+        <span class="item">Freshly killed cat <span class="amt">Δ4</span></span>
+        <span class="item">Raw turnips and mole pâté <span class="amt">Δ4</span></span>
+        <span class="item">Jar of flailsnail soup <span class="amt">Δ4</span></span>
+        <span class="item">Dried parsnips in oil <span class="amt">Δ4</span></span>
+        <span class="item">Mystery meat with mushrooms <span class="amt">Δ6</span> </span>
+        <span class="item">Eggplant and dried catfish <span class="amt">Δ6</span></span>
+        <span class="item">Fried rice and ooze balls <span class="amt">Δ6</span> </span>
+        <span class="item">Ginger spider meat confit <span class="amt">Δ6</span> </span>
+        <span class="item">Fresh fruit and brown bread <span class="amt">Δ6</span> </span>
+        <span class="item">Live rat in a cage <span class="amt">Δ6</span></span>
+        <span class="item">Nobbit liver sausage <span class="amt">Δ6</span></span>
+        <span class="item">Mutton and beans <span class="amt">Δ6</span></span>
+        <span class="item">Dried crabapples <span class="amt">Δ6</span></span>
+        <span class="item">Pancakes and dried crab spider <span class="amt">Δ6</span> </span>
+        <span class="item">Blood pudding and dark beer <span class="amt">Δ8</span></span>
+        <span class="item">Pickled drider eggs with cabbage <span class="amt">Δ8</span> </span>
+        <span class="item">Spiced goose tart <span class="amt">Δ8</span></span>
+        <span class="item">Gnomish fish cakes and dry wine <span class="amt">Δ8</span> </span>
+        <span class="item">Cinnamon rice balls <span class="amt">Δ8</span></span>
+        <span class="item">Catoblepas ham and dried tomatoes <span class="amt">Δ8</span></span>
+        <span class="item">Stirge tarts <span class="amt">Δ8</span></span>
+        <span class="item">Virgin sausages in vinegar <span class="amt">Δ8</span></span>
+        <span class="item">Killer bee honey and lemon cakes <span class="amt">Δ8</span></span>
+        <span class="item">Wilderness oysters in sauce <span class="amt">Δ8</span></span>
+        <span class="item">Peppered cheese and dwarven cider <span class="amt">Δ10</span></span>
+    </template>
+
+</main>
+
