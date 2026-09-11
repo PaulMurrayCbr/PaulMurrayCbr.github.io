@@ -28,6 +28,11 @@
             min-height: 100dvh;
         }
 
+        main {
+            max-width: 40rem;
+            margin-left: 0 auto;
+        }
+
         /*
         A dice-dropzone has a number of "die" spans in it, each with an image.
         */
@@ -254,8 +259,6 @@
         function init() {
             initLevelListener();
             initDragNDrop();
-
-            console.info("init ok at ", new Date());
         }
 
         function initLevelListener() {
@@ -491,7 +494,6 @@
         }
 
         function rollDice() {
-
             const kitbag = document.getElementById("kitbag");
 
             kitbag.replaceChildren();
@@ -499,9 +501,11 @@
             const list = document.createElement("ul");
             kitbag.appendChild(list);
 
+            let noDice = true;
+
             for (const slot of [diceslot.melee, diceslot.missile, diceslot.armour, diceslot.misc, diceslot.snacks]) {
                 if (!state.slotContains[slot]) continue;
-                console.info("Rolling", slot, "with", state.slotContains[slot]);
+                noDice= false;
                 const die = Number(state.slotContains[slot].description.slice(1));
                 const roll1 = Math.floor(Math.random() * die) + 1;
                 const roll2 = Math.floor(Math.random() * die) + 1;
@@ -517,8 +521,6 @@
                         roll = roll1;
                         break;
                 }
-
-                console.info(`Rolled ${roll1}, ${roll2} , using ${roll}`);
 
                 const rollE = document.createElement("span");
                 rollE.classList.add('die-rolls');
@@ -544,9 +546,6 @@
                 const spans = template.content.querySelectorAll("span.item");
                 const span = spans[roll + Number(state.level)];
 
-                console.log('rollE', rollE);
-                console.log(template, span);
-
                 const li = document.createElement("li");
 
                 li.appendChild(rollE);
@@ -554,7 +553,9 @@
                 list.appendChild(li);
             }
 
-
+            if(noDice) {
+                document.getElementById('helpModal').classList.remove('d-none');
+            }
         }
 
         function updateBursarRelationship() {
@@ -687,7 +688,8 @@
                 <div class="card-header">
                     <div>Kitbag</div>
                     <small class="text-body-secondary">
-                        Each kitbag also contains Δ4 torches and a Δ<span id="senority-rank-potions">6</span> healing potion
+                        Each kitbag also contains <span class="amt">Δ4</span> torches and a <span class="amt">Δ<span id="senority-rank-potions">6</span></span> healing
+                        potion
                     </small>
                 </div>
                 <div class="card-body" id="kitbag">
@@ -702,7 +704,32 @@
 
         </div>
     </section>
+    <div class="d-none position-fixed top-0 start-0 w-100 h-100" id="helpModal"
+         onpointerup="document.getElementById('helpModal').classList.add('d-none')"
+         style="
+         z-index: 1050;
+         background: rgba(0, 0, 0, 0.25);
+         backdrop-filter: blur(1px);
+         -webkit-backdrop-filter: blur(1px);
+     "
+    >
 
+        <!-- message -->
+        <div class="position-absolute top-50 start-50 translate-middle
+                bg-body rounded shadow p-4 text-center border border-2"
+             style="min-width: 280px; max-width: 90%;">
+            <div id="messageText">
+                <h5 class="mb-3">Roll 'em!</h5>
+                <p>
+                    Drag your dice to equipment slots to assign them.
+                </p>
+            </div>
+            <div class="small text-body-secondary mt-3">
+                Touch anywhere to dismiss this message
+            </div>
+        </div>
+
+    </div>
 
     <template id="generated-melee">
         <span class="item">0 should never happen</span>
